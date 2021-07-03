@@ -1,40 +1,72 @@
 package com.udangtangtang.emotion_mapfile.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.Activity;
-import android.graphics.Paint;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.FirebaseDatabase;
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.model.City;
-import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-import java.security.cert.PKIXRevocationChecker;
-import java.util.List;
-import java.util.Optional;
-
 public class MainActivity extends Activity {
-
     private final String TAG = "MainActivity";
-    private final String databaseURL = "https://emotion-map-312b1-default-rtdb.firebaseio.com";
-    private final MainPresenter mainPresenter = new MainPresenter(new User(),new City());
+    private MainPresenter presenter;
+    private DrawerLayout drawerLayout;
+    private View drawerView;
+    private ImageButton btn_plus; //감정 표시 버튼
+    private ImageButton btn_close;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setAntiAlias(true);
 
-        Log.d(TAG, "onCreate: called");
-        mainPresenter.getCommentList();
-        Log.d(TAG, "onCreate: finished");
+        initView();
+
+        drawerLayout.setDrawerListener(listener);
+        drawerLayout .setOnTouchListener((v, event) -> false);
+
+        btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
+
+
+        //감정 표시 버튼 클릭 시
+        btn_plus.setOnClickListener(v -> presenter.add_emotion());
+        presenter = new MainPresenter(MainActivity.this);
+        presenter.getCommentList();
     }
+
+    private void initView(){
+        //뷰 세팅
+        btn_plus = findViewById(R.id.btn_plus);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerView = findViewById(R.id.drawer);
+        btn_close = findViewById(R.id.btn_close);
+    }
+
+    //메뉴창
+    DrawerLayout.DrawerListener listener = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+        }
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerClosed(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
+    };
+
 }
