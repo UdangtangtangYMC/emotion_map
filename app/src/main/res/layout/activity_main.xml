@@ -47,13 +47,14 @@
                         android:textSize="16sp" />
                 </TableRow>
                 <TableRow>
+
                     <androidx.recyclerview.widget.RecyclerView
-                        android:layout_column="1"
+                        android:id="@+id/commentList"
                         android:layout_width="match_parent"
-                        android:layout_span="2"
                         android:layout_height="100dp"
-                        android:layout_marginBottom="10dp">
-                    </androidx.recyclerview.widget.RecyclerView>
+                        android:layout_column="1"
+                        android:layout_marginBottom="10dp"
+                        android:layout_span="2"></androidx.recyclerview.widget.RecyclerView>
 
 
                 </TableRow>
