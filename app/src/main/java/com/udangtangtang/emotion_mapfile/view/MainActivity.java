@@ -1,10 +1,13 @@
-package com.udangtangtang.emotion_mapfile;
+package com.udangtangtang.emotion_mapfile.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.udangtangtang.emotion_mapfile.R;
+
+public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
