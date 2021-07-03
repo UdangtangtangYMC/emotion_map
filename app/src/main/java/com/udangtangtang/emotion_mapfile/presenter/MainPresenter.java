@@ -25,5 +25,4 @@ public class MainPresenter {
         city.getCommentList("Anyang");
         Log.d(TAG, "getCommentList: finished");
     }
-
 }
