@@ -1,5 +1,6 @@
 package com.udangtangtang.emotion_mapfile.view;
 
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,5 +192,4 @@ public class MainActivity extends Activity {
         }
         return null;
     }
-
 }
