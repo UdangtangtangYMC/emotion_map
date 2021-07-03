@@ -7,7 +7,7 @@
     tools:context=".view.MainActivity"
     android:orientation="vertical">
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="10dp">
@@ -23,25 +23,50 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/customborder"
                 android:layout_marginBottom="20dp">
-
             </LinearLayout>
 
-            <LinearLayout
+            <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/customborder"
-                android:layout_marginBottom="20dp">
+                android:stretchColumns="1">
+                <TableRow
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/menu_bottom_border">
 
-            </LinearLayout>
+                    <TextView
+                        android:layout_column="1"
+                        android:paddingBottom="10dp"
+                        android:text="@string/comment_list"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:paddingBottom="10dp"
+                        android:text="@string/expand"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+                </TableRow>
+                <TableRow>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_column="1"
+                        android:layout_width="match_parent"
+                        android:layout_span="2"
+                        android:layout_height="100dp"
+                        android:layout_marginBottom="10dp">
+                    </androidx.recyclerview.widget.RecyclerView>
+
+
+                </TableRow>
+
+            </TableLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/customborder">
-
             </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>
