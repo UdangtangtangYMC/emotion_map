@@ -1,20 +1,18 @@
 package com.udangtangtang.emotion_mapfile.view;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
+
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
 public class MainActivity extends Activity {
+    private final String TAG = "MainActivity";
     private MainPresenter presenter;
     private DrawerLayout drawerLayout;
     private View drawerView;
@@ -29,28 +27,15 @@ public class MainActivity extends Activity {
         initView();
 
         drawerLayout.setDrawerListener(listener);
-        drawerLayout .setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return false;
-            }
-        });
+        drawerLayout .setOnTouchListener((v, event) -> false);
 
-        btn_close.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.closeDrawers();
-            }
-        });
+        btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
 
 
         //감정 표시 버튼 클릭 시
-        btn_plus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.add_emotion();
-            }
-        });
+        btn_plus.setOnClickListener(v -> presenter.add_emotion());
+        presenter = new MainPresenter(MainActivity.this);
+        presenter.getCommentList();
     }
 
     private void initView(){
@@ -59,13 +44,6 @@ public class MainActivity extends Activity {
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer);
         btn_close = findViewById(R.id.btn_close);
-    }
-
-    @Override
-    protected void onResume() {
-        //presenter 실행
-        super.onResume();
-        presenter = new MainPresenter(MainActivity.this);
     }
 
     //메뉴창
