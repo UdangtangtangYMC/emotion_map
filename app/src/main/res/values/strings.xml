@@ -17,4 +17,5 @@
 
     <!---카카오-->
     <string name="kakao_app_key">14c0eb02333568e599c669cb59b7e30c</string>
+    <string name="splashText">빡칠지도</string>
 </resources>

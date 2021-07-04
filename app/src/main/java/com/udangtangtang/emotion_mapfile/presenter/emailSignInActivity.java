@@ -9,14 +9,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.view.MainActivity;
 
 public class emailSignInActivity extends Activity {
     private FirebaseAuth mAuth;
@@ -49,7 +47,7 @@ public class emailSignInActivity extends Activity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Intent intent=new Intent(emailSignInActivity.this, MainActivity.class);
+                            Intent intent=new Intent(emailSignInActivity.this, signInActivity.class);
                             startActivity(intent);
                         }
                         else{
