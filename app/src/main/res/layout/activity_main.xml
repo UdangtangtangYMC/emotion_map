@@ -62,12 +62,15 @@
                             android:textColor="@color/black"
                             android:textSize="16sp" />
                     </TableRow>
-                    <TableRow>
+
+                    <TableRow
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/commentList"
                             android:layout_width="match_parent"
-                            android:layout_height="100dp"
+                            android:layout_height="300dp"
                             android:layout_column="1"
                             android:layout_marginBottom="10dp"
                             android:layout_span="2">
