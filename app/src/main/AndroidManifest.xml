@@ -5,19 +5,35 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".presenter.KakaoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Emotion_mapFile">
-        <activity android:name=".view.MainActivity">
+        <activity android:name=".view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".view.Comment_list"/>
-    </application>
+        <activity android:name=".presenter.emailSignUpActivity" />
+        <activity android:name=".presenter.emailSignInActivity" />
+        <activity android:name=".presenter.signInActivity" />
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao{NATIVE_APP_KEY}://oauth" -->
+                <data
+                    android:host="oauth"
+                    android:scheme="kakao14c0eb02333568e599c669cb59b7e30c" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>
