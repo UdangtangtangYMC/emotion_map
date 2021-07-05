@@ -21,7 +21,7 @@ public class PlusEmotionPresenter {
         this.user = user;
     }
 
-    public String get_emotion(int id){ return (id==0) ? "기쁨" : "슬픔"; }
+    public String get_emotion(int id){ return (id==0) ? "기쁨" : "빡침"; }
 
     public void insert_emotion(String seleted_emotion, String comment){
         Comment input_comment = new Comment();

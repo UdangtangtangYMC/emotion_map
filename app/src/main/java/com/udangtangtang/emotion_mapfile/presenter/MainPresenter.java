@@ -48,7 +48,6 @@ public class MainPresenter {
         PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
         plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
         plusEmotion.callFunciton(new RefreshCallBack(){
-
             @Override
             public void refresh() {
                 insert_CommentList();
