@@ -56,13 +56,12 @@
                             android:textColor="@color/black"
                             android:textSize="20sp" />
 
-                        <Button
-                            android:id="@+id/btn_commentDetail"
+                        <TextView
+                            android:id="@+id/textView_commentDetail"
                             android:paddingBottom="10dp"
                             android:text="@string/expand"
                             android:textColor="@color/black"
-                            android:backgroundTint="@android:color/background_light"
-                            android:textSize="16sp" />
+                            android:textSize="14dp" />
                     </TableRow>
 
                     <TableRow
@@ -72,7 +71,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/commentList"
                             android:layout_width="match_parent"
-                            android:layout_height="300dp"
+                            android:layout_height="150dp"
                             android:layout_column="1"
                             android:layout_marginBottom="10dp"
                             android:layout_span="2">

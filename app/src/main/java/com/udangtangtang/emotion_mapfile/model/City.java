@@ -16,51 +16,44 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class City extends Thread{
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
-    private String city;
+    private double latitude;
+    private double longitude;
+    private String myCity;
 
     public City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public void getCommentList(String city, CommentListCallBack callBack){
-        new Thread(){
-            public void run(){
-                DatabaseReference reference = firebaseDatabase.getReference(city);
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        HashMap<String,HashMap<String,String>> value = (HashMap) snapshot.getValue();
-                        for (String key : value.keySet()) {
-                            Log.d(TAG, "onDataChange: "+key+" : "+value.get(key));
-                        }
-                        callBack.onSuccess(createCommentList(value));
-                        Log.d(TAG, "2");
+        new Thread(() -> {
+            DatabaseReference reference = firebaseDatabase.getReference(city);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    HashMap<String,HashMap<String,String>> value = (HashMap) snapshot.getValue();
+                    for (String key : value.keySet()) {
+                        Log.d(TAG, "onDataChange: "+key+" : "+value.get(key));
                     }
+                    callBack.onSuccess(createCommentList(value));
+                    Log.d(TAG, "2");
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.d(TAG, "onCancelled: ");
-                    }
-                });
-            }
-        }.start();
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d(TAG, "onCancelled: ");
+                }
+            });
+        }).start();
     }
-
-
-
 
     private List<String> createCommentList(HashMap<String, HashMap<String,String>> target){
         List<String> comments = new ArrayList<String>();

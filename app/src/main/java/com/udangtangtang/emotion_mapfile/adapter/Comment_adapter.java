@@ -36,7 +36,7 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
     @NonNull
     @Override
     //recyclerview에 레이아웃 지정정
-   public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         //Inflater : xml에 표기된 레이아웃들을 메모리에 객체화 하는 행동 수행
         View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment, viewGroup, false);
         MyViewHolder myViewHolder = new MyViewHolder(holderView);
