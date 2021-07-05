@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">Emotion_mapFile</string>
-<<<<<<< HEAD
     <string name="comment_list">주변 상황</string>
     <string name="expand">더 보기</string>
-=======
 
     <string name="mainSignUpButtonText">회원가입</string>
     <string name="mainSignInButtonText">로그인</string>
@@ -22,5 +20,4 @@
     <!---카카오-->
     <string name="kakao_app_key">14c0eb02333568e599c669cb59b7e30c</string>
     <string name="splashText">빡칠지도</string>
->>>>>>> c5571f9fa7fd04a40f679ab680cfcd086fe323ca
 </resources>
