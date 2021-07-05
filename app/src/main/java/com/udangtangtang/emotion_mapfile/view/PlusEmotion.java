@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
+import com.udangtangtang.emotion_mapfile.presenter.RefreshCallBack;
 
 public class PlusEmotion {
     private PlusEmotionPresenter plusEmotionPresenter;
@@ -32,7 +33,7 @@ public class PlusEmotion {
 
     }
 
-    public void callFunciton(){
+    public void callFunciton(RefreshCallBack refreshCallBack){
         final Dialog dlg = new Dialog(context);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.setContentView(R.layout.dialog_plus);
@@ -52,6 +53,7 @@ public class PlusEmotion {
                 selected_emotion = plusEmotionPresenter.get_emotion(emotion_id);
                 comment = edt_ment.getText().toString();
                 plusEmotionPresenter.insert_emotion(selected_emotion, comment);
+                refreshCallBack.refresh();
                 dlg.dismiss();
             }
         });

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,7 @@ public class MainActivity extends Activity {
     private MainPresenter presenter;
     private DrawerLayout drawerLayout;
     private View drawerView;
+    private TextView txt_userCity, txt_cityTemperature, txt_angry, txt_happy;
     private RecyclerView comment_view;
     private ImageButton btn_plus; //감정 표시 버튼
     private ImageButton btn_close;
@@ -38,16 +40,18 @@ public class MainActivity extends Activity {
         //위젯 연결
         initView();
         //presenter 생성
-        presenter = new MainPresenter(MainActivity.this);
+        presenter = new MainPresenter(MainActivity.this, comment_view);
 
         //옆 메뉴 출력
         drawerLayout.setDrawerListener(listener);
         drawerLayout.setOnTouchListener((v, event) -> false);
         btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
 
+
+
         //recyclerview 세팅
         //presenter를 통해 받아온 adapter 객체를 set
-        presenter.insert_CommentList(comment_view);
+        presenter.insert_CommentList();
 
         //감정 표시 버튼 클릭 시
         btn_plus.setOnClickListener(v -> presenter.add_emotion());
@@ -64,6 +68,10 @@ public class MainActivity extends Activity {
         comment_view = findViewById(R.id.commentList);
         comment_view.setLayoutManager(new LinearLayoutManager(this));
         comment_view.setHasFixedSize(true);
+        txt_userCity = findViewById(R.id.txt_city);
+        txt_cityTemperature = findViewById(R.id.txt_cityTemperature);
+        txt_angry = findViewById(R.id.txt_angry);
+        txt_happy = findViewById(R.id.txt_happy);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
         btn_commentDetail = findViewById(R.id.btn_commentDetail);
