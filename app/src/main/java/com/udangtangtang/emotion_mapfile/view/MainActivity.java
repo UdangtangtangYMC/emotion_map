@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ public class MainActivity extends Activity {
     private RecyclerView comment_view;
     private ImageButton btn_plus; //감정 표시 버튼
     private ImageButton btn_close;
+    private Button btn_commentDetail;
 
 
     @Override
@@ -50,7 +52,10 @@ public class MainActivity extends Activity {
         //감정 표시 버튼 클릭 시
         btn_plus.setOnClickListener(v -> presenter.add_emotion());
 
-    }
+        //주변 상황 더보기 클릭시
+        btn_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+
+   }
 
     private void initView(){
         //뷰 세팅
@@ -61,6 +66,7 @@ public class MainActivity extends Activity {
         comment_view.setHasFixedSize(true);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
+        btn_commentDetail = findViewById(R.id.btn_commentDetail);
     }
 
     //메뉴창

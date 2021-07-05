@@ -1,6 +1,8 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.User;
+import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 
 import org.w3c.dom.Comment;
@@ -61,5 +64,9 @@ public class MainPresenter {
         });
     }
 
-
+    public void intent_CommentDetail(){
+        Intent intent = new Intent(context, Comment_list.class);
+        intent.putExtra("adapter", comment_adapter);
+        context.startActivity(intent);
+    }
 }

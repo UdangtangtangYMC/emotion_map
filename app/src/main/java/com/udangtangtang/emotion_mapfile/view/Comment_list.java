@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -24,21 +25,22 @@ public class Comment_list extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_commentlist);
 
         initView();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setHasFixedSize(true);
-
-        comment_adapter = new Comment_adapter(comment_list);
+        Intent intent = getIntent();
+        comment_adapter = (Comment_adapter) intent.getSerializableExtra("adapter");
         recyclerView.setAdapter(comment_adapter);
+
     }
 
     private void initView(){
         //뷰 세팅
        recyclerView = findViewById(R.id.recyclerview);
+       recyclerView.setLayoutManager(new LinearLayoutManager(this));
+       recyclerView.setHasFixedSize(true);
        txt_city = findViewById(R.id.txt_city);
     }
-
 
 }

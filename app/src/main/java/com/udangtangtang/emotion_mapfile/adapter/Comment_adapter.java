@@ -11,14 +11,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyViewHolder>{
+public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyViewHolder> implements Serializable {
     private final String TAG = "Comment_adapter";
-    public List<String> comment_list = new ArrayList<String>();
+    private List<String> comment_list = new ArrayList<String>();
 
-    class MyViewHolder extends RecyclerView.ViewHolder{
+    protected class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView txt_comment;
 
         public MyViewHolder(@NonNull View itemView) {
