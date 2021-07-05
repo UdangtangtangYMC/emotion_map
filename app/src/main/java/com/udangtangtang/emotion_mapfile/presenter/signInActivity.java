@@ -4,6 +4,9 @@ package com.udangtangtang.emotion_mapfile.presenter;
 import androidx.annotation.NonNull;
 
 import android.app.Activity;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -18,15 +21,32 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.kakao.sdk.auth.LoginClient;
+import com.kakao.sdk.auth.model.OAuthToken;
+import com.kakao.sdk.user.UserApiClient;
+import com.kakao.sdk.user.model.Account;
+import com.kakao.sdk.user.model.Profile;
+import com.kakao.sdk.user.model.User;
 import com.udangtangtang.emotion_mapfile.R;
 
 import android.content.Intent;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.List;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 public class signInActivity extends Activity {
     private static final String TAG = "GoogleActivity";
@@ -34,11 +54,12 @@ public class signInActivity extends Activity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainaftersplash);
+
+        Log.d("GET_KEYHASH", getKeyHash());
 
         Button signUpButton = (Button) findViewById(R.id.signUpButton);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -74,17 +95,73 @@ public class signInActivity extends Activity {
         });
 
         ImageButton kakaoSignInButton=(ImageButton)findViewById(R.id.kakaoSignInButton);
+
+        Function2<OAuthToken, Throwable, Unit> callback=new Function2<OAuthToken, Throwable, Unit>() {
+            @Override
+            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
+                if(oAuthToken!=null){
+
+                }
+                if(throwable!=null){
+
+                }
+                //updateaKakaoLoginUI();
+                return null;
+            }
+        };
+
         kakaoSignInButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                if(LoginClient.getInstance().isKakaoTalkLoginAvailable(signInActivity.this)){
+                    LoginClient.getInstance().loginWithKakaoTalk(signInActivity.this, callback);
+                }else{
+                    LoginClient.getInstance().loginWithKakaoAccount(signInActivity.this, callback);
+                }
+            }
+        });
+
+        /*
+        logoutButton.setOnClickListner(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>(){
+                    @Override
+                    public Unit invoke(Throwable throwable){
+                        //updateKakaoLoginUI();
+                        return null;
+                    }
+                });
+            }
+        });
+        */
+
+    }
+
+    /*
+    *kakao logout code
+        btn_login_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserApiClient.getInstance().logout(error -> {
+                    if (error != null) {
+                        Log.e(TAG, "로그아웃 실패, SDK에서 토큰 삭제됨", error);
+                    }else{
+                        Log.e(TAG, "로그아웃 성공, SDK에서 토큰 삭제됨");
+                    }
+                    return null;
+                });
             }
         });
     }
 
+});
+     */
+
     @Override
-    public void onStart(){
+    public void onStart() {
         super.onStart();
-        FirebaseUser currentUser= mAuth.getCurrentUser();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
     }
 
@@ -132,7 +209,26 @@ public class signInActivity extends Activity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    private void updateUI(FirebaseUser currentUser){
+    private void updateUI(FirebaseUser currentUser) {
         //UI를 업데이트 하자
+    }
+
+    public String getKeyHash() {
+        try {
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+            if (packageInfo == null) return null;
+            for (Signature signature : packageInfo.signatures) {
+                try {
+                    MessageDigest md = MessageDigest.getInstance("SHA");
+                    md.update(signature.toByteArray());
+                    return android.util.Base64.encodeToString(md.digest(), Base64.NO_WRAP);
+                } catch (NoSuchAlgorithmException e) {
+                    Log.w("getKeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+                }
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w("getPackageInfo", "Unable to getPackageInfo");
+        }
+        return null;
     }
 }
