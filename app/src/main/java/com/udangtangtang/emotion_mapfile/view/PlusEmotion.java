@@ -22,10 +22,14 @@ public class PlusEmotion {
     private Button btn_ok;
     private Button btn_cancel;
 
+    private String selected_emotion;
+    private String comment;
 
-    public PlusEmotion(Context context){
+
+    public PlusEmotion(Context context, PlusEmotionPresenter plusEmotionPresenter){
         this.context = context;
-        plusEmotionPresenter = new PlusEmotionPresenter(context);
+        this.plusEmotionPresenter = plusEmotionPresenter;
+
     }
 
     public void callFunciton(){
@@ -44,6 +48,10 @@ public class PlusEmotion {
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int emotion_id = rdg.getCheckedRadioButtonId();
+                selected_emotion = plusEmotionPresenter.get_emotion(emotion_id);
+                comment = edt_ment.getText().toString();
+                plusEmotionPresenter.insert_emotion(selected_emotion, comment);
                 dlg.dismiss();
             }
         });

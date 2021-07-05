@@ -10,30 +10,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListCallBack;
-import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class City extends Thread{
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
-    private String city;
 
     public City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
 
     public void getCommentList(String city, CommentListCallBack callBack){
         new Thread(){
@@ -59,9 +51,6 @@ public class City extends Thread{
         }.start();
     }
 
-
-
-
     private List<String> createCommentList(HashMap<String, HashMap<String,String>> target){
         List<String> comments = new ArrayList<String>();
         for (String key : target.keySet()) {
@@ -72,6 +61,11 @@ public class City extends Thread{
         Log.d(TAG, "1");
 
         return comments;
+    }
+
+    public void insert_comment(Comment comment, String city, String id){
+        DatabaseReference reference = firebaseDatabase.getReference(city);
+        reference.child(id).setValue(comment);
     }
 
 

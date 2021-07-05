@@ -1,5 +1,6 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
@@ -11,6 +12,7 @@ import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
+import com.udangtangtang.emotion_mapfile.view.MainActivity;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 
 import org.w3c.dom.Comment;
@@ -42,7 +44,8 @@ public class MainPresenter {
 //    }
 
     public void add_emotion(){
-        plusEmotion = new PlusEmotion(context);
+        PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
+        plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
         plusEmotion.callFunciton();
     }
 
