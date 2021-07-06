@@ -1,6 +1,8 @@
 package com.udangtangtang.emotion_mapfile.model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String UserID;
     private String City;
 

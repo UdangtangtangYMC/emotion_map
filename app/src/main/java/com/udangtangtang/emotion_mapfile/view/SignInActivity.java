@@ -1,7 +1,5 @@
-package com.udangtangtang.emotion_mapfile.presenter;
+package com.udangtangtang.emotion_mapfile.view;
 
-
-import androidx.annotation.NonNull;
 
 import android.app.Activity;
 import android.content.pm.PackageInfo;
@@ -19,14 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.kakao.sdk.auth.LoginClient;
 import com.kakao.sdk.auth.model.OAuthToken;
-import com.kakao.sdk.user.UserApiClient;
-import com.kakao.sdk.user.model.Account;
-import com.kakao.sdk.user.model.Profile;
-import com.kakao.sdk.user.model.User;
 import com.udangtangtang.emotion_mapfile.R;
 
 import android.content.Intent;
@@ -35,68 +30,90 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
+import androidx.annotation.NonNull;
+
+import com.udangtangtang.emotion_mapfile.model.User;
+import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 import kotlin.jvm.functions.Function2;
 
-public class signInActivity extends Activity {
-    private static final String TAG = "GoogleActivity";
+public class SignInActivity extends Activity {
+    private final String TAG = "SignInActivity";
+    private Button signUpButton;
+    private Button signInButton;
+    private SignInButton googleSignInButton;
+    private ImageButton kakaoSignInButton;
+    private SignInPresenter signInPresenter;
+
+    //구글 로그인을 위해 필요한 변수 선언
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInOptions gso;
+
+    //카카오 로그인을 위해 필요한 변수 선언
+    private Function2<OAuthToken, Throwable, Unit> callback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainaftersplash);
 
+        initView();
+
+        SignInPresenter signInPresenter = new SignInPresenter(SignInActivity.this);
+
         Log.d("GET_KEYHASH", getKeyHash());
 
-        Button signUpButton = (Button) findViewById(R.id.signUpButton);
+        //회원가입
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), emailSignUpActivity.class);
-                startActivity(intent);
+               signInPresenter.intent_EmailSignUpActivity();
             }
         });
 
-        Button signInButton = (Button) findViewById(R.id.signInButton);
+        //로그인
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), emailSignInActivity.class);
-                startActivity(intent);
+                signInPresenter.intent_EmailSignInActivity();
             }
         });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("866090862234-1lk57862u2n2bq5ic4l5ln3kq444c1ub.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        mAuth = FirebaseAuth.getInstance();
-
-        SignInButton googleSignInButton = (SignInButton) findViewById(R.id.googleSignInButton);
+        //구글 로그인
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signIn();
+                login_google();
             }
         });
 
-        ImageButton kakaoSignInButton=(ImageButton)findViewById(R.id.kakaoSignInButton);
+        //카카오 로그인
+        kakaoSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(LoginClient.getInstance().isKakaoTalkLoginAvailable(SignInActivity.this)){
+                    LoginClient.getInstance().loginWithKakaoTalk(SignInActivity.this, callback);
+                }else{
+                    LoginClient.getInstance().loginWithKakaoAccount(SignInActivity.this, callback);
+                }
+            }
+        });
 
-        Function2<OAuthToken, Throwable, Unit> callback=new Function2<OAuthToken, Throwable, Unit>() {
+    }
+
+    private void initView(){
+        signUpButton = findViewById(R.id.signUpButton);
+        signInButton = findViewById(R.id.signInButton);
+        googleSignInButton = findViewById(R.id.googleSignInButton);
+        kakaoSignInButton = findViewById(R.id.kakaoSignInButton);
+        callback=new Function2<OAuthToken, Throwable, Unit>() {
             @Override
             public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
                 if(oAuthToken!=null){
@@ -109,83 +126,47 @@ public class signInActivity extends Activity {
                 return null;
             }
         };
-
-        kakaoSignInButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                if(LoginClient.getInstance().isKakaoTalkLoginAvailable(signInActivity.this)){
-                    LoginClient.getInstance().loginWithKakaoTalk(signInActivity.this, callback);
-                }else{
-                    LoginClient.getInstance().loginWithKakaoAccount(signInActivity.this, callback);
-                }
-            }
-        });
-
-        /*
-        logoutButton.setOnClickListner(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>(){
-                    @Override
-                    public Unit invoke(Throwable throwable){
-                        //updateKakaoLoginUI();
-                        return null;
-                    }
-                });
-            }
-        });
-        */
-
     }
 
-    /*
-    *kakao logout code
-        btn_login_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserApiClient.getInstance().logout(error -> {
-                    if (error != null) {
-                        Log.e(TAG, "로그아웃 실패, SDK에서 토큰 삭제됨", error);
-                    }else{
-                        Log.e(TAG, "로그아웃 성공, SDK에서 토큰 삭제됨");
-                    }
-                    return null;
-                });
-            }
-        });
+    public void login_google(){
+        //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함
+        mAuth = FirebaseAuth.getInstance();
+        Log.d(TAG, "1");
+        this.gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        Log.d(TAG, "2");
+        signIn();
     }
 
-});
-     */
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+        Log.d(TAG, "3");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "4");
 
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                firebaseAuthWithGoogle(account.getIdToken());
+                firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+                Log.d(TAG, "task fail(google)");
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -194,23 +175,27 @@ public class signInActivity extends Activity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d(TAG, "5");
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Log.d(TAG, "5");
                             updateUI(null);
                         }
                     }
                 });
     }
 
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-    private void updateUI(FirebaseUser currentUser) {
-        //UI를 업데이트 하자
+    private void updateUI(FirebaseUser user) { //update ui code here
+        if (user != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            User login_user = new User();
+            login_user.setUserID(user.getDisplayName());
+            intent.putExtra("user",login_user);
+            this.startActivity(intent);
+            finish();
+        }
     }
 
     public String getKeyHash() {
@@ -231,4 +216,40 @@ public class signInActivity extends Activity {
         }
         return null;
     }
+
+       /*
+    *kakao logout code
+        btn_login_out.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserApiClient.getInstance().logout(error -> {
+                    if (error != null) {
+                        Log.e(TAG, "로그아웃 실패, SDK에서 토큰 삭제됨", error);
+                    }else{
+                        Log.e(TAG, "로그아웃 성공, SDK에서 토큰 삭제됨");
+                    }
+                    return null;
+                });
+            }
+        });
+    }
+
+});
+     */
+
+      /*
+        logoutButton.setOnClickListner(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>(){
+                    @Override
+                    public Unit invoke(Throwable throwable){
+                        //updateKakaoLoginUI();
+                        return null;
+                    }
+                });
+            }
+        });
+        */
+
 }

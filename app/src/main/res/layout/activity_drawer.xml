@@ -18,7 +18,7 @@
         app:tint="#151515"/>
 
     <TextView
-        android:id="@+id/tv_id"
+        android:id="@+id/txt_id"
         android:layout_width="225dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
@@ -28,7 +28,6 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="37dp"
         android:layout_marginLeft="10dp"
@@ -36,7 +35,6 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/textView8"
         android:layout_width="226dp"
         android:layout_height="62dp"
         android:layout_marginLeft="10dp"
@@ -44,6 +42,7 @@
         android:textSize="25sp" />
     
     <ImageButton
+        android:id="@+id/btn_logout"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_margin="10dp"

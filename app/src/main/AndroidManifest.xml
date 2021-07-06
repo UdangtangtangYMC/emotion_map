@@ -19,9 +19,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.Comment_list"/>
-        <activity android:name=".presenter.emailSignUpActivity" />
-        <activity android:name=".presenter.emailSignInActivity" />
-        <activity android:name=".presenter.signInActivity" />
+        <activity android:name=".view.EmailSignUpActivity" />
+        <activity android:name=".view.EmailSignInActivity" />
+        <activity android:name=".view.SignInActivity" />
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -35,5 +35,7 @@
                     android:scheme="kakao14c0eb02333568e599c669cb59b7e30c" />
             </intent-filter>
         </activity>
+        <activity android:name=".view.MainActivity"/>
+        <activity android:name=".view.NationalStatistics"/>
     </application>
 </manifest>

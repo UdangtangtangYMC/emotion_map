@@ -33,15 +33,20 @@ public class MainPresenter {
     private RecyclerView comment_view;
 
 
-    public MainPresenter(Context context, RecyclerView comment_view) {
+    public MainPresenter(Context context, RecyclerView comment_view, User user) {
         this.context = context;
-        this.user = new User();
+        this.user = user;
         this.city = new City();
         this.comment_view = comment_view;
     }
 
     public void set_locInfo(){
 
+    }
+
+    public String get_userName(){
+        Log.d(TAG, user.getUserID());
+        return user.getUserID();
     }
 
     public void add_emotion(){
