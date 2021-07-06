@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface CommentListCallBack {
         void onSuccess(List<String> comment_list);
-        void onFail(Exception ex);
+        void onFail(Exception ex) throws Exception;
 }

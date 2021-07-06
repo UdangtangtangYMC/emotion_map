@@ -27,28 +27,27 @@ public class City extends Thread{
     }
 
 
-    public void getCommentList(String city, CommentListCallBack callBack){
-        new Thread(){
-            public void run(){
-                DatabaseReference reference = firebaseDatabase.getReference(city);
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        HashMap<String,HashMap<String,String>> value = (HashMap) snapshot.getValue();
-                        for (String key : value.keySet()) {
-                            Log.d(TAG, "onDataChange: "+key+" : "+value.get(key));
-                        }
-                        callBack.onSuccess(createCommentList(value));
-                        Log.d(TAG, "2");
+    public void getCommentList(String city, CommentListCallBack callBack) throws Exception{
+        try {
+            DatabaseReference reference = firebaseDatabase.getReference(city);
+            reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    HashMap<String,HashMap<String,String>> value = (HashMap) snapshot.getValue();
+                    for (String key : value.keySet()) {
+                        Log.d(TAG, "onDataChange: "+key+" : "+value.get(key));
                     }
+                    callBack.onSuccess(createCommentList(value));
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.d(TAG, "onCancelled: ");
-                    }
-                });
-            }
-        }.start();
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d(TAG, "onCancelled: ");
+                }
+            });
+        }catch (Exception e) {
+            throw new Exception();
+        }
     }
 
     private List<String> createCommentList(HashMap<String, HashMap<String,String>> target){
@@ -63,10 +62,13 @@ public class City extends Thread{
         return comments;
     }
 
-    public void insert_comment(Comment comment, String city, String id){
-        DatabaseReference reference = firebaseDatabase.getReference(city);
-        reference.child(id).setValue(comment);
+    public void insert_comment(Comment comment, String city, String id) throws Exception{
+        try{
+            DatabaseReference reference = firebaseDatabase.getReference(city);
+            reference.child(id).setValue(comment);
+        }catch(Exception e){
+            Log.d(TAG, e.toString());
+            throw new Exception();
+        }
     }
-
-
 }

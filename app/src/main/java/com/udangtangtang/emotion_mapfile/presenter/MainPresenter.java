@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,8 +46,8 @@ public class MainPresenter {
     }
 
     public String get_userName(){
-        Log.d(TAG, user.getUserID());
-        return user.getUserID();
+        Log.d(TAG, user.getName());
+        return user.getName();
     }
 
     public void add_emotion(){
@@ -64,25 +65,31 @@ public class MainPresenter {
     public void insert_CommentList(){
         //db로 부터 데이터를 받아오고 입력한 city를 기반으로한 data 배열 생성
         //커멘트 어댑터 생성 및 데이터 recyclerview에 들어갈 data set
-        city.getCommentList("Anyang", new CommentListCallBack() {
-            @Override
-            public void onSuccess(List<String> comment_list) {
-                comment_adapter = new Comment_adapter(comment_list);
-                comment_view.setAdapter(comment_adapter);
-            }
+        try {
+            city.getCommentList("Anyang", new CommentListCallBack() {
+                @Override
+                public void onSuccess(List<String> comment_list) {
+                    comment_adapter = new Comment_adapter(comment_list);
+                    comment_view.setAdapter(comment_adapter);
+                }
 
-            @Override
-            public void onFail(Exception ex) {
-
-            }
-        });
+                @Override
+                public void onFail(Exception ex) throws Exception {
+                    throw new Exception();
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(context, "멘트 목록 불러오기 실패", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void intent_CommentDetail(){
-        Intent intent = new Intent(context, Comment_list.class);
-        intent.putExtra("adapter", comment_adapter);
-        context.startActivity(intent);
+        if(comment_adapter != null){
+            Intent intent = new Intent(context, Comment_list.class);
+            intent.putExtra("adapter", comment_adapter);
+            context.startActivity(intent);
+        }else{
+            Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
+        }
     }
-
-
 }

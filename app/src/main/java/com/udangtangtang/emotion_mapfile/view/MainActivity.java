@@ -97,7 +97,11 @@ public class MainActivity extends Activity {
         txt_id = findViewById(R.id.txt_id);
         btn_logout = findViewById(R.id.btn_logout);
         //로그인 정보를 위한 변수 초기화
-        mAuth = FirebaseAuth.getInstance();
+        try{
+            mAuth = FirebaseAuth.getInstance();
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //메뉴창

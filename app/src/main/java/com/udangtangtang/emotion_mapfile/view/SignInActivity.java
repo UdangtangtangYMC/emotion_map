@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -113,44 +114,48 @@ public class SignInActivity extends Activity {
         signInButton = findViewById(R.id.signInButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
         kakaoSignInButton = findViewById(R.id.kakaoSignInButton);
-        callback=new Function2<OAuthToken, Throwable, Unit>() {
-            @Override
-            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                if(oAuthToken!=null){
+        try{
+            callback=new Function2<OAuthToken, Throwable, Unit>() {
+                @Override
+                public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
+                    if(oAuthToken!=null){
 
-                }
-                if(throwable!=null){
+                    }
+                    if(throwable!=null){
 
+                    }
+                    //updateaKakaoLoginUI();
+                    return null;
                 }
-                //updateaKakaoLoginUI();
-                return null;
-            }
-        };
+            };
+        }catch(Exception e){
+            Toast.makeText(getApplicationContext(), "Kakao_login: request oAuthToken Fail", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void login_google(){
         //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함
-        mAuth = FirebaseAuth.getInstance();
-        Log.d(TAG, "1");
-        this.gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        Log.d(TAG, "2");
-        signIn();
+        try{
+            mAuth = FirebaseAuth.getInstance();
+            this.gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+            mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+            signIn();
+        }catch(Exception e){
+            Toast.makeText(getApplicationContext(), "google_login: requestIdToken Fail", Toast.LENGTH_SHORT);
+        }
     }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-        Log.d(TAG, "3");
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "4");
 
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
@@ -159,11 +164,10 @@ public class SignInActivity extends Activity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
-                Log.d(TAG, "task fail(google)");
+                Log.d(TAG, "google_login : task fail");
             }
         }
     }
-
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -191,10 +195,15 @@ public class SignInActivity extends Activity {
         if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
             User login_user = new User();
-            login_user.setUserID(user.getDisplayName());
-            intent.putExtra("user",login_user);
-            this.startActivity(intent);
-            finish();
+            try{
+                login_user.setName(user.getDisplayName());
+                login_user.setID(user.getEmail());
+                intent.putExtra("user",login_user);
+                this.startActivity(intent);
+                finish();
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "google_login: request user_name fail", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

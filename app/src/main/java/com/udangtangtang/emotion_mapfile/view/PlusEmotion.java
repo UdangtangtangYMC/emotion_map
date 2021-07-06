@@ -39,18 +39,13 @@ public class PlusEmotion {
         dlg.setContentView(R.layout.dialog_plus);
         dlg.show();
 
-        rdg = dlg.findViewById(R.id.rdg);
-        rd_btn1 = dlg.findViewById(R.id.rg_btn1);
-        rd_btn2 = dlg.findViewById(R.id.rg_btn2);
-        edt_ment = dlg.findViewById(R.id.edt_ment);
-        btn_ok = dlg.findViewById(R.id.btn_ok);
-        btn_cancel = dlg.findViewById(R.id.btn_cancel);
-
+        init(dlg);
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int emotion_id = rdg.getCheckedRadioButtonId();
-                selected_emotion = plusEmotionPresenter.get_emotion(emotion_id);
+                int happy_id = R.id.rg_btn1;
+                selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
                 plusEmotionPresenter.insert_emotion(selected_emotion, comment);
                 refreshCallBack.refresh();
@@ -64,5 +59,14 @@ public class PlusEmotion {
                 dlg.dismiss();
             }
         });
+    }
+
+    public void init(Dialog dlg){
+        rdg = dlg.findViewById(R.id.rdg);
+        rd_btn1 = dlg.findViewById(R.id.rg_btn1);
+        rd_btn2 = dlg.findViewById(R.id.rg_btn2);
+        edt_ment = dlg.findViewById(R.id.edt_ment);
+        btn_ok = dlg.findViewById(R.id.btn_ok);
+        btn_cancel = dlg.findViewById(R.id.btn_cancel);
     }
 }
