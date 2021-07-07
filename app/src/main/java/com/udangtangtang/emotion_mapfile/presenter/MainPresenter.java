@@ -2,6 +2,7 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -40,22 +41,40 @@ public class MainPresenter {
     static final int PERMISSIONS_REQUEST = 0x0000001;
     private FusedLocationProviderClient loc;
 
-    public MainPresenter(Context context) {
-        this.context = context;
 
-        this.user = new User();
+    public MainPresenter(Context context, User user) {
+        this.context = context;
+        this.user = user;
         this.city = new City();
     }
 
     public void add_emotion() {
         plusEmotion = new PlusEmotion(context);
         plusEmotion.callFunciton();
+    public String get_userName(){
+        Log.d(TAG, user.getName());
+        return user.getName();
+    }
+
+    public void add_emotion(){
+        PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
+        plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
+        plusEmotion.callFunciton(new RefreshCallBack(){
+            @Override
+            public void refresh() {
+                insert_CommentList();
+            }
+        });
     }
 
     public void intent_CommentDetail() {
-        Intent intent = new Intent(context, Comment_list.class);
-        intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
-        context.startActivity(intent);
+        if(comment_adapter!=null){
+            Intent intent = new Intent(context, Comment_list.class);
+            intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
+            context.startActivity(intent);
+        }else{
+            Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // 위치 권환 확인 메소드

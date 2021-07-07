@@ -16,7 +16,7 @@
       "oauth_client": [
         {
           "client_id": "866090862234-1lk57862u2n2bq5ic4l5ln3kq444c1ub.apps.googleusercontent.com",
-          "client_type": 1,
+          "client_type": 3,
           "android_info": {
             "package_name": "com.udangtangtang.emotion_mapfile",
             "certificate_hash": "3837c8f4dc9776630087a433de8c1b74f0a6aed2"
@@ -24,7 +24,7 @@
         },
         {
           "client_id": "866090862234-4rto4tuake8r6i5o7u59t93hrqur3380.apps.googleusercontent.com",
-          "client_type": 1,
+          "client_type": 3,
           "android_info": {
             "package_name": "com.udangtangtang.emotion_mapfile",
             "certificate_hash": "d01d73ef2f32203e777845bf3abd8839373d3729"

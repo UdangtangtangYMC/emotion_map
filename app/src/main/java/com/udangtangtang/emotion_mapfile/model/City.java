@@ -50,9 +50,9 @@ public class City {
         this.longitude = longitude;
 
         DatabaseReference reference = firebaseDatabase.getReference(myCity);
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                 HashMap<String,Object> cityInfo = (HashMap) snapshot.getValue();
                 temperature = (long) cityInfo.get("Temperature");
 
@@ -60,7 +60,7 @@ public class City {
                 List<String> commentList = createCommentList(users);
                 callBack.onSuccess(commentList);
 
-            }
+                    }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

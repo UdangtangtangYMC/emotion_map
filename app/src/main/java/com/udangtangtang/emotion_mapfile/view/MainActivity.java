@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
+import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
+import com.google.firebase.auth.FirebaseAuth;
+
 
 public class MainActivity extends Activity {
 
@@ -30,11 +32,17 @@ public class MainActivity extends Activity {
     private TextView userCity;
     private TextView temperature;
 
+    private ImageButton btn_close, btn_logout;
+    private TextView txt_id;
+
+    //로그인 한 회원 정보 관련
+    private FirebaseAuth mAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         //위젯 연결
         initView();
@@ -42,6 +50,13 @@ public class MainActivity extends Activity {
         //presenter 생성 및 위치권한 요청
         presenter = new MainPresenter(MainActivity.this);
         presenter.checkPermissions(this);
+
+        //로그인 화면으로 부터 유저 정보를 얻어옴
+        Intent intent = getIntent();
+        //presenter 생성
+        presenter = new MainPresenter(MainActivity.this, comment_view, (User)intent.getSerializableExtra("user"));
+        //user 이름을 받아옴
+        txt_id.setText(presenter.get_userName());
 
         //옆 메뉴 출력
         drawerLayout.setDrawerListener(listener);
@@ -53,6 +68,16 @@ public class MainActivity extends Activity {
 
         //주변 상황 더보기 클릭시
         TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+        btn_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+
+        //로그아웃 버튼 클릭 시
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //로그아웃 수행
+                FirebaseAuth.getInstance().signOut();
+            }
+        });
     }
 
     private void initView() {
@@ -67,6 +92,17 @@ public class MainActivity extends Activity {
         TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
         temperature = (TextView) findViewById(R.id.txt_cityTemperature);
+        btn_commentDetail = findViewById(R.id.btn_commentDetail);
+
+        //drawer
+        txt_id = findViewById(R.id.txt_id);
+        btn_logout = findViewById(R.id.btn_logout);
+        //로그인 정보를 위한 변수 초기화
+        try{
+            mAuth = FirebaseAuth.getInstance();
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
+        }
     }
 
     //메뉴창
