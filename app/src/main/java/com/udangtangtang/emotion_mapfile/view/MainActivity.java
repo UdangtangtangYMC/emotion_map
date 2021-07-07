@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,7 +29,6 @@ public class MainActivity extends Activity {
     private View drawerView;
     private RecyclerView comment_view;
     private ImageButton btn_plus; //감정 표시 버튼
-    private ImageButton btn_close;
     private TextView TextView_commentDetail;
     private TextView userCity;
     private TextView temperature;
@@ -48,13 +49,10 @@ public class MainActivity extends Activity {
         initView();
 
         //presenter 생성 및 위치권한 요청
-        presenter = new MainPresenter(MainActivity.this);
+        Intent intent = getIntent();
+        presenter = new MainPresenter(MainActivity.this, (User)intent.getSerializableExtra("user"));
         presenter.checkPermissions(this);
 
-        //로그인 화면으로 부터 유저 정보를 얻어옴
-        Intent intent = getIntent();
-        //presenter 생성
-        presenter = new MainPresenter(MainActivity.this, comment_view, (User)intent.getSerializableExtra("user"));
         //user 이름을 받아옴
         txt_id.setText(presenter.get_userName());
 
@@ -68,7 +66,6 @@ public class MainActivity extends Activity {
 
         //주변 상황 더보기 클릭시
         TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
-        btn_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
 
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +89,7 @@ public class MainActivity extends Activity {
         TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
         temperature = (TextView) findViewById(R.id.txt_cityTemperature);
-        btn_commentDetail = findViewById(R.id.btn_commentDetail);
+        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
 
         //drawer
         txt_id = findViewById(R.id.txt_id);
@@ -139,6 +136,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    // TextView에 텍스트 설정 및, RecyclerView에 어댑터 설정
     public void setInitInfo(Comment_adapter adapter) {
         comment_view.setAdapter(adapter);
         userCity.setText(presenter.getUserCity());

@@ -33,39 +33,54 @@ public class City {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
-    private List<String> createCommentList(HashMap<String, Object> target){
+    // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
+    private List<String> createCommentList(HashMap<String, Object> target) {
         List<String> comments = new ArrayList<String>();
         for (String key : target.keySet()) {
             HashMap<String, String> userInfo = (HashMap) target.get(key);
             comments.add(userInfo.get("comment"));
         }
-        comments.stream().forEach(c-> Log.d(TAG, "createCommentList: "+c));
+        comments.stream().forEach(c -> Log.d(TAG, "createCommentList: " + c));
 
         return comments;
     }
 
+    // 매개변수를 통해 City 객체의 각 변수들 초기화 이후 FirebaseDatabase에서 현재 도시의 기온 및 user들의 comment를 획득
     public void setInitInfo(String myCity, double latitude, double longitude, MainPresenterCallBack callBack) {
         this.myCity = myCity;
         this.latitude = latitude;
         this.longitude = longitude;
 
+        // 현재 도시의 FirebaseDatabase 레퍼런스 획득
         DatabaseReference reference = firebaseDatabase.getReference(myCity);
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                HashMap<String,Object> cityInfo = (HashMap) snapshot.getValue();
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                // Temperature 값 획득
+                HashMap<String, Object> cityInfo = (HashMap) snapshot.getValue();
                 temperature = (long) cityInfo.get("Temperature");
 
-                HashMap<String,Object> users = (HashMap) cityInfo.get("users");
+                // user의 comment 정보 획득
+                HashMap<String, Object> users = (HashMap) cityInfo.get("users");
                 List<String> commentList = createCommentList(users);
                 callBack.onSuccess(commentList);
 
-                    }
+            }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d(TAG, "onCancelled: ");
             }
         });
+    }
+
+    public void insert_comment(Comment comment, String city, String id) throws Exception {
+        try {
+            DatabaseReference reference = firebaseDatabase.getReference(city);
+            reference.child("users").child(id).setValue(comment);
+        } catch (Exception e) {
+            Log.d(TAG, e.toString());
+            throw new Exception();
+        }
     }
 }

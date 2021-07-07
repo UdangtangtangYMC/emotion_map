@@ -48,31 +48,23 @@ public class MainPresenter {
         this.city = new City();
     }
 
-    public void add_emotion() {
-        plusEmotion = new PlusEmotion(context);
-        plusEmotion.callFunciton();
-    public String get_userName(){
+    public String get_userName() {
         Log.d(TAG, user.getName());
         return user.getName();
     }
 
-    public void add_emotion(){
+    public void add_emotion() {
         PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
         plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-        plusEmotion.callFunciton(new RefreshCallBack(){
-            @Override
-            public void refresh() {
-                insert_CommentList();
-            }
-        });
+        plusEmotion.callFunciton();
     }
 
     public void intent_CommentDetail() {
-        if(comment_adapter!=null){
+        if (comment_adapter != null) {
             Intent intent = new Intent(context, Comment_list.class);
             intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
             context.startActivity(intent);
-        }else{
+        } else {
             Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
         }
     }
@@ -95,6 +87,7 @@ public class MainPresenter {
 
     }
 
+    // 기기의 마지막 위치를 기반으로 현재 도시명을 획득하는 메소드
     @SuppressLint("MissingPermission")
     private void getLocality(MainActivity activity) {
         loc = LocationServices.getFusedLocationProviderClient(activity);
@@ -103,13 +96,16 @@ public class MainPresenter {
                     Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                     try {
                         Geocoder geocoder = new Geocoder(context);
+                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                         List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        // Address 객체에서 Locality 속성을 획득하고 위도, 경도, 도시명을 City 객체에 저장
                         city.setInitInfo(fromLocation.get(0).getLocality(),
                                 location.getLatitude(),
                                 location.getLongitude(),
                                 new MainPresenterCallBack() {
                                     @Override
                                     public void onSuccess(List<String> commentList) {
+                                        // 작업이 완료된 경우 MainActivity 초기 값들을 설정해줌.
                                         comment_adapter = new Comment_adapter(commentList);
                                         activity.setInitInfo(comment_adapter);
                                     }
@@ -125,11 +121,11 @@ public class MainPresenter {
                 });
     }
 
-    public String getUserCity(){
+    public String getUserCity() {
         return city.getMyCity();
     }
 
-    public String getCityTemperature(){
+    public String getCityTemperature() {
         return String.valueOf(city.getTemperature());
     }
 }
