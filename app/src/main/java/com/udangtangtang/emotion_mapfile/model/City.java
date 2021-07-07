@@ -9,8 +9,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.udangtangtang.emotion_mapfile.presenter.CommentListCallBack;
-import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
+import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,51 +20,52 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class City extends Thread{
+public class City {
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
     private double latitude;
     private double longitude;
     private String myCity;
+    private long temperature;
 
     public City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
-    public void getCommentList(String city, CommentListCallBack callBack){
-        new Thread(() -> {
-            DatabaseReference reference = firebaseDatabase.getReference(city);
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    HashMap<String,HashMap<String,String>> value = (HashMap) snapshot.getValue();
-                    for (String key : value.keySet()) {
-                        Log.d(TAG, "onDataChange: "+key+" : "+value.get(key));
-                    }
-                    callBack.onSuccess(createCommentList(value));
-                    Log.d(TAG, "2");
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.d(TAG, "onCancelled: ");
-                }
-            });
-        }).start();
-    }
-
-    private List<String> createCommentList(HashMap<String, HashMap<String,String>> target){
+    private List<String> createCommentList(HashMap<String, Object> target){
         List<String> comments = new ArrayList<String>();
         for (String key : target.keySet()) {
-            HashMap<String, String> userInfo = target.get(key);
+            HashMap<String, String> userInfo = (HashMap) target.get(key);
             comments.add(userInfo.get("comment"));
         }
         comments.stream().forEach(c-> Log.d(TAG, "createCommentList: "+c));
-        Log.d(TAG, "1");
 
         return comments;
     }
 
+    public void setInitInfo(String myCity, double latitude, double longitude, MainPresenterCallBack callBack) {
+        this.myCity = myCity;
+        this.latitude = latitude;
+        this.longitude = longitude;
 
+        DatabaseReference reference = firebaseDatabase.getReference(myCity);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                HashMap<String,Object> cityInfo = (HashMap) snapshot.getValue();
+                temperature = (long) cityInfo.get("Temperature");
+
+                HashMap<String,Object> users = (HashMap) cityInfo.get("users");
+                List<String> commentList = createCommentList(users);
+                callBack.onSuccess(commentList);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: ");
+            }
+        });
+    }
 }
