@@ -1,22 +1,34 @@
 package com.udangtangtang.emotion_mapfile.model;
 
-public class User {
-    private String UserID;
-    private String City;
+import java.io.Serializable;
 
-    public String getUserID() {
-        return UserID;
+public class User implements Serializable {
+    private String ID;
+    private String name;
+    private String city;
+
+    public String getID() {
+        return ID;
     }
 
-    public void setUserID(String userID) {
-        UserID = userID;
+    public void setID(String ID) {
+        ID = ID.replaceAll("@gmail.com", "");
+        this.ID = ID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCity() {
-        return City;
+        return city;
     }
 
     public void setCity(String city) {
-        City = city;
+        this.city = city;
     }
 }

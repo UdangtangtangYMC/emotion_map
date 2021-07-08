@@ -30,17 +30,17 @@ public class Comment_list extends Activity {
         initView();
 
         Intent intent = getIntent();
-        comment_adapter = (Comment_adapter) intent.getSerializableExtra("adapter");
+        comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
         recyclerView.setAdapter(comment_adapter);
 
     }
 
     private void initView(){
         //뷰 세팅
-       recyclerView = findViewById(R.id.recyclerview);
-       recyclerView.setLayoutManager(new LinearLayoutManager(this));
-       recyclerView.setHasFixedSize(true);
-       txt_city = findViewById(R.id.txt_city);
+        recyclerView = findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setHasFixedSize(true);
+        txt_city = findViewById(R.id.txt_city);
     }
 
 }

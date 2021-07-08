@@ -1,4 +1,4 @@
-package com.udangtangtang.emotion_mapfile.presenter;
+package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -16,7 +15,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 
-public class emailSignUpActivity extends Activity {
+public class EmailSignUpActivity extends Activity {
     private FirebaseAuth mAuth;
 
     @Override
@@ -52,27 +51,27 @@ public class emailSignUpActivity extends Activity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(emailSignUpActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(EmailSignUpActivity.this, "회원가입 되었습니다.", Toast.LENGTH_SHORT).show();
                                 } else {
                                     if (task.getException().toString() != null) {
                                         if (password.length() < 6) {
-                                            Toast.makeText(emailSignUpActivity.this, "6자리 이상의 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EmailSignUpActivity.this, "6자리 이상의 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
                                         }
                                         else if (email.length()==0){
-                                            Toast.makeText(emailSignUpActivity.this, "이메일을 입력하세요.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EmailSignUpActivity.this, "이메일을 입력하세요.", Toast.LENGTH_SHORT).show();
                                         }
                                         else{
-                                            Toast.makeText(emailSignUpActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EmailSignUpActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
                             }
                         });
             } else {
-                Toast.makeText(emailSignUpActivity.this, "비밀번호를 동일하게 입력했나요?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EmailSignUpActivity.this, "비밀번호를 동일하게 입력했나요?", Toast.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(emailSignUpActivity.this, "모두 입력했나요?", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EmailSignUpActivity.this, "모두 입력했나요?", Toast.LENGTH_SHORT).show();
         }
     }
 }

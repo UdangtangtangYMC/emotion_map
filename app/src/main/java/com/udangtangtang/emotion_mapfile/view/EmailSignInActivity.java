@@ -1,4 +1,4 @@
-package com.udangtangtang.emotion_mapfile.presenter;
+package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 
-public class emailSignInActivity extends Activity {
+public class EmailSignInActivity extends Activity {
     private FirebaseAuth mAuth;
 
     @Override
@@ -43,21 +43,21 @@ public class emailSignInActivity extends Activity {
         String password = ((EditText) findViewById(R.id.signInPasswordInput)).getText().toString();
         if (email.length() > 0 && password.length() > 0) {
             mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(emailSignInActivity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(EmailSignInActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Intent intent=new Intent(emailSignInActivity.this, signInActivity.class);
+                            Intent intent=new Intent(EmailSignInActivity.this, SignInActivity.class);
                             startActivity(intent);
                         }
                         else{
-                            Toast.makeText(emailSignInActivity.this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(EmailSignInActivity.this, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
         }
         else{
-            Toast.makeText(emailSignInActivity.this, "이메일과 비밀번호를 확인하세요.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(EmailSignInActivity.this, "이메일과 비밀번호를 확인하세요.", Toast.LENGTH_SHORT).show();
         }
     }
 }
