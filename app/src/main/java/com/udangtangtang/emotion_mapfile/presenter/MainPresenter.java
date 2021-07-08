@@ -148,6 +148,7 @@ public class MainPresenter {
     public void logout_google(FirebaseAuth mAuth){
         mAuth.signOut();
         intent_SignInActivity();
+        Log.d(TAG, "구글 로그아웃 성공");
     }
 
     public void logout_kakao(){
@@ -155,6 +156,7 @@ public class MainPresenter {
             @Override
             public void onCompleteLogout() {
                 intent_SignInActivity();
+                Log.d(TAG, "카카오 로그아웃 성공");
             }
         });
     }
