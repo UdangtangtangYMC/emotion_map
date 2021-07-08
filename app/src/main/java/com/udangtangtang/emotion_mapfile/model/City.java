@@ -11,11 +11,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,17 +30,26 @@ public class City{
     private double longitude;
     private String myCity;
     private long temperature;
+    private long happyPeople;
+    private long angryPeople;
 
     public City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
     }
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
-    private List<String> createCommentList(HashMap<String, Object> target) {
-        List<String> comments = new ArrayList<String>();
+    private ArrayList<String> createCommentList(HashMap<String, Object> target) {
+        this.angryPeople = 0;
+        this.happyPeople = 0;
+
+        ArrayList<String> comments = new ArrayList<String>();
         for (String key : target.keySet()) {
             HashMap<String, String> userInfo = (HashMap) target.get(key);
             comments.add(userInfo.get("comment"));
+            if(userInfo.get("status").equals("좋음"))
+                this.happyPeople+=1;
+            else
+                this.angryPeople+=1;
         }
         comments.stream().forEach(c -> Log.d(TAG, "createCommentList: " + c));
 
@@ -72,7 +79,7 @@ public class City{
 
                 // user의 comment 정보 획득
                 HashMap<String, Object> users = (HashMap) cityInfo.get("users");
-                List<String> commentList = createCommentList(users);
+                ArrayList<String> commentList = createCommentList(users);
                 callBack.onSuccess(commentList);
 
             }
@@ -88,6 +95,20 @@ public class City{
         try {
             DatabaseReference reference = firebaseDatabase.getReference(city);
             reference.child("users").child(id).setValue(comment);
+            reference.child("Temperature").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    Long temp = Long.valueOf(String.valueOf(snapshot.getValue()));
+                    if(comment.getStatus().equals("빡침")){
+                        reference.child("Temperature").setValue(temp+1);
+                    }else reference.child("Temperature").setValue(temp - 1);
+                }
+
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+
+                }
+            });
         } catch (Exception e) {
             Log.d(TAG, e.toString());
             throw new Exception();

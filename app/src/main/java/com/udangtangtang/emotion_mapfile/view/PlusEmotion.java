@@ -11,7 +11,6 @@ import android.widget.RadioGroup;
 
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
-import com.udangtangtang.emotion_mapfile.presenter.RefreshCallBack;
 
 public class PlusEmotion {
     private PlusEmotionPresenter plusEmotionPresenter;

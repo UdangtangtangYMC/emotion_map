@@ -13,11 +13,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
-import com.google.firebase.auth.FirebaseAuth;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
@@ -27,11 +31,9 @@ public class MainActivity extends Activity {
     private MainPresenter presenter;
     private DrawerLayout drawerLayout;
     private View drawerView;
-    private RecyclerView comment_view;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_commentDetail;
-    private TextView userCity;
-    private TextView temperature;
+    private TextView TextView_commentDetail, userCity, temperature, angry, happy, commentOne, commentTwo, commentThree,commentFour;
+    private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
@@ -81,15 +83,27 @@ public class MainActivity extends Activity {
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer);
-        comment_view = findViewById(R.id.commentList);
-        comment_view.setLayoutManager(new LinearLayoutManager(this));
-        comment_view.setHasFixedSize(true);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
         TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
         temperature = (TextView) findViewById(R.id.txt_cityTemperature);
         TextView_commentDetail = findViewById(R.id.textView_commentDetail);
+        angry = (TextView) findViewById(R.id.txt_angry);
+        happy = (TextView) findViewById(R.id.txt_happy);
+
+        // comment를 보여줄 TextView
+        commentOne = (TextView) findViewById(R.id.commentOne);
+        commentTwo = (TextView) findViewById(R.id.commentTwo);
+        commentThree = (TextView) findViewById(R.id.commentThree);
+        commentFour = (TextView) findViewById(R.id.commentFour);
+
+        // 4개의 view를 리스트에 추가
+        commentViewList = new ArrayList<>();
+        commentViewList.add(commentOne);
+        commentViewList.add(commentTwo);
+        commentViewList.add(commentThree);
+        commentViewList.add(commentFour);
 
         //drawer
         txt_id = findViewById(R.id.txt_id);
@@ -137,9 +151,14 @@ public class MainActivity extends Activity {
     }
 
     // TextView에 텍스트 설정 및, RecyclerView에 어댑터 설정
-    public void setInitInfo(Comment_adapter adapter) {
-        comment_view.setAdapter(adapter);
+    public void setInitInfo(ArrayList<String> commentList) {
         userCity.setText(presenter.getUserCity());
         temperature.setText(presenter.getCityTemperature()+" ℃");
+        angry.setText(presenter.getAngryPeople()+"명");
+        happy.setText(presenter.getHappyPeople()+"명");
+
+        for (int i = 0; i < 4; i++) {
+            commentViewList.get(i).setText(commentList.get(i));
+        }
     }
 }
