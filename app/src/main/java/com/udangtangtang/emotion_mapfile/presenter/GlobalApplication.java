@@ -1,0 +1,77 @@
+package com.udangtangtang.emotion_mapfile.presenter;
+
+import android.app.Application;
+
+import androidx.annotation.Nullable;
+
+import com.kakao.auth.ApprovalType;
+import com.kakao.auth.AuthType;
+import com.kakao.auth.IApplicationConfig;
+import com.kakao.auth.ISessionConfig;
+import com.kakao.auth.KakaoAdapter;
+import com.kakao.auth.KakaoSDK;
+import com.kakao.sdk.common.KakaoSdk;
+
+public class KakaoApplication extends Application {
+    private static KakaoApplication instance;
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        instance = this;
+        KakaoSDK.init(new KakaoSDKAdapter());
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        instance = null;
+    }
+
+    public static Application getInstance(){
+        if(instance == null){
+            throw new IllegalStateException("this app illegal state");
+        }
+        return instance;
+    }
+
+    public static class KakaoSDKAdapter extends KakaoAdapter {
+
+        @Override
+        public ISessionConfig getSessionConfig() {
+            return new ISessionConfig() {
+                @Override
+                public AuthType[] getAuthTypes() {
+                    // kakao SDK 로그인을 하는 방식에 대한 Enum class (카카오 맵 + 카카오 스토리 + 웹뷰 다이어로그 포함)
+                    return new AuthType[]{AuthType.KAKAO_LOGIN_ALL};
+                }
+
+                @Override
+                public boolean isUsingWebviewTimer() {
+                    return false;
+                }
+
+                @Override
+                public boolean isSecureMode() {
+                    return false;
+                }
+
+                @Nullable
+                @org.jetbrains.annotations.Nullable
+                @Override
+                public ApprovalType getApprovalType() {
+                    return ApprovalType.INDIVIDUAL;
+                }
+
+                @Override
+                public boolean isSaveFormData() {
+                    return true;
+                }
+            };
+        }
+
+        @Override
+        public IApplicationConfig getApplicationConfig() {
+            return KakaoApplication::getInstance;
+        }
+    }
+}
