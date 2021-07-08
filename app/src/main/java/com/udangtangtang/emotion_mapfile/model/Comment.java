@@ -5,7 +5,7 @@ public class Comment {
     private String create_at;
     private String district;
     private Double latitude;
-    private Double logitude;
+    private Double longitude;
     private String status;
 
     public String getCreate_at() {
@@ -40,12 +40,12 @@ public class Comment {
         this.latitude = latitude;
     }
 
-    public Double getLogitude() {
-        return logitude;
+    public Double getLongitude() {
+        return longitude;
     }
 
-    public void setLogitude(Double logitude) {
-        this.logitude = logitude;
+    public void setLongitude(Double logitude) {
+        this.longitude = logitude;
     }
 
     public String getStatus() {

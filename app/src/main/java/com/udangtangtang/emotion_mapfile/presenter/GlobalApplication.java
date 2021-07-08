@@ -10,10 +10,9 @@ import com.kakao.auth.IApplicationConfig;
 import com.kakao.auth.ISessionConfig;
 import com.kakao.auth.KakaoAdapter;
 import com.kakao.auth.KakaoSDK;
-import com.kakao.sdk.common.KakaoSdk;
 
-public class KakaoApplication extends Application {
-    private static KakaoApplication instance;
+public class GlobalApplication extends Application {
+    private static GlobalApplication instance;
     @Override
     public void onCreate(){
         super.onCreate();
@@ -34,7 +33,7 @@ public class KakaoApplication extends Application {
         return instance;
     }
 
-    public static class KakaoSDKAdapter extends KakaoAdapter {
+    public class KakaoSDKAdapter extends KakaoAdapter {
 
         @Override
         public ISessionConfig getSessionConfig() {
@@ -71,7 +70,7 @@ public class KakaoApplication extends Application {
 
         @Override
         public IApplicationConfig getApplicationConfig() {
-            return KakaoApplication::getInstance;
+            return GlobalApplication::getInstance;
         }
     }
 }

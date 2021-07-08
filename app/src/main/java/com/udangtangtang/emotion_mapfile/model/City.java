@@ -11,13 +11,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListCallBack;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-public class City extends Thread{
+public class City{
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
@@ -61,6 +65,12 @@ public class City extends Thread{
 
         return comments;
     }
+    private void sort_comment(List<Comment> comment_list){
+        for (Comment comment : comment_list){
+
+        }
+    }
+
 
     public void insert_comment(Comment comment, String city, String id) throws Exception{
         try{

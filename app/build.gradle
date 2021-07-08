@@ -54,6 +54,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
-    implementation 'com.kakao.sdk:v2-user:2.1.0'
+    implementation 'com.kakao.sdk:v2-user:2.4.2'
+    implementation group: project.KAKAO_SDK_GROUP, name: 'usermgmt', version: project.KAKAO_SDK_VERSION
 }
 apply plugin: 'com.google.gms.google-services'
