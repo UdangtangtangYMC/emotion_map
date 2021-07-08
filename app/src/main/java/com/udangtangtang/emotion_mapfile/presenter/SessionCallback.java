@@ -62,7 +62,7 @@ public class SessionCallback implements ISessionCallback {
                         String id = String.valueOf(result.getId());
                         user.setName(id);
                         //user정보를 받아옴
-                        UserPro kakaoAccount = result.getProperties();
+                        UserAccount kakaoAccount = result.getKakaoAccount();
                         if (kakaoAccount != null) {
                             String email = kakaoAccount.getEmail();
                             if(email != null){

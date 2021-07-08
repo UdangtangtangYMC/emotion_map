@@ -44,8 +44,8 @@ public class Comment {
         return longitude;
     }
 
-    public void setLongitude(Double logitude) {
-        this.longitude = logitude;
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public String getStatus() {

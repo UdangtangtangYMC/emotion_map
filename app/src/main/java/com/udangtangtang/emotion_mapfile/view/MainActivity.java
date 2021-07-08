@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,10 +27,11 @@ public class MainActivity extends Activity {
     private MainPresenter presenter;
     private DrawerLayout drawerLayout;
     private View drawerView;
-    private TextView txt_userCity, txt_cityTemperature, txt_angry, txt_happy;
     private RecyclerView comment_view;
     private ImageButton btn_plus; //감정 표시 버튼
-    private Button btn_commentDetail;
+    private TextView TextView_commentDetail;
+    private TextView userCity;
+    private TextView temperature;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
@@ -46,10 +47,12 @@ public class MainActivity extends Activity {
 
         //위젯 연결
         initView();
-        //로그인 화면으로 부터 유저 정보를 얻어옴
+
+        //presenter 생성 및 위치권한 요청
         Intent intent = getIntent();
-        //presenter 생성
-        presenter = new MainPresenter(MainActivity.this, comment_view, (User)intent.getSerializableExtra("user"));
+        presenter = new MainPresenter(MainActivity.this, (User)intent.getSerializableExtra("user"));
+        presenter.checkPermissions(this);
+
         //user 이름을 받아옴
         txt_id.setText(presenter.get_userName());
 
@@ -58,15 +61,11 @@ public class MainActivity extends Activity {
         drawerLayout.setOnTouchListener((v, event) -> false);
         btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
 
-        //recyclerview 세팅
-        //presenter를 통해 받아온 adapter 객체를 set
-        presenter.insert_CommentList();
-
         //감정 표시 버튼 클릭 시
         btn_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
-        btn_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+        TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
 
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
@@ -76,22 +75,21 @@ public class MainActivity extends Activity {
                 FirebaseAuth.getInstance().signOut();
             }
         });
-   }
+    }
 
-    private void initView(){
+    private void initView() {
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer);
         comment_view = findViewById(R.id.commentList);
         comment_view.setLayoutManager(new LinearLayoutManager(this));
         comment_view.setHasFixedSize(true);
-        txt_userCity = findViewById(R.id.txt_city);
-        txt_cityTemperature = findViewById(R.id.txt_cityTemperature);
-        txt_angry = findViewById(R.id.txt_angry);
-        txt_happy = findViewById(R.id.txt_happy);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
-        btn_commentDetail = findViewById(R.id.btn_commentDetail);
+        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
+        userCity = (TextView) findViewById(R.id.txt_userCity);
+        temperature = (TextView) findViewById(R.id.txt_cityTemperature);
+        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
 
         //drawer
         txt_id = findViewById(R.id.txt_id);
@@ -129,13 +127,19 @@ public class MainActivity extends Activity {
 
     //뒤로가기 버튼 2번을 통해 시스템 종료
     @Override
-    public void onBackPressed(){
-        if(System.currentTimeMillis() - time >= 2000){
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - time >= 2000) {
             time = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
-        }else if(System.currentTimeMillis() - time < 2000){
+        } else if (System.currentTimeMillis() - time < 2000) {
             finish();
         }
     }
 
+    // TextView에 텍스트 설정 및, RecyclerView에 어댑터 설정
+    public void setInitInfo(Comment_adapter adapter) {
+        comment_view.setAdapter(adapter);
+        userCity.setText(presenter.getUserCity());
+        temperature.setText(presenter.getCityTemperature()+" ℃");
+    }
 }

@@ -2,7 +2,6 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -33,7 +32,7 @@ public class PlusEmotion {
 
     }
 
-    public void callFunciton(RefreshCallBack refreshCallBack){
+    public void callFunciton(){
         final Dialog dlg = new Dialog(context);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.setContentView(R.layout.dialog_plus);
@@ -48,7 +47,6 @@ public class PlusEmotion {
                 selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
                 plusEmotionPresenter.insert_emotion(selected_emotion, comment);
-                refreshCallBack.refresh();
                 dlg.dismiss();
             }
         });

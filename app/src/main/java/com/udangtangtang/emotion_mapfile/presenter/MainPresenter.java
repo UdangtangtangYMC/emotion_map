@@ -1,14 +1,20 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.User;
@@ -16,13 +22,14 @@ import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 
-import org.w3c.dom.Comment;
-
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
-import lombok.Synchronized;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class MainPresenter {
 
     private final String TAG = "MainPresenter";
@@ -31,65 +38,94 @@ public class MainPresenter {
     private User user;
     private City city;
     private Comment_adapter comment_adapter;
-    private RecyclerView comment_view;
+    static final int PERMISSIONS_REQUEST = 0x0000001;
+    private FusedLocationProviderClient loc;
 
 
-    public MainPresenter(Context context, RecyclerView comment_view, User user) {
+    public MainPresenter(Context context, User user) {
         this.context = context;
         this.user = user;
         this.city = new City();
-        this.comment_view = comment_view;
     }
 
-    public void set_locInfo(){
-
-    }
-
-    public String get_userName(){
+    public String get_userName() {
         Log.d(TAG, user.getName());
         return user.getName();
     }
 
-    public void add_emotion(){
+    public void add_emotion() {
         PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
         plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-        plusEmotion.callFunciton(new RefreshCallBack(){
-            @Override
-            public void refresh() {
-                insert_CommentList();
-            }
-        });
+        plusEmotion.callFunciton();
     }
 
-
-    public void insert_CommentList(){
-        //db로 부터 데이터를 받아오고 입력한 city를 기반으로한 data 배열 생성
-        //커멘트 어댑터 생성 및 데이터 recyclerview에 들어갈 data set
-        try {
-            city.getCommentList("Anyang", new CommentListCallBack() {
-                @Override
-                public void onSuccess(List<String> comment_list) {
-                    comment_adapter = new Comment_adapter(comment_list);
-                    comment_view.setAdapter(comment_adapter);
-                }
-
-                @Override
-                public void onFail(Exception ex) throws Exception {
-                    throw new Exception();
-                }
-            });
-        } catch (Exception e) {
-            Toast.makeText(context, "멘트 목록 불러오기 실패", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    public void intent_CommentDetail(){
-        if(comment_adapter != null){
+    public void intent_CommentDetail() {
+        if (comment_adapter != null) {
             Intent intent = new Intent(context, Comment_list.class);
-            intent.putExtra("adapter", comment_adapter);
+            intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
             context.startActivity(intent);
-        }else{
+        } else {
             Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // 위치 권환 확인 메소드
+    public void checkPermissions(MainActivity activity) {
+
+        // 위치권한이 획득 되어있지 않은 경우
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            // 권한의 획득 사유를 표시해야 하는 경우
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION))
+                Toast.makeText(context, "서비스 제공을 위해서 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
+            // 권한 요청
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST);
+        }
+        getLocality(activity);
+
+    }
+
+    // 기기의 마지막 위치를 기반으로 현재 도시명을 획득하는 메소드
+    @SuppressLint("MissingPermission")
+    private void getLocality(MainActivity activity) {
+        loc = LocationServices.getFusedLocationProviderClient(activity);
+        loc.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
+                    try {
+                        Geocoder geocoder = new Geocoder(context);
+                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
+                        List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        // Address 객체에서 Locality 속성을 획득하고 위도, 경도, 도시명을 City 객체에 저장
+                        city.setInitInfo(fromLocation.get(0).getLocality(),
+                                location.getLatitude(),
+                                location.getLongitude(),
+                                new MainPresenterCallBack() {
+                                    @Override
+                                    public void onSuccess(List<String> commentList) {
+                                        // 작업이 완료된 경우 MainActivity 초기 값들을 설정해줌.
+                                        comment_adapter = new Comment_adapter(commentList);
+                                        activity.setInitInfo(comment_adapter);
+                                    }
+
+                                    @Override
+                                    public void onFail(Exception ex) {
+                                        Log.d(TAG, "onFail: ");
+                                    }
+                                });
+                    } catch (IOException e) {
+                        Log.d(TAG, "onSuccess: failed");
+                    }
+                });
+    }
+
+    public String getUserCity() {
+        return city.getMyCity();
+    }
+
+    public String getCityTemperature() {
+        return String.valueOf(city.getTemperature());
     }
 }
