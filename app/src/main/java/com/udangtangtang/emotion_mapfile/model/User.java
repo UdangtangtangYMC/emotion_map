@@ -6,6 +6,7 @@ public class User implements Serializable {
     private String ID;
     private String name;
     private String city;
+    private String login_method;
 
     public String getID() {
         return ID;
@@ -30,5 +31,13 @@ public class User implements Serializable {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getLogin_method() {
+        return login_method;
+    }
+
+    public void setLogin_method(String login_method) {
+        this.login_method = login_method;
     }
 }

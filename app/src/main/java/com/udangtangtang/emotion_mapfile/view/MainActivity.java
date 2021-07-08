@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //로그아웃 수행
-                FirebaseAuth.getInstance().signOut();
+
             }
         });
     }

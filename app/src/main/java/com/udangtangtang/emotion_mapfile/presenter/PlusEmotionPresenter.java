@@ -29,10 +29,11 @@ public class PlusEmotionPresenter {
         input_comment.setComment(comment);
         input_comment.setStatus(seleted_emotion);
         input_comment.setCreate_at(get_date());
+
         //후에 api를 통해 받아옴
         input_comment.setDistrict("만안구");
         input_comment.setLatitude(37.400303);
-        input_comment.setLogitude(126.102);
+        input_comment.setLongitude(126.102);
 
         //삭제 예정 코드임 user객체는 ID city는 로그인시 객체생성을통해 삽입
         user.setCity("Anyang");
@@ -44,9 +45,9 @@ public class PlusEmotionPresenter {
     }
 
     public String get_date(){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date time = new Date();
-        String date = format.format(time);
-        return date;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String str = format.format(time);
+        return str;
     }
 }

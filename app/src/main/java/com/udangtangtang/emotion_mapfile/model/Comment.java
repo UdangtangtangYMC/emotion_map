@@ -44,7 +44,7 @@ public class Comment {
         return longitude;
     }
 
-    public void setLogitude(Double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

@@ -29,17 +29,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.kakao.sdk.auth.LoginClient;
-import com.kakao.sdk.auth.model.OAuthToken;
+import com.kakao.auth.AuthType;
+import com.kakao.auth.Session;
+import com.kakao.sdk.user.UserApiClient;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
+import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import kotlin.Unit;
-import kotlin.jvm.functions.Function2;
 
 public class SignInActivity extends Activity {
     private final String TAG = "SignInActivity";
@@ -56,7 +56,8 @@ public class SignInActivity extends Activity {
     private GoogleSignInOptions gso;
 
     //카카오 로그인을 위해 필요한 변수 선언
-    private Function2<OAuthToken, Throwable, Unit> callback;
+    private SessionCallback sessionCallback = new SessionCallback(SignInActivity.this);
+    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,11 @@ public class SignInActivity extends Activity {
 
         initView();
 
-        SignInPresenter signInPresenter = new SignInPresenter(SignInActivity.this);
+        signInPresenter = new SignInPresenter(SignInActivity.this);
+
+        //카카오 세션 검사
+        session = Session.getCurrentSession();
+        session.addCallback(sessionCallback);
 
         Log.d("GET_KEYHASH", getKeyHash());
 
@@ -97,10 +102,12 @@ public class SignInActivity extends Activity {
         kakaoSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(LoginClient.getInstance().isKakaoTalkLoginAvailable(SignInActivity.this)){
-                    LoginClient.getInstance().loginWithKakaoTalk(SignInActivity.this, callback);
+                if (Session.getCurrentSession().checkAndImplicitOpen()){
+                    Log.d(TAG, "onClick: 로그인 세션 살아있음");
+                    sessionCallback.requestMe();
                 }else{
-                    LoginClient.getInstance().loginWithKakaoAccount(SignInActivity.this, callback);
+                    Log.d(TAG, "onClick: 로그인 세션 끝남");
+                    session.open(AuthType.KAKAO_LOGIN_ALL,SignInActivity.this);
                 }
             }
         });
@@ -112,25 +119,9 @@ public class SignInActivity extends Activity {
         signInButton = findViewById(R.id.signInButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
         kakaoSignInButton = findViewById(R.id.kakaoSignInButton);
-        try{
-            callback=new Function2<OAuthToken, Throwable, Unit>() {
-                @Override
-                public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                    if(oAuthToken!=null){
-
-                    }
-                    if(throwable!=null){
-
-                    }
-                    //updateaKakaoLoginUI();
-                    return null;
-                }
-            };
-        }catch(Exception e){
-            Toast.makeText(getApplicationContext(), "Kakao_login: request oAuthToken Fail", Toast.LENGTH_SHORT).show();
-        }
     }
 
+    //구글 로그인
     public void login_google(){
         //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함
         try{
@@ -146,11 +137,13 @@ public class SignInActivity extends Activity {
         }
     }
 
+    //결과값을 SignInActivity 액티비티로 보냄
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    //구글 client로 부터 결과값이 왔을 때 반응
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -163,10 +156,22 @@ public class SignInActivity extends Activity {
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 Log.d(TAG, "google_login : task fail");
+                Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
             }
+        }
+
+        if(Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)){
+            return;
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Session.getCurrentSession().removeCallback(sessionCallback);
+    }
+
+    //파이어베이스의 인증 기능 사용
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -177,23 +182,23 @@ public class SignInActivity extends Activity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            Log.d(TAG, "5");
-                            updateUI(user);
+                            updateUI_google(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Log.d(TAG, "5");
-                            updateUI(null);
+                            updateUI_google(null);
                         }
                     }
                 });
     }
 
-    private void updateUI(FirebaseUser user) { //update ui code here
+    //로그인 한 결과에 따른 UI업데이트
+    private void updateUI_google(FirebaseUser user) { //update ui code here
         if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
             User login_user = new User();
             try{
+                login_user.setLogin_method("google");
                 login_user.setName(user.getDisplayName());
                 login_user.setID(user.getEmail());
                 intent.putExtra("user",login_user);
@@ -205,7 +210,8 @@ public class SignInActivity extends Activity {
         }
     }
 
-    public String getKeyHash() {
+    //카카로 로그인을 위한 키 해시값 구하기
+    private String getKeyHash() {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
             if (packageInfo == null) return null;
@@ -213,6 +219,7 @@ public class SignInActivity extends Activity {
                 try {
                     MessageDigest md = MessageDigest.getInstance("SHA");
                     md.update(signature.toByteArray());
+                    //캐해시값 반환
                     return android.util.Base64.encodeToString(md.digest(), Base64.NO_WRAP);
                 } catch (NoSuchAlgorithmException e) {
                     Log.w("getKeyHash", "Unable to get MessageDigest. signature=" + signature, e);

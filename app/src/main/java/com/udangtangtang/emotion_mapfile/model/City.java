@@ -13,7 +13,11 @@ import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,7 +26,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class City {
+public class City{
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
@@ -55,6 +59,12 @@ public class City {
 
         return comments;
     }
+    private void sort_comment(List<Comment> comment_list){
+        for (Comment comment : comment_list){
+
+        }
+    }
+
 
     // 매개변수를 통해 City 객체의 각 변수들 초기화 이후 FirebaseDatabase에서 현재 도시의 기온 및 user들의 comment를 획득
     public void setInitInfo(String myCity, double latitude, double longitude, MainPresenterCallBack callBack) {
