@@ -76,6 +76,7 @@ public class City{
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d(TAG, "onDataChange: dgdgdg");
                 // Temperature 값 획득
                 HashMap<String, Object> cityInfo = (HashMap) snapshot.getValue();
                 temperature = (long) cityInfo.get("Temperature");
@@ -96,14 +97,20 @@ public class City{
     public void insert_comment(Comment comment, String city, String id) throws Exception {
         try {
             DatabaseReference reference = firebaseDatabase.getReference(city);
-            reference.child("users").child(id).setValue(comment);
-            reference.child("Temperature").addListenerForSingleValueEvent(new ValueEventListener() {
+            reference.child("users").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    Long temp = Long.valueOf(String.valueOf(snapshot.getValue()));
-                    if(comment.getStatus().equals("빡침")){
-                        reference.child("Temperature").setValue(temp+1);
-                    }else reference.child("Temperature").setValue(temp - 1);
+                    Comment oldComment = snapshot.getValue(Comment.class);
+                    boolean statusChanged = false;
+                    Log.d(TAG, "onDataChange: oldStatus"+oldComment.getStatus());
+                    Log.d(TAG, "onDataChange: newStatus"+comment.getStatus());
+                    if (!oldComment.getStatus().equals(comment.getStatus())) statusChanged = true;
+                    reference.child("users").child(id).setValue(comment);
+                    if (statusChanged) {
+                        if (comment.getStatus().equals("빡침")) {
+                            reference.child("Temperature").setValue(temperature + 1);
+                        } else reference.child("Temperature").setValue(temperature - 1);
+                    }
                 }
 
                 @Override
@@ -111,6 +118,7 @@ public class City{
 
                 }
             });
+
         } catch (Exception e) {
             Log.d(TAG, e.toString());
             throw new Exception();
