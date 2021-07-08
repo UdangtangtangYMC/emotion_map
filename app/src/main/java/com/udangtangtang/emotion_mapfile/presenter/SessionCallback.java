@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.kakao.auth.ISessionCallback;
 import com.kakao.network.ErrorResult;
-import com.kakao.sdk.user.model.Account;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
@@ -38,7 +37,7 @@ public class SessionCallback implements ISessionCallback {
         }
         //세션 연결이 실패 했을때
         //로그인화면을 다시 불러옴
-        activity.setContentView(R.layout.activity_mainaftersplash);
+        activity.setContentView(R.layout.activity_login);
     }
 
     //사용자 정보 요청
