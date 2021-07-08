@@ -48,6 +48,8 @@ public class SignInActivity extends Activity {
     private SignInButton googleSignInButton;
     private ImageButton kakaoSignInButton;
     private SignInPresenter signInPresenter;
+    private FirebaseUser currentUser;
+
 
     //구글 로그인을 위해 필요한 변수 선언
     private static final int RC_SIGN_IN = 9001;
@@ -113,19 +115,29 @@ public class SignInActivity extends Activity {
         });
 
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
+            updateUI_google(currentUser);
+            finish();
+        }
+    }
 
     private void initView(){
         signUpButton = findViewById(R.id.signUpButton);
         signInButton = findViewById(R.id.signInButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
         kakaoSignInButton = findViewById(R.id.kakaoSignInButton);
+        mAuth = FirebaseAuth.getInstance();
     }
 
     //구글 로그인
     public void login_google(){
         //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함
         try{
-            mAuth = FirebaseAuth.getInstance();
             this.gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))
                     .requestEmail()
