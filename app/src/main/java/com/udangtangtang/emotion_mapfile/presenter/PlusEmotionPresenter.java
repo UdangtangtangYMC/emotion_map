@@ -36,7 +36,7 @@ public class PlusEmotionPresenter {
         input_comment.setLongitude(126.102);
 
         //삭제 예정 코드임 user객체는 ID city는 로그인시 객체생성을통해 삽입
-        user.setCity("Anyang");
+        user.setCity("안양시");
         try {
             city.insert_comment(input_comment, user.getCity(), user.getID());
         } catch (Exception e) {

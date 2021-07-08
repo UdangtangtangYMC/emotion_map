@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -55,6 +57,7 @@ public class City{
 
         return comments;
     }
+
     private void sort_comment(List<Comment> comment_list){
         for (Comment comment : comment_list){
 
@@ -81,7 +84,6 @@ public class City{
                 HashMap<String, Object> users = (HashMap) cityInfo.get("users");
                 ArrayList<String> commentList = createCommentList(users);
                 callBack.onSuccess(commentList);
-
             }
 
             @Override
