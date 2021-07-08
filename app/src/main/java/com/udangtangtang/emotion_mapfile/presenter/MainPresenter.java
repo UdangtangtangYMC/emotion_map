@@ -2,7 +2,6 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,13 +22,12 @@ import com.udangtangtang.emotion_mapfile.view.MainActivity;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 public class MainPresenter {
 
     private final String TAG = "MainPresenter";
@@ -104,10 +102,11 @@ public class MainPresenter {
                                 location.getLongitude(),
                                 new MainPresenterCallBack() {
                                     @Override
-                                    public void onSuccess(List<String> commentList) {
-                                        // 작업이 완료된 경우 MainActivity 초기 값들을 설정해줌.
+                                    public void onSuccess(ArrayList<String> commentList) {
+                                        // comment 상세보기에 쓰일 comment_adapter 생성
                                         comment_adapter = new Comment_adapter(commentList);
-                                        activity.setInitInfo(comment_adapter);
+                                        // MainActivity 에 보일 ui 초기화
+                                        activity.setInitInfo(commentList);
                                     }
 
                                     @Override
@@ -127,5 +126,13 @@ public class MainPresenter {
 
     public String getCityTemperature() {
         return String.valueOf(city.getTemperature());
+    }
+
+    public String getAngryPeople(){
+        return String.valueOf(city.getAngryPeople());
+    }
+
+    public String getHappyPeople(){
+        return String.valueOf(city.getHappyPeople());
     }
 }

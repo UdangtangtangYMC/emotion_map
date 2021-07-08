@@ -6,7 +6,6 @@ import android.widget.Toast;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
-import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
