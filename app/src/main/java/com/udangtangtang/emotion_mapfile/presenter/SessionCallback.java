@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.kakao.auth.ISessionCallback;
 import com.kakao.network.ErrorResult;
+import com.kakao.sdk.user.model.Account;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
@@ -58,36 +59,27 @@ public class SessionCallback implements ISessionCallback {
                     public void onSuccess(MeV2Response result) {
                         //유저 정보 저장을 위한 객체 생성
                         user = new User();
+                        user.setLogin_method("kakao");
                         Log.i("KAKAO_API", "사용자 아이디 : " + result.getId());
-                        String id = String.valueOf(result.getId());
-                        user.setName(id);
                         //user정보를 받아옴
                         UserAccount kakaoAccount = result.getKakaoAccount();
                         if (kakaoAccount != null) {
                             String email = kakaoAccount.getEmail();
                             if(email != null){
-                                user.setID(id);
+                                user.setID(email);
+                                Log.i("KAKAO_API", "사용자 아이디 : " + user.getID());
                             }else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE){
 
-                            }
-                            Profile profile = kakaoAccount.getProfile();
-
-                            if (profile == null) {
-                                Log.d("KAKAO_API", "onSuccess:profile null");
-                            } else {
-                                Log.d("KAKAO_API", "onSuccess:getProfileImageUrl" + profile.getProfileImageUrl());
-                                Log.d("KAKAO_API", "onSuccess:getNickname" + profile.getNickname());
-                            }
-                            if (email != null) {
-                                Log.d("KAKAO_API", "onSuccess:email" + email);
                             }
                             //프로필
                             Profile _profile = kakaoAccount.getProfile();
 
                             if (_profile != null) {
-                                Log.d("KAKAO_API", "nickname: " + _profile.getNickname());
+                                String nickName = _profile.getNickname();
+                                Log.d("KAKAO_API", "nickname: " + nickName);
                                 Log.d("KAKAO_API", "profile image: " + _profile.getProfileImageUrl());
                                 Log.d("KAKAO_API", "thumbnail image: " + _profile.getThumbnailImageUrl());
+                                user.setName(nickName);
                             } else if (kakaoAccount.profileNeedsAgreement() == OptionalBoolean.TRUE) {
                                 // 동의 요청 후 프로필 정보 휙득 가능
                             } else {

@@ -200,6 +200,7 @@ public class SignInActivity extends Activity {
             Intent intent = new Intent(this, MainActivity.class);
             User login_user = new User();
             try{
+                login_user.setLogin_method("google");
                 login_user.setName(user.getDisplayName());
                 login_user.setID(user.getEmail());
                 intent.putExtra("user",login_user);
@@ -232,17 +233,6 @@ public class SignInActivity extends Activity {
         return null;
     }
 
-    //카카오 로그인 성공
-    private void login_kakao(){
-        UserApiClient.getInstance().loginWithKakaoTalk(SignInActivity.this, (oAuthToken, error) -> {
-            if(error != null){
-                Log.e(TAG, "로그인 실패", error);
-            }else if(oAuthToken != null){
-                Log.i(TAG, "로그인 성공(토큰) : " + oAuthToken.getAccessToken());
-            }
-            return null;
-        });
-    }
        /*
     *kakao logout code
         btn_login_out.setOnClickListener(new View.OnClickListener() {

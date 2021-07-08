@@ -22,9 +22,9 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
-public class City{
 @Getter
 @Setter
+public class City{
 
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
