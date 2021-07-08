@@ -21,13 +21,13 @@ public class PlusEmotionPresenter {
         this.user = user;
     }
 
-    public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "기쁨" : "빡침"; }
+    public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "좋음" : "빡침"; }
 
-    public void insert_emotion(String seleted_emotion, String comment){
+    public void insert_emotion(String selected_emotion, String comment){
         Comment input_comment = new Comment();
 
         input_comment.setComment(comment);
-        input_comment.setStatus(seleted_emotion);
+        input_comment.setStatus(selected_emotion);
         input_comment.setCreate_at(get_date());
 
         //후에 api를 통해 받아옴
@@ -36,7 +36,7 @@ public class PlusEmotionPresenter {
         input_comment.setLongitude(126.102);
 
         //삭제 예정 코드임 user객체는 ID city는 로그인시 객체생성을통해 삽입
-        user.setCity("Anyang");
+        user.setCity("안양시");
         try {
             city.insert_comment(input_comment, user.getCity(), user.getID());
         } catch (Exception e) {
