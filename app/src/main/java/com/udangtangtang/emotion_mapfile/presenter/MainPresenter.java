@@ -14,12 +14,17 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+import com.kakao.sdk.user.UserApiClient;
+import com.kakao.usermgmt.UserManagement;
+import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
+import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.io.IOException;
 import java.security.cert.PKIXRevocationChecker;
@@ -156,5 +161,28 @@ public class MainPresenter {
                 Log.d(TAG, "onFail: ");
             }
         };
+    public String getLoginMethod(){
+        return user.getLogin_method();
+    }
+
+    public void logout_google(FirebaseAuth mAuth){
+        mAuth.signOut();
+        intent_SignInActivity();
+        Log.d(TAG, "구글 로그아웃 성공");
+    }
+
+    public void logout_kakao(){
+        UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
+            @Override
+            public void onCompleteLogout() {
+                intent_SignInActivity();
+                Log.d(TAG, "카카오 로그아웃 성공");
+            }
+        });
+    }
+
+    public void intent_SignInActivity(){
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
     }
 }

@@ -3,6 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -74,7 +75,19 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //로그아웃 수행
-
+                String loginMethod = presenter.getLoginMethod();
+                switch (loginMethod){
+                    case "google":
+                        presenter.logout_google(mAuth);
+                        finish();
+                        break;
+                    case "kakao":
+                        presenter.logout_kakao();
+                        finish();
+                        break;
+                    default:
+                        Log.d(TAG, "로그아웃 정보 얻어오기 실패");
+                }
             }
         });
     }
