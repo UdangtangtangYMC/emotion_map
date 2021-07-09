@@ -31,7 +31,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.Session;
-import com.kakao.sdk.user.UserApiClient;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
@@ -42,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 
 
 public class SignInActivity extends Activity {
+    private long time = 0;
     private final String TAG = "SignInActivity";
     private Button signUpButton;
     private Button signInButton;
@@ -64,7 +64,7 @@ public class SignInActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mainaftersplash);
+        setContentView(R.layout.activity_login);
 
         initView();
 
@@ -242,6 +242,17 @@ public class SignInActivity extends Activity {
             Log.w("getPackageInfo", "Unable to getPackageInfo");
         }
         return null;
+    }
+
+    //뒤로가기 버튼 2번을 통해 시스템 종료
+    @Override
+    public void onBackPressed() {
+        if (System.currentTimeMillis() - time >= 2000) {
+            time = System.currentTimeMillis();
+            Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
+        } else if (System.currentTimeMillis() - time < 2000) {
+            finish();
+        }
     }
 
        /*
