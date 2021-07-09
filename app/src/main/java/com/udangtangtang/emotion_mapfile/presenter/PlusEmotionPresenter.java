@@ -21,7 +21,7 @@ public class PlusEmotionPresenter {
         this.user = user;
     }
 
-    public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "좋음" : "빡침"; }
+    public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "기쁨" : "빡침"; }
 
     public void insert_emotion(String selected_emotion, String comment){
         Comment input_comment = new Comment();
@@ -30,15 +30,9 @@ public class PlusEmotionPresenter {
         input_comment.setStatus(selected_emotion);
         input_comment.setCreate_at(get_date());
 
-        //후에 api를 통해 받아옴
-        input_comment.setDistrict("만안구");
-        input_comment.setLatitude(37.400303);
-        input_comment.setLongitude(126.102);
-
-        //삭제 예정 코드임 user객체는 ID city는 로그인시 객체생성을통해 삽입
-        user.setCity("안양시");
         try {
-            city.insert_comment(input_comment, user.getCity(), user.getID());
+            // 새로 등록하려는 comment와 user.getID()를 매개변수로 city.insertComment 메소드 호출
+            city.insert_comment(input_comment, user.getID());
         } catch (Exception e) {
             Toast.makeText(context, "감정 입력 오류", Toast.LENGTH_SHORT).show();
         }

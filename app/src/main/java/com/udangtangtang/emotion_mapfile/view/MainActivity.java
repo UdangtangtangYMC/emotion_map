@@ -170,7 +170,12 @@ public class MainActivity extends Activity {
         angry.setText(presenter.getAngryPeople()+"명");
         happy.setText(presenter.getHappyPeople()+"명");
 
-        for (int i = 0; i < 4; i++) {
+        if (commentList.size() == 0) {
+            commentOne.setText("첫 번째 상태를 등록해보세요!");
+            return;
+        }
+
+        for (int i = 0; i < commentList.size(); i++) {
             commentViewList.get(i).setText(commentList.get(i));
         }
     }

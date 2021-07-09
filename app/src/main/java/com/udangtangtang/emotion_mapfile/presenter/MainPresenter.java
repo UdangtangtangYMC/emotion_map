@@ -27,8 +27,10 @@ import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.io.IOException;
+import java.security.cert.PKIXRevocationChecker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -100,25 +102,28 @@ public class MainPresenter {
                     try {
                         Geocoder geocoder = new Geocoder(context);
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
-                        List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        // Address 객체에서 Locality 속성을 획득하고 위도, 경도, 도시명을 City 객체에 저장
-                        city.setInitInfo(fromLocation.get(0).getLocality(),
+                        Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
+
+                        // Address 객체에서 Locality 속성을 획득
+                        // subLocality는 구로 고정 되어있음, 속해있는 도가 없는 경우 -> getAdminArea를 통해 해당 시 접근, 도가 있는 존재하는 경우 -> getLocality를 통해 시 획득
+                        String locality = address.getLocality();
+
+                        Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
+
+                        // MainPresenterCallBack 생성
+                        MainPresenterCallBack mainPresenterCallBack = createCallBack(activity);
+
+                        // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
+                        if (locality == null) {
+                            locality = address.getAdminArea();
+                        }
+                        // 위도, 경도, 도시명을 City 객체에 저장
+                        city.setInitInfo(locality,
+                                address.getSubLocality(),
                                 location.getLatitude(),
                                 location.getLongitude(),
-                                new MainPresenterCallBack() {
-                                    @Override
-                                    public void onSuccess(ArrayList<String> commentList) {
-                                        // comment 상세보기에 쓰일 comment_adapter 생성
-                                        comment_adapter = new Comment_adapter(commentList);
-                                        // MainActivity 에 보일 ui 초기화
-                                        activity.setInitInfo(commentList);
-                                    }
+                                mainPresenterCallBack);
 
-                                    @Override
-                                    public void onFail(Exception ex) {
-                                        Log.d(TAG, "onFail: ");
-                                    }
-                                });
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
                     }
@@ -133,14 +138,29 @@ public class MainPresenter {
         return String.valueOf(city.getTemperature());
     }
 
-    public String getAngryPeople(){
+    public String getAngryPeople() {
         return String.valueOf(city.getAngryPeople());
     }
 
-    public String getHappyPeople(){
+    public String getHappyPeople() {
         return String.valueOf(city.getHappyPeople());
     }
 
+    private MainPresenterCallBack createCallBack(MainActivity activity) {
+        return new MainPresenterCallBack(){
+            @Override
+            public void onSuccess(ArrayList<String> commentList) {
+                // comment 상세보기에 쓰일 comment_adapter 생성
+                comment_adapter = new Comment_adapter(commentList);
+                // MainActivity 에 보일 ui 초기화
+                activity.setInitInfo(commentList);
+            }
+
+            @Override
+            public void onFail(Exception ex) {
+                Log.d(TAG, "onFail: ");
+            }
+        };
     public String getLoginMethod(){
         return user.getLogin_method();
     }
