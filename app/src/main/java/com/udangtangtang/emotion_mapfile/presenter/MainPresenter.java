@@ -7,13 +7,22 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
@@ -26,7 +35,11 @@ import com.udangtangtang.emotion_mapfile.view.MainActivity;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
+import java.security.Permission;
+import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +52,9 @@ public class MainPresenter {
     private City city;
     private Comment_adapter comment_adapter;
     static final int PERMISSIONS_REQUEST = 0x0000001;
-    private FusedLocationProviderClient loc;
+    private FusedLocationProviderClient locProvider;
+    private MainActivity activity;
+    private LocationRequest locationRequest;
 
 
     public MainPresenter(Context context, User user) {
@@ -54,9 +69,14 @@ public class MainPresenter {
     }
 
     public void add_emotion() {
-        PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
-        plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-        plusEmotion.callFunciton();
+        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
+            plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
+            plusEmotion.callFunciton();
+        }
+        else{
+            Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void intent_CommentDetail() {
@@ -71,32 +91,40 @@ public class MainPresenter {
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
-
+        this.activity = activity;
         // 위치권한이 획득 되어있지 않은 경우
+        Log.d(TAG, "checkPermissions: "+ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "권한요청 실행");
+            Log.d(TAG, "checkPermissions: if entered");
             // 권한의 획득 사유를 표시해야 하는 경우
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION))
                 Toast.makeText(context, "서비스 제공을 위해서 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
             // 권한 요청
+            Log.d(TAG, "checkPermissions: entered");
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST);
+            Log.d(TAG, "checkPermissions: finished");
+        } else {
+            Log.d(TAG, "checkPermissions: else entered");
+            getLocality(activity);
         }
-        getLocality(activity);
         Log.d(TAG, "getLocality 메서드 실행");
 
     }
 
-    // 기기의 마지막 위치를 기반으로 현재 도시명을 획득하는 메소드
     @SuppressLint("MissingPermission")
-    private void getLocality(MainActivity activity) {
-        loc = LocationServices.getFusedLocationProviderClient(activity);
-        loc.getLastLocation()
+    public void getLocality(MainActivity activity) {
+        Log.d(TAG, "getLocality entered: ");
+        locProvider = LocationServices.getFusedLocationProviderClient(activity);
+        updateLocation(locProvider);
+        locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
                     Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                     try {
                         Geocoder geocoder = new Geocoder(context);
+                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                         Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
 
                         // Address 객체에서 Locality 속성을 획득
@@ -187,4 +215,21 @@ public class MainPresenter {
         Intent intent = new Intent(context, SignInActivity.class);
         context.startActivity(intent);
     }
+
+    // 아직 수정이 필요한 메소드
+    @SuppressLint("MissingPermission")
+    private void updateLocation(FusedLocationProviderClient loc){
+        Log.d(TAG, "updateLocation: ");
+        locationRequest = LocationRequest.create().
+                setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        loc.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location lastLocation = locationResult.getLastLocation();
+                Log.d(TAG, "onLocationResult: "+ lastLocation.getLatitude() + lastLocation.getLongitude());
+            }
+        }, Looper.getMainLooper());
+
+    }
+
 }

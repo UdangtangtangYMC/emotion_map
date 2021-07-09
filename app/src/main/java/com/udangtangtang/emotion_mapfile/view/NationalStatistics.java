@@ -6,6 +6,12 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.udangtangtang.emotion_mapfile.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarEntry;
 import com.udangtangtang.emotion_mapfile.R;
 
@@ -24,8 +30,6 @@ public class NationalStatistics extends Activity {
 
         initView();
         graphInitSetting(); //그래프 기본 세팅
-
-
     }
 
     private void initView(){
@@ -34,5 +38,5 @@ public class NationalStatistics extends Activity {
 
    public void graphInitSetting(){
 
-   }
+    }
 }

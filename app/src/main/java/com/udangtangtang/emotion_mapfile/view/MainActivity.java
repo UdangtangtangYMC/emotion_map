@@ -1,7 +1,10 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,31 +13,37 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private final String TAG = "MainActivity";
     private MainPresenter presenter;
     private DrawerLayout drawerLayout;
+    private CoordinatorLayout coordinatorLayout;
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_commentDetail, userCity, temperature, angry, happy, commentOne, commentTwo, commentThree,commentFour;
+    private TextView TextView_commentDetail, userCity, temperature, angry, happy, commentOne, commentTwo, commentThree, commentFour;
     private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
@@ -54,7 +63,7 @@ public class MainActivity extends Activity {
 
         //presenter 생성 및 위치권한 요청
         Intent intent = getIntent();
-        presenter = new MainPresenter(MainActivity.this, (User)intent.getSerializableExtra("user"));
+        presenter = new MainPresenter(MainActivity.this, (User) intent.getSerializableExtra("user"));
         presenter.checkPermissions(this);
 
         //user 이름을 받아옴
@@ -77,7 +86,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 //로그아웃 수행
                 String loginMethod = presenter.getLoginMethod();
-                switch (loginMethod){
+                switch (loginMethod) {
                     case "google":
                         presenter.logout_google(mAuth);
                         finish();
@@ -105,6 +114,7 @@ public class MainActivity extends Activity {
         TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         angry = (TextView) findViewById(R.id.txt_angry);
         happy = (TextView) findViewById(R.id.txt_happy);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -123,9 +133,9 @@ public class MainActivity extends Activity {
         txt_id = findViewById(R.id.txt_id);
         btn_logout = findViewById(R.id.btn_logout);
         //로그인 정보를 위한 변수 초기화
-        try{
+        try {
             mAuth = FirebaseAuth.getInstance();
-        }catch (Exception e){
+        } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
         }
     }
@@ -167,17 +177,32 @@ public class MainActivity extends Activity {
     // TextView에 텍스트 설정
     public void setInitInfo(List<String> commentList) {
         userCity.setText(presenter.getUserCity());
-        temperature.setText(presenter.getCityTemperature()+" ℃");
-        angry.setText(presenter.getAngryPeople()+"명");
-        happy.setText(presenter.getHappyPeople()+"명");
+        temperature.setText(presenter.getCityTemperature() + " ℃");
+        angry.setText(presenter.getAngryPeople() + "명");
+        happy.setText(presenter.getHappyPeople() + "명");
 
         if (commentList.size() == 0) {
             commentOne.setText("첫 번째 상태를 등록해보세요!");
             return;
-        }else {
-            for (int i = 0; i < commentList.size(); i++) {
+        } else
+            for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
             }
+    }
+
+    // 권한 설정 후 사용자의 결정에 따라 구문 실행
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "onRequestPermissionsResult: if statement entered");
+
+            presenter.getLocality(this);
+        } else {
+            Snackbar
+                    .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.confirm, v -> {
+                    })
+                    .show();
         }
     }
 }
