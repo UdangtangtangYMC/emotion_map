@@ -186,6 +186,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             return;
         }else {
             for (int i = 0; i <Math.min(commentList.size(), commentViewList.size()); i++) {
+        }else {
+            for (int i = 0; i < commentList.size(); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
             }
         }
@@ -205,4 +207,5 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                     .show();
         }
     }
+}
 }
