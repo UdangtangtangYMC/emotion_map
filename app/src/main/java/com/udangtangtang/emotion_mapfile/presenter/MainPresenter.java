@@ -28,6 +28,7 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.security.Permission;
 import java.security.Permissions;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainPresenter {
 
@@ -93,6 +95,7 @@ public class MainPresenter {
         // 위치권한이 획득 되어있지 않은 경우
         Log.d(TAG, "checkPermissions: "+ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "권한요청 실행");
             Log.d(TAG, "checkPermissions: if entered");
             // 권한의 획득 사유를 표시해야 하는 경우
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION))
@@ -107,6 +110,8 @@ public class MainPresenter {
             Log.d(TAG, "checkPermissions: else entered");
             getLocality(activity);
         }
+        Log.d(TAG, "getLocality 메서드 실행");
+
     }
 
     @SuppressLint("MissingPermission")
@@ -141,9 +146,15 @@ public class MainPresenter {
                                 location.getLatitude(),
                                 location.getLongitude(),
                                 mainPresenterCallBack);
-
+                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
+                    }catch (NullPointerException e){
+                        Log.d(TAG, "db에 존재 하지 않는 도시 입니다.");
+                        Toast.makeText(context, "db에 존재 하지 않는 도시 입니다.", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e){
+                        Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
+                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -167,16 +178,15 @@ public class MainPresenter {
     private MainPresenterCallBack createCallBack(MainActivity activity) {
         return new MainPresenterCallBack(){
             @Override
-            public void onSuccess(ArrayList<String> commentList) {
+            public void onSuccess(List<Comment> commentList) {
                 // comment 상세보기에 쓰일 comment_adapter 생성
                 comment_adapter = new Comment_adapter(commentList);
                 // MainActivity 에 보일 ui 초기화
-                activity.setInitInfo(commentList);
-            }
-
-            @Override
-            public void onFail(Exception ex) {
-                Log.d(TAG, "onFail: ");
+                List<String> comments = new ArrayList<String>();
+                for(Comment comment:commentList){
+                   comments.add(comment.getComment());
+                }
+                activity.setInitInfo(comments);
             }
         };
     }

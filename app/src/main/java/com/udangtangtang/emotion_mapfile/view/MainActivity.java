@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -173,8 +174,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
     }
 
-    // TextView에 텍스트 설정 및, RecyclerView에 어댑터 설정
-    public void setInitInfo(ArrayList<String> commentList) {
+    // TextView에 텍스트 설정
+    public void setInitInfo(List<String> commentList) {
         userCity.setText(presenter.getUserCity());
         temperature.setText(presenter.getCityTemperature()+" ℃");
         angry.setText(presenter.getAngryPeople()+"명");
@@ -183,10 +184,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         if (commentList.size() == 0) {
             commentOne.setText("첫 번째 상태를 등록해보세요!");
             return;
-        }
-
-        for (int i = 0; i < commentList.size(); i++) {
-            commentViewList.get(i).setText(commentList.get(i));
+        }else {
+            for (int i = 0; i <Math.min(commentList.size(), commentViewList.size()); i++) {
+                commentViewList.get(i).setText(commentList.get(i));
+            }
         }
     }
 

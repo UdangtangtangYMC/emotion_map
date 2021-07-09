@@ -38,10 +38,8 @@ public class PlusEmotionPresenter {
         }
     }
 
-    public String get_date(){
+    public Long get_date(){
         Date time = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String str = format.format(time);
-        return str;
+        return time.getTime();
     }
 }

@@ -8,18 +8,15 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
-import org.jetbrains.annotations.NotNull;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.SortedMap;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,32 +40,83 @@ public class City {
     }
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
-    private ArrayList<String> createCommentList(Optional<HashMap<String, Object>> target) {
+    private List<Comment> createCommentList(Optional<HashMap<String, Object>> target) {
+        long twoDay = 1000 * 60 * 60 * 24 * 2;
+        Date nowDate = new Date();
+        Long now_criteria = nowDate.getTime();
+        Log.d(TAG, "현재시간" + String.valueOf(now_criteria));
         this.angryPeople = 0;
         this.happyPeople = 0;
 
-        ArrayList<String> comments = new ArrayList<String>();
+        List<Comment> comments = new ArrayList<Comment>();
 
         // target이 비어있는 Optional 객체가 아닐 경우 commentList에 추가하는 작업을 진행
         target.ifPresent(t -> {
             for (String key : t.keySet()) {
                 HashMap<String, String> userInfo = (HashMap) t.get(key);
-                comments.add(userInfo.get("comment"));
-                if (userInfo.get("status").equals("기쁨"))
-                    this.happyPeople += 1;
-                else
-                    this.angryPeople += 1;
+                //userInfo 에서 타임을 String 값으로 받아오고 이를 정수형으로 변환
+                //정수형으로 변환된 time 값을 현재 날짜의 2일 전 값과 비교
+                Log.d(TAG, "userInfo size: " + userInfo.size());
+                String temp = String.valueOf(userInfo.get("create_at"));
+                long write_date = Long.parseLong(temp);
+                Log.d(TAG, "userInfo size: " + write_date);
+
+                //받아온 date가 현재 시간 기준 2일 안에 해당된다면
+                //comment 인스턴스를 생성하여 list에 담음
+                if (write_date > now_criteria - twoDay) {
+                    Log.d(TAG, "정렬 진입");
+                    Comment comment = new Comment();
+                    comment.setComment(userInfo.get("comment"));
+                    comment.setCreate_at(write_date);
+                    comment.setDistrict("district");
+                    comment.setStatus("status");
+                    comments.add(comment);
+                    if (userInfo.get("status").equals("기쁨"))
+                        this.happyPeople += 1;
+                    else
+                        this.angryPeople += 1;
+                }
             }
         });
-        comments.stream().forEach(c -> Log.d(TAG, "createCommentList: " + c));
+
+        Comment[] comment_list = new Comment[comments.size()];
+        for (int i = 0; i < comments.size(); i++) {
+            comment_list[i] = comments.get(i);
+        }
+
+        sort_comment(comment_list, 0, comment_list.length - 1);
+
+        comments.clear();
+
+        for (int i = 0; i < comment_list.length; i++) {
+            comments.add(comment_list[i]);
+        }
 
         return comments;
     }
 
-    private void sort_comment(List<Comment> comment_list) {
-        for (Comment comment : comment_list) {
 
-        }
+    private void sort_comment(Comment[] comment_list, int left, int right) {
+        int pl = left;
+        int pr = right;
+        Long mid = comment_list[(pl + pr)/2].getCreate_at();
+
+        do{
+            //작성된 날짜값을 기준으로 비교함 - 최신순 우선
+            while (comment_list[pl].getCreate_at() > mid) pl++;
+            while (comment_list[pr].getCreate_at() < mid) pr--;
+            if(pl <= pr){
+                swap(comment_list, pl++, pr--);
+            }
+        }while(pl <= pr);
+        if(left < pr) sort_comment(comment_list, left, pr);
+        if(left < right) sort_comment(comment_list, pl, right);
+    }
+
+    public void swap(Comment[] comment_list, int idx1, int idx2){
+        Comment comment = comment_list[idx1];
+        comment_list[idx1] = comment_list[idx2];
+        comment_list[idx2] = comment;
     }
 
 
@@ -89,10 +137,11 @@ public class City {
                 try {
                     // Temperature 값 획득 후 로컬 temperature 변수에 저장
                     HashMap<String, Object> cityInfo = (HashMap) snapshot.getValue();
+                    Log.d(TAG, "cityInfo size : " + cityInfo.size());
                     temperature = Long.valueOf(String.valueOf(cityInfo.get("Temperature")));
                     // user의 comment 정보 획득
                     Optional<HashMap<String, Object>> users = Optional.ofNullable((HashMap) cityInfo.get("users"));
-                    ArrayList<String> commentList = createCommentList(users);
+                    List<Comment> commentList = createCommentList(users);
 
                     // 완료될 경우 callBack.onSuccess 메소드 호출
                     callBack.onSuccess(commentList);
@@ -107,7 +156,7 @@ public class City {
                     temperature = 0;
 
                     // 마찬가지로, 없던 도시였기 때문에 생성할 comment 리스트가 없음 -> Optional.empty()를 이용해 비어있는 Optional 객체 전달
-                    ArrayList<String> commentList = createCommentList(Optional.empty());
+                    List<Comment> commentList = createCommentList(Optional.empty());
                     callBack.onSuccess(commentList);
                 }
             }
@@ -122,8 +171,6 @@ public class City {
     public void insert_comment(Comment comment, String id) throws Exception {
 
         // comment의 위도, 경도, 구는 City 내의 정보들로 초기화.
-        comment.setLatitude(latitude);
-        comment.setLongitude(longitude);
         comment.setDistrict(district);
 
         try {
