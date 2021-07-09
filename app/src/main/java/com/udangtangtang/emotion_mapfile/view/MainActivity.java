@@ -163,13 +163,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    // TextView에 텍스트 설정 및, RecyclerView에 어댑터 설정
-    public void setInitInfo(ArrayList<String> commentList) {
+    // TextView에 텍스트 설정
+    public void setInitInfo() {
         userCity.setText(presenter.getUserCity());
         temperature.setText(presenter.getCityTemperature()+" ℃");
         angry.setText(presenter.getAngryPeople()+"명");
         happy.setText(presenter.getHappyPeople()+"명");
 
+    }
+
+    //ment_list 세팅
+    public void setInitMentList(ArrayList<String> commentList){
         for (int i = 0; i < 4; i++) {
             commentViewList.get(i).setText(commentList.get(i));
         }

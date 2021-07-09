@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface MainPresenterCallBack {
-        void onSuccess(ArrayList<String> commentList);
+        void onSuccessGetCommentList(ArrayList<String> commentList);
+        void onSuccessGetUserInfo();
         void onFail(Exception ex);
 }

@@ -77,7 +77,7 @@ public class MainPresenter {
 
         // 위치권한이 획득 되어있지 않은 경우
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+            Log.d(TAG, "권한요청 실행");
             // 권한의 획득 사유를 표시해야 하는 경우
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION))
                 Toast.makeText(context, "서비스 제공을 위해서 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
@@ -87,6 +87,7 @@ public class MainPresenter {
                     PERMISSIONS_REQUEST);
         }
         getLocality(activity);
+        Log.d(TAG, "getLocality 메서드 실행");
 
     }
 
@@ -101,19 +102,28 @@ public class MainPresenter {
                         Geocoder geocoder = new Geocoder(context);
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                         List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        if(fromLocation == null){
+                            Log.d(TAG, "fromLocation == null");
+                        }
                         // Address 객체에서 Locality 속성을 획득하고 위도, 경도, 도시명을 City 객체에 저장
-                        city.setInitInfo(fromLocation.get(0).getLocality(),
+                        String myCity = fromLocation.get(0).getAdminArea(); // 위치정보
+                        city.setInitInfo(myCity,
                                 location.getLatitude(),
                                 location.getLongitude(),
                                 new MainPresenterCallBack() {
                                     @Override
-                                    public void onSuccess(ArrayList<String> commentList) {
+                                    public void onSuccessGetUserInfo() {
+                                        activity.setInitInfo();
+                                        Log.d(TAG, "내 위치 불러오기 성공");
+                                    }
+                                    @Override
+                                    public void onSuccessGetCommentList(ArrayList<String> commentList) {
                                         // comment 상세보기에 쓰일 comment_adapter 생성
                                         comment_adapter = new Comment_adapter(commentList);
                                         // MainActivity 에 보일 ui 초기화
-                                        activity.setInitInfo(commentList);
+                                        activity.setInitMentList(commentList);
+                                        Log.d(TAG, "멘트 목록 불러오기 성공");
                                     }
-
                                     @Override
                                     public void onFail(Exception ex) {
                                         Log.d(TAG, "onFail: ");
@@ -121,6 +131,12 @@ public class MainPresenter {
                                 });
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
+                    }catch (NullPointerException e){
+                        Log.d(TAG, "db에 존재 하지 않는 도시 입니다.");
+                        Toast.makeText(context, "db에 존재 하지 않는 도시 입니다.", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e){
+                        Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
+                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

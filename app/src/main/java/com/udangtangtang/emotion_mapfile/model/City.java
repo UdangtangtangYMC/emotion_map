@@ -66,17 +66,25 @@ public class City{
 
 
     // 매개변수를 통해 City 객체의 각 변수들 초기화 이후 FirebaseDatabase에서 현재 도시의 기온 및 user들의 comment를 획득
-    public void setInitInfo(String myCity, double latitude, double longitude, MainPresenterCallBack callBack) {
+    public void setInitInfo(String myCity, double latitude, double longitude, MainPresenterCallBack callBack) throws Exception{
         this.myCity = myCity;
         this.latitude = latitude;
         this.longitude = longitude;
+        DatabaseReference reference = null;
+
+        if (myCity != null){
+            callBack.onSuccessGetUserInfo();
+        }else{
+            throw new Exception();
+        }
 
         // 현재 도시의 FirebaseDatabase 레퍼런스 획득
-        DatabaseReference reference = firebaseDatabase.getReference(myCity);
+        reference = firebaseDatabase.getReference(myCity);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Log.d(TAG, "onDataChange: dgdgdg");
+
                 // Temperature 값 획득
                 HashMap<String, Object> cityInfo = (HashMap) snapshot.getValue();
                 temperature = (long) cityInfo.get("Temperature");
@@ -84,7 +92,7 @@ public class City{
                 // user의 comment 정보 획득
                 HashMap<String, Object> users = (HashMap) cityInfo.get("users");
                 ArrayList<String> commentList = createCommentList(users);
-                callBack.onSuccess(commentList);
+                callBack.onSuccessGetCommentList(commentList);
             }
 
             @Override
