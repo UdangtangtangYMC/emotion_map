@@ -14,7 +14,10 @@ import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.SortedMap;
@@ -40,28 +43,72 @@ public class City{
     }
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
-    private ArrayList<String> createCommentList(HashMap<String, Object> target) {
+    private List<Comment> createCommentList(HashMap<String, Object> target) {
+        long twoDay = 1000 * 60 * 60 * 24;
+        Date nowDate = new Date();
+        Long now_criteria = Long.valueOf(nowDate.getYear() + nowDate.getMonth() + nowDate.getDay());
         this.angryPeople = 0;
         this.happyPeople = 0;
 
-        ArrayList<String> comments = new ArrayList<String>();
+        List<Comment> comments = new ArrayList<Comment>();
+
         for (String key : target.keySet()) {
             HashMap<String, String> userInfo = (HashMap) target.get(key);
-            comments.add(userInfo.get("comment"));
-            if(userInfo.get("status").equals("좋음"))
-                this.happyPeople+=1;
-            else
-                this.angryPeople+=1;
+            //userInfo 에서 타임을 String 값으로 받아오고 이를 정수형으로 변환
+            //정수형으로 변환된 time 값을 현재 날짜의 2일 전 값과 비교
+            Long write_date = Long.parseLong(userInfo.get("create_At"));
+            //받아온 date가 현재 시간 기준 2일 안에 해당된다면
+            //comment 인스턴스를 생성하여 list에 담음
+            if(write_date > now_criteria - twoDay){
+                Comment comment = new Comment();
+                comment.setComment(userInfo.get("comment"));
+                comment.setCreate_at(write_date);
+                comment.setDistrict("district");
+                comment.setStatus("status");
+                if(userInfo.get("status").equals("좋음"))
+                    this.happyPeople+=1;
+                else
+                    this.angryPeople+=1;
+                comments.add(comment);
+            }
         }
-        comments.stream().forEach(c -> Log.d(TAG, "createCommentList: " + c));
 
+        Comment[] comment_list = new Comment[comments.size()];
+        for(int i=0;i<comments.size();i++){
+            comment_list[i] = comments.get(i);
+        }
+
+        sort_comment(comment_list, 0, comment_list.length-1);
+
+        comments.clear();
+
+        for(int i=0;i<comments.size();i++){
+                comments.add(comment_list[i]);
+        }
+
+        comments.stream().forEach(c -> Log.d(TAG, "createCommentList: " + c));
         return comments;
     }
 
-    private void sort_comment(List<Comment> comment_list){
-        for (Comment comment : comment_list){
+    private void sort_comment(Comment[] comment_list, int left, int right) {
+        int pl = left;
+        int pr = right;
+        Long mid = comment_list[(pl + pr)].getCreate_at();
 
-        }
+        do{
+            //작성된 날짜값을 기준으로 비교함 - 최신순 우선
+            while (comment_list[pl].getCreate_at() > mid) pl++;
+            while (comment_list[pr].getCreate_at() < mid) pr--;
+            if(pl <= pr){
+                swap(comment_list, pl++, pr--);
+            }
+        }while(pl <= pr);
+    }
+
+    public void swap(Comment[] comment_list, int idx1, int idx2){
+        Comment comment = comment_list[idx1];
+        comment_list[idx1] = comment_list[idx2];
+        comment_list[idx2] = comment_list[idx1];
     }
 
 
@@ -91,7 +138,7 @@ public class City{
 
                 // user의 comment 정보 획득
                 HashMap<String, Object> users = (HashMap) cityInfo.get("users");
-                ArrayList<String> commentList = createCommentList(users);
+                List<Comment> commentList = createCommentList(users);
                 callBack.onSuccessGetCommentList(commentList);
             }
 

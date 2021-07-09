@@ -32,8 +32,6 @@ public class PlusEmotionPresenter {
 
         //후에 api를 통해 받아옴
         input_comment.setDistrict("만안구");
-        input_comment.setLatitude(37.400303);
-        input_comment.setLongitude(126.102);
 
         //삭제 예정 코드임 user객체는 ID city는 로그인시 객체생성을통해 삽입
         user.setCity("안양시");
@@ -44,10 +42,8 @@ public class PlusEmotionPresenter {
         }
     }
 
-    public String get_date(){
+    public Long get_date(){
         Date time = new Date();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String str = format.format(time);
-        return str;
+        return time.getTime();
     }
 }

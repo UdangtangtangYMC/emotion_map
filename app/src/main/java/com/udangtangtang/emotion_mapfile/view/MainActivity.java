@@ -23,6 +23,7 @@ import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -173,7 +174,7 @@ public class MainActivity extends Activity {
     }
 
     //ment_list 세팅
-    public void setInitMentList(ArrayList<String> commentList){
+    public void setInitMentList(List<String> commentList){
         for (int i = 0; i < 4; i++) {
             commentViewList.get(i).setText(commentList.get(i));
         }

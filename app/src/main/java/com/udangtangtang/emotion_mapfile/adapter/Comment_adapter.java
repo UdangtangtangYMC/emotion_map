@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyViewHolder> implements Serializable {
     private final String TAG = "Comment_adapter";
-    private List<String> comment_list = new ArrayList<String>();
+    private List<Comment> comment_list = new ArrayList<Comment>();
 
     protected class MyViewHolder extends RecyclerView.ViewHolder{
         private TextView txt_comment;
@@ -29,7 +30,7 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
         }
     }
 
-    public Comment_adapter(List<String> comment_list){
+    public Comment_adapter(List<Comment> comment_list){
         this.comment_list = comment_list;
     }
 
@@ -45,8 +46,8 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String comment = comment_list.get(position);
-        holder.txt_comment.setText(comment);
+        Comment comment = comment_list.get(position);
+        holder.txt_comment.setText(comment.getComment());
         Log.d(TAG, String.valueOf(position));
         Log.d(TAG, String.valueOf(getItemCount()));
     }

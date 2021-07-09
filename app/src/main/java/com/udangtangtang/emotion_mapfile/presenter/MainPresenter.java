@@ -15,11 +15,11 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
-import com.kakao.sdk.user.UserApiClient;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
@@ -117,11 +117,15 @@ public class MainPresenter {
                                         Log.d(TAG, "내 위치 불러오기 성공");
                                     }
                                     @Override
-                                    public void onSuccessGetCommentList(ArrayList<String> commentList) {
+                                    public void onSuccessGetCommentList(List<Comment> commentList) {
                                         // comment 상세보기에 쓰일 comment_adapter 생성
                                         comment_adapter = new Comment_adapter(commentList);
                                         // MainActivity 에 보일 ui 초기화
-                                        activity.setInitMentList(commentList);
+                                        List<String> comments = new ArrayList<String>();
+                                        for(Comment comment : commentList){
+                                            comments.add(comment.getComment());
+                                        }
+                                        activity.setInitMentList(comments);
                                         Log.d(TAG, "멘트 목록 불러오기 성공");
                                     }
                                     @Override

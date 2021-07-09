@@ -7,9 +7,8 @@ import lombok.Setter;
 @Setter
 public class Comment {
     private String comment;
-    private String create_at;
+    private Long create_at;
     private String district;
-    private Double latitude;
-    private Double longitude;
     private String status;
+
 }
