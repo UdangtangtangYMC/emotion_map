@@ -6,7 +6,5 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface MainPresenterCallBack {
-        void onSuccessGetCommentList(List<Comment> commentList);
-        void onSuccessGetUserInfo();
-        void onFail(Exception ex);
+        void onSuccess(List<Comment> commentsList);
 }

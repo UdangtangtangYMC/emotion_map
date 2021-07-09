@@ -30,9 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class MainPresenter {
 
     private final String TAG = "MainPresenter";
@@ -100,39 +97,28 @@ public class MainPresenter {
                     Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                     try {
                         Geocoder geocoder = new Geocoder(context);
-                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
-                        List<Address> fromLocation = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        if(fromLocation == null){
-                            Log.d(TAG, "fromLocation == null");
+                        Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
+
+                        // Address 객체에서 Locality 속성을 획득
+                        // subLocality는 구로 고정 되어있음, 속해있는 도가 없는 경우 -> getAdminArea를 통해 해당 시 접근, 도가 있는 존재하는 경우 -> getLocality를 통해 시 획득
+                        String locality = address.getLocality();
+
+                        Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
+
+                        // MainPresenterCallBack 생성
+                        MainPresenterCallBack mainPresenterCallBack = createCallBack(activity);
+
+                        // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
+                        if (locality == null) {
+                            locality = address.getAdminArea();
                         }
-                        // Address 객체에서 Locality 속성을 획득하고 위도, 경도, 도시명을 City 객체에 저장
-                        String myCity = fromLocation.get(0).getAdminArea(); // 위치정보
-                        city.setInitInfo(myCity,
+                        // 위도, 경도, 도시명을 City 객체에 저장
+                        city.setInitInfo(locality,
+                                address.getSubLocality(),
                                 location.getLatitude(),
                                 location.getLongitude(),
-                                new MainPresenterCallBack() {
-                                    @Override
-                                    public void onSuccessGetUserInfo() {
-                                        activity.setInitInfo();
-                                        Log.d(TAG, "내 위치 불러오기 성공");
-                                    }
-                                    @Override
-                                    public void onSuccessGetCommentList(List<Comment> commentList) {
-                                        // comment 상세보기에 쓰일 comment_adapter 생성
-                                        comment_adapter = new Comment_adapter(commentList);
-                                        // MainActivity 에 보일 ui 초기화
-                                        List<String> comments = new ArrayList<String>();
-                                        for(Comment comment : commentList){
-                                            comments.add(comment.getComment());
-                                        }
-                                        activity.setInitMentList(comments);
-                                        Log.d(TAG, "멘트 목록 불러오기 성공");
-                                    }
-                                    @Override
-                                    public void onFail(Exception ex) {
-                                        Log.d(TAG, "onFail: ");
-                                    }
-                                });
+                                mainPresenterCallBack);
+                        // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
                     }catch (NullPointerException e){
@@ -153,12 +139,28 @@ public class MainPresenter {
         return String.valueOf(city.getTemperature());
     }
 
-    public String getAngryPeople(){
+    public String getAngryPeople() {
         return String.valueOf(city.getAngryPeople());
     }
 
-    public String getHappyPeople(){
+    public String getHappyPeople() {
         return String.valueOf(city.getHappyPeople());
+    }
+
+    private MainPresenterCallBack createCallBack(MainActivity activity) {
+        return new MainPresenterCallBack(){
+            @Override
+            public void onSuccess(List<Comment> commentList) {
+                // comment 상세보기에 쓰일 comment_adapter 생성
+                comment_adapter = new Comment_adapter(commentList);
+                // MainActivity 에 보일 ui 초기화
+                List<String> comments = new ArrayList<String>();
+                for(Comment comment:commentList){
+                   comments.add(comment.getComment());
+                }
+                activity.setInitInfo(comments);
+            }
+        };
     }
 
     public String getLoginMethod(){

@@ -165,18 +165,19 @@ public class MainActivity extends Activity {
     }
 
     // TextView에 텍스트 설정
-    public void setInitInfo() {
+    public void setInitInfo(List<String> commentList) {
         userCity.setText(presenter.getUserCity());
         temperature.setText(presenter.getCityTemperature()+" ℃");
         angry.setText(presenter.getAngryPeople()+"명");
         happy.setText(presenter.getHappyPeople()+"명");
 
-    }
-
-    //ment_list 세팅
-    public void setInitMentList(List<String> commentList){
-        for (int i = 0; i < 4; i++) {
-            commentViewList.get(i).setText(commentList.get(i));
+        if (commentList.size() == 0) {
+            commentOne.setText("첫 번째 상태를 등록해보세요!");
+            return;
+        }else {
+            for (int i = 0; i < commentList.size(); i++) {
+                commentViewList.get(i).setText(commentList.get(i));
+            }
         }
     }
 }

@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="좋음" />
+            android:text="기쁨" />
         <RadioButton
             android:id="@+id/rg_btn2"
             android:layout_width="wrap_content"
