@@ -38,19 +38,5 @@ public class NationalStatistics extends Activity {
 
    public void graphInitSetting(){
 
-        setContentView(R.layout.activity_nationalstatistics);
-
-        initView();
-        graphInitSetting(); //그래프 기본 세팅
-
-
     }
-
-    private void initView(){
-        barChart = findViewById(R.id.chart);
-    }
-
-   public void graphInitSetting(){
-
-   }
 }
