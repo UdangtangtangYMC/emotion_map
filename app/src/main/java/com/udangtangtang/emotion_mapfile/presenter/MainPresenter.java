@@ -15,7 +15,6 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.auth.FirebaseAuth;
-import com.kakao.sdk.user.UserApiClient;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
@@ -28,11 +27,6 @@ import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import lombok.Getter;
-import lombok.Setter;
 
 public class MainPresenter {
 
