@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">Emotion_mapFile</string>
+    <string name="recent_emotion">최근 내 상태</string>
     <string name="comment_list">주변 상황</string>
     <string name="expand">더 보기</string>
     <string name="confirm">확인</string>
+    <string name="dash">-</string>
 
     <string name="angry">빡침</string>
     <string name="happy">기쁨</string>
-
+    <string name="people">%s 명</string>
+    <string name="temperature">%s ℃</string>
     <string name="mainSignUpButtonText">회원가입</string>
     <string name="mainSignInButtonText">로그인</string>
 

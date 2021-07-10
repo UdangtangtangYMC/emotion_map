@@ -12,5 +12,4 @@ public class Comment implements Serializable {
     private Long create_at;
     private String district;
     private String status;
-
 }

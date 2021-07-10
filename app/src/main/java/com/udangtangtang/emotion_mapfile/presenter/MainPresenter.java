@@ -35,26 +35,23 @@ import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class MainPresenter {
 
     private final String TAG = "MainPresenter";
     private final Context context;
-    private PlusEmotion plusEmotion;
-    private User user;
-    private City city;
+    private final User user;
+    private final City city;
     private Comment_adapter comment_adapter;
     static final int PERMISSIONS_REQUEST = 0x0000001;
-    private FusedLocationProviderClient locProvider;
-    private MainActivity activity;
-    private LocationRequest locationRequest;
-
 
     public MainPresenter(Context context, User user) {
         this.context = context;
         this.user = user;
-        this.city = new City();
+        this.city = City.getInstance();
     }
 
     public String get_userName() {
@@ -63,12 +60,11 @@ public class MainPresenter {
     }
 
     public void add_emotion() {
-        if(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
-            plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
+            PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
             plusEmotion.callFunciton();
-        }
-        else{
+        } else {
             Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -96,23 +92,26 @@ public class MainPresenter {
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
-        this.activity = activity;
+
+        Log.d(TAG, "checkPermissions: " + ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         // 위치권한이 획득 되어있지 않은 경우
-        Log.d(TAG, "checkPermissions: "+ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "권한요청 실행");
             Log.d(TAG, "checkPermissions: if entered");
             // 권한의 획득 사유를 표시해야 하는 경우
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_FINE_LOCATION))
+                // 토스트를 생성해 적절한 안내 메시지 제공
                 Toast.makeText(context, "서비스 제공을 위해서 권한 설정이 필요합니다.", Toast.LENGTH_LONG).show();
-            // 권한 요청
+
             Log.d(TAG, "checkPermissions: entered");
+            // 권한 요청
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST);
             Log.d(TAG, "checkPermissions: finished");
         } else {
             Log.d(TAG, "checkPermissions: else entered");
+            // 권한이 이미 승인되어있다면 getLocality() 호출
             getLocality(activity);
         }
         Log.d(TAG, "getLocality 메서드 실행");
@@ -122,7 +121,7 @@ public class MainPresenter {
     @SuppressLint("MissingPermission")
     public void getLocality(MainActivity activity) {
         Log.d(TAG, "getLocality entered: ");
-        locProvider = LocationServices.getFusedLocationProviderClient(activity);
+        FusedLocationProviderClient locProvider = LocationServices.getFusedLocationProviderClient(activity);
         updateLocation(locProvider);
         locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -150,14 +149,15 @@ public class MainPresenter {
                                 address.getSubLocality(),
                                 location.getLatitude(),
                                 location.getLongitude(),
-                                mainPresenterCallBack);
+                                mainPresenterCallBack,
+                                user.getID());
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
-                    }catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         Log.d(TAG, "db에 존재 하지 않는 도시 입니다.");
                         Toast.makeText(context, "db에 존재 하지 않는 도시 입니다.", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
                         Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
                     }
@@ -181,32 +181,35 @@ public class MainPresenter {
     }
 
     private MainPresenterCallBack createCallBack(MainActivity activity) {
-        return new MainPresenterCallBack(){
+        return new MainPresenterCallBack() {
             @Override
-            public void onSuccess(List<Comment> commentList) {
+            public void onSuccess(List<Comment> commentList, Optional<HashMap<String, String>> myComment) {
                 // comment 상세보기에 쓰일 comment_adapter 생성
                 comment_adapter = new Comment_adapter(commentList);
                 // MainActivity 에 보일 ui 초기화
-                List<String> comments = new ArrayList<String>();
-                for(Comment comment:commentList){
-                   comments.add(comment.getComment());
+                List<String> comments = new ArrayList<>();
+                for (Comment comment : commentList) {
+                    comments.add(comment.getComment());
                 }
-                activity.setInitInfo(comments);
+                myComment.ifPresent(c -> activity.setInitInfo(comments, Optional.ofNullable(c.get("status")), Optional.ofNullable(c.get("comment"))));
+                if (!myComment.isPresent()) {
+                    activity.setInitInfo(comments, Optional.empty(), Optional.empty());
+                }
             }
         };
     }
 
-    public String getLoginMethod(){
+    public String getLoginMethod() {
         return user.getLogin_method();
     }
 
-    public void logout_google(FirebaseAuth mAuth){
+    public void logout_google(FirebaseAuth mAuth) {
         mAuth.signOut();
         intent_SignInActivity();
         Log.d(TAG, "구글 로그아웃 성공");
     }
 
-    public void logout_kakao(){
+    public void logout_kakao() {
         UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
             @Override
             public void onCompleteLogout() {
@@ -216,20 +219,34 @@ public class MainPresenter {
         });
     }
 
+    public void intent_SignInActivity() {
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
+    }
+
     // 아직 수정이 필요한 메소드
     @SuppressLint("MissingPermission")
-    private void updateLocation(FusedLocationProviderClient loc){
+    private void updateLocation(FusedLocationProviderClient loc) {
         Log.d(TAG, "updateLocation: ");
-        locationRequest = LocationRequest.create().
+        LocationRequest locationRequest = LocationRequest.create().
                 setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         loc.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location lastLocation = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: "+ lastLocation.getLatitude() + lastLocation.getLongitude());
+                Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
             }
         }, Looper.getMainLooper());
 
+    }
+
+    public void intent_nationalStatistics(){
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Intent intent = new Intent(context, NationalStatistics.class);
+            context.startActivity(intent);
+        } else {
+            Toast.makeText(context, "GPS 사용 권환 획득 실패", Toast.LENGTH_SHORT).show();
+        }
     }
 
 }

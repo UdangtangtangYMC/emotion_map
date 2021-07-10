@@ -18,9 +18,8 @@ import java.util.ArrayList;
 public class Comment_list extends Activity {
     private TextView txt_city;
     private RecyclerView recyclerView;
-    private Comment_adapter comment_adapter;
     private CommentListPresenter commentListPresenter;
-    private ArrayList<String> comment_list = new ArrayList<String>();
+    private ArrayList<String> comment_list = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -30,8 +29,12 @@ public class Comment_list extends Activity {
         initView();
 
         Intent intent = getIntent();
-        comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
+        Comment_adapter comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
+        commentListPresenter = new CommentListPresenter();
+
+        setCityName();
         recyclerView.setAdapter(comment_adapter);
+
 
     }
 
@@ -41,6 +44,10 @@ public class Comment_list extends Activity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setHasFixedSize(true);
         txt_city = findViewById(R.id.txt_city);
+    }
+
+    private void setCityName() {
+        txt_city.setText(commentListPresenter.getMyCity());
     }
 
 }

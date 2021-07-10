@@ -7,6 +7,7 @@ public class User implements Serializable {
     private String name;
     private String city;
     private String login_method;
+    private Comment myComment;
 
     public String getID() {
         return ID;
