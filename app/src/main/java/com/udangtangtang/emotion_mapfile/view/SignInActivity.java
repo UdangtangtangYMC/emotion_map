@@ -70,11 +70,11 @@ public class SignInActivity extends Activity {
 
         signInPresenter = new SignInPresenter(SignInActivity.this);
 
-        //카카오 세션 검사
+        Log.d("GET_KEYHASH", getKeyHash());
+
+        //카카오세션 초기화
         session = Session.getCurrentSession();
         session.addCallback(sessionCallback);
-
-        Log.d("GET_KEYHASH", getKeyHash());
 
         //회원가입
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +123,9 @@ public class SignInActivity extends Activity {
         if(currentUser != null){
             updateUI_google(currentUser);
             finish();
+        }else if(Session.getCurrentSession().checkAndImplicitOpen()){
+            Log.d(TAG, "onStart: 로그인 세션 살아있음");
+            sessionCallback.requestMe();
         }
     }
 

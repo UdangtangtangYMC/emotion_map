@@ -1,10 +1,8 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,22 +11,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
-
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +34,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_commentDetail, userCity, temperature, angry, happy, commentOne, commentTwo, commentThree, commentFour;
+    private TextView TextView_menu2, TextView_menu3,userCity, temperature, angry, happy, commentOne, commentTwo, commentThree, commentFour;
     private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
@@ -78,7 +69,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         btn_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
-        TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+        TextView_menu2.setOnClickListener(v -> presenter.intent_CommentDetail());
+
+        //지역별 통계 더보기 클릭시
+        TextView_menu3.setOnClickListener(v -> presenter.intent_NationalStatistics());
 
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
@@ -86,7 +80,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             public void onClick(View v) {
                 //로그아웃 수행
                 String loginMethod = presenter.getLoginMethod();
-                switch (loginMethod) {
+                switch (loginMethod){
                     case "google":
                         presenter.logout_google(mAuth);
                         finish();
@@ -108,10 +102,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         drawerView = findViewById(R.id.drawer);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
-        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
+        TextView_menu2 = findViewById(R.id.textView_menu2);
+        TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
         temperature = (TextView) findViewById(R.id.txt_cityTemperature);
-        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         angry = (TextView) findViewById(R.id.txt_angry);
         happy = (TextView) findViewById(R.id.txt_happy);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);

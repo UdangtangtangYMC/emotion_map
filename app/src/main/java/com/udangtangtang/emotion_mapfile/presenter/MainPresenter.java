@@ -10,10 +10,8 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
@@ -22,7 +20,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
@@ -32,14 +29,11 @@ import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
+import com.udangtangtang.emotion_mapfile.view.NationalStatistics;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
-import java.security.Permission;
-import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +82,17 @@ public class MainPresenter {
             Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void intent_SignInActivity(){
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
+    }
+
+    public void intent_NationalStatistics(){
+        Intent intent = new Intent(context, NationalStatistics.class);
+        context.startActivity(intent);
+    }
+
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
@@ -209,11 +214,6 @@ public class MainPresenter {
                 Log.d(TAG, "카카오 로그아웃 성공");
             }
         });
-    }
-
-    public void intent_SignInActivity(){
-        Intent intent = new Intent(context, SignInActivity.class);
-        context.startActivity(intent);
     }
 
     // 아직 수정이 필요한 메소드

@@ -7,7 +7,6 @@ import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class PlusEmotionPresenter {

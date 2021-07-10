@@ -20,6 +20,12 @@
     <string name="signInPasswordInputHint">비밀번호 (6자리 이상)</string>
     <string name="signInEmailInputHint">이메일</string>
     <string name="signInSubmitButtonText">로그인</string>
+    <!--지역별 통계-->
+    <string name="menu3">지역별 통계</string>
+    <string name="menu3.1">지역</string>
+    <string name="menu3.2">빡침</string>
+    <string name="menu3.3">행복</string>
+    <string name="menu3.4">총합</string>
 
     <!---카카오-->
     <string name="kakao_app_key">14c0eb02333568e599c669cb59b7e30c</string>

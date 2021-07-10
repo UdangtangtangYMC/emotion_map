@@ -18,6 +18,7 @@ import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
 
 public class SessionCallback implements ISessionCallback {
+    private static final String TAG = "SessionCallback";
     private Activity activity;
     private User user;
 
@@ -42,6 +43,7 @@ public class SessionCallback implements ISessionCallback {
 
     //사용자 정보 요청
     public void requestMe(){
+        Log.d(TAG, "requestMe()");
         UserManagement.getInstance()
                 .me(new MeV2ResponseCallback() {
                     @Override

@@ -11,7 +11,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
