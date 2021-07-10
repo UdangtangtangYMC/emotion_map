@@ -1,10 +1,8 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,25 +11,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
@@ -43,7 +35,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_commentDetail, userCity, temperature, angry, happy, commentOne, commentTwo, commentThree, commentFour;
+    private TextView TextView_commentDetail, userCity, temperature, angry, happy,
+            commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment, nationalStatistics;
     private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
@@ -80,6 +73,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         //주변 상황 더보기 클릭시
         TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
 
+        // 통계 더보기 클릭시
+        nationalStatistics.setOnClickListener(v->presenter.intent_nationalStatistics());
+
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +111,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         angry = (TextView) findViewById(R.id.txt_angry);
         happy = (TextView) findViewById(R.id.txt_happy);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
+        recentStatus = (TextView) findViewById(R.id.recent_status);
+        recentComment = (TextView) findViewById(R.id.recent_comment);
+        nationalStatistics = (TextView) findViewById(R.id.nationalStatisticsView);
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -175,15 +174,22 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     }
 
     // TextView에 텍스트 설정
-    public void setInitInfo(List<String> commentList) {
+    public void setInitInfo(List<String> commentList, Optional myStatus, Optional myComment) {
         userCity.setText(presenter.getUserCity());
-        temperature.setText(presenter.getCityTemperature() + " ℃");
-        angry.setText(presenter.getAngryPeople() + "명");
-        happy.setText(presenter.getHappyPeople() + "명");
+        temperature.setText(getString(R.string.temperature,presenter.getCityTemperature()));
+        angry.setText(getString(R.string.people, presenter.getAngryPeople()));
+        happy.setText(getString(R.string.people, presenter.getHappyPeople()));
+
+        if (myStatus.isPresent() && myComment.isPresent()) {
+            recentStatus.setText(String.valueOf(myStatus.get()));
+            recentComment.setText(String.valueOf(myComment.get()));
+        } else{
+            recentStatus.setHeight(0);
+            recentComment.setText("지금 자신의 감정을 등록해보세요!");
+        }
 
         if (commentList.size() == 0) {
             commentOne.setText("첫 번째 상태를 등록해보세요!");
-            return;
         } else
             for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
@@ -200,8 +206,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         } else {
             Snackbar
                     .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.confirm, v -> {
-                    })
                     .show();
         }
     }

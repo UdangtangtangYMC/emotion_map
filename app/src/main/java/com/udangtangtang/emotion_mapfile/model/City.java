@@ -11,8 +11,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenterCallBack;
 
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,9 +34,17 @@ public class City {
     private long temperature;
     private long happyPeople;
     private long angryPeople;
+    private static City singletonCity;
 
-    public City() {
+    private City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
+    }
+
+    public static City getInstance() {
+        if (singletonCity == null) {
+            singletonCity = new City();
+        }
+        return singletonCity;
     }
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
@@ -88,9 +96,7 @@ public class City {
 
         comments.clear();
 
-        for (int i = 0; i < comment_list.length; i++) {
-            comments.add(comment_list[i]);
-        }
+        comments.addAll(Arrays.asList(comment_list));
 
         return comments;
     }
@@ -121,7 +127,7 @@ public class City {
 
 
     // 매개변수를 통해 City 객체의 각 변수들 초기화 이후 FirebaseDatabase에서 현재 도시의 기온 및 user들의 comment를 획득
-    public void setInitInfo(String myCity, String district, double latitude, double longitude, MainPresenterCallBack callBack) {
+    public void setInitInfo(String myCity, String district, double latitude, double longitude, MainPresenterCallBack callBack,String id) {
         this.myCity = myCity;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -138,13 +144,13 @@ public class City {
                     // Temperature 값 획득 후 로컬 temperature 변수에 저장
                     HashMap<String, Object> cityInfo = (HashMap) snapshot.getValue();
                     Log.d(TAG, "cityInfo size : " + cityInfo.size());
-                    temperature = Long.valueOf(String.valueOf(cityInfo.get("Temperature")));
+                    temperature = Long.parseLong(String.valueOf(cityInfo.get("Temperature")));
                     // user의 comment 정보 획득
                     Optional<HashMap<String, Object>> users = Optional.ofNullable((HashMap) cityInfo.get("users"));
                     List<Comment> commentList = createCommentList(users);
 
-                    // 완료될 경우 callBack.onSuccess 메소드 호출
-                    callBack.onSuccess(commentList);
+                    // users가 비어있지 않으면 callback함수를 통해 결과 전송
+                    users.ifPresent(u->callBack.onSuccess(commentList,Optional.ofNullable((HashMap<String,String>)u.get(id))));
                 } catch (NullPointerException e) { // 현재 DB에 등록되어 있지 않은 도시의 경우!
 
                     // Temperature를 0으로 초기화
@@ -157,7 +163,7 @@ public class City {
 
                     // 마찬가지로, 없던 도시였기 때문에 생성할 comment 리스트가 없음 -> Optional.empty()를 이용해 비어있는 Optional 객체 전달
                     List<Comment> commentList = createCommentList(Optional.empty());
-                    callBack.onSuccess(commentList);
+                    callBack.onSuccess(commentList,Optional.empty());
                 }
             }
 
@@ -180,7 +186,6 @@ public class City {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     // 회원이 이전에 등록한 comment의 존재 여부에 따라 null 값이 존재할 수 있기 때문에 Optional객체를 이용하여 생성
                     Optional<Comment> oldComment = Optional.ofNullable(snapshot.getValue(Comment.class));
-                    Log.d(TAG, "onDataChange: " + (oldComment == null));
 
                     // oldComment가 비어있지 않은 경우 이전 상태와 현재 등록하려는 상태를 비교한후 db에 업데이트 이후, 도시의 온도를 변경
                     oldComment.ifPresent(old -> {

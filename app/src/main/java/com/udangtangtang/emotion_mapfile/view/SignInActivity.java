@@ -70,7 +70,7 @@ public class SignInActivity extends Activity {
 
         signInPresenter = new SignInPresenter(SignInActivity.this);
 
-        //카카오 세션 검사
+        //카카오세션 초기화
         session = Session.getCurrentSession();
         session.addCallback(sessionCallback);
 
