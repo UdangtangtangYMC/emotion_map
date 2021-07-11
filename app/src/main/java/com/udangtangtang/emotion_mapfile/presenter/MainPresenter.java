@@ -2,6 +2,7 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -180,10 +181,11 @@ public class MainPresenter {
         return String.valueOf(city.getHappyPeople());
     }
 
-    private MainPresenterCallBack createCallBack(MainActivity activity) {
+    public MainPresenterCallBack createCallBack(MainActivity activity) {
         return new MainPresenterCallBack() {
             @Override
             public void onSuccess(List<Comment> commentList, Optional<HashMap<String, String>> myComment) {
+                Toast.makeText(activity.getApplicationContext(), "새로고침 하였습니다.", Toast.LENGTH_SHORT).show();
                 // comment 상세보기에 쓰일 comment_adapter 생성
                 comment_adapter = new Comment_adapter(commentList);
                 // MainActivity 에 보일 ui 초기화
@@ -195,10 +197,10 @@ public class MainPresenter {
                 if (!myComment.isPresent()) {
                     activity.setInitInfo(comments, Optional.empty(), Optional.empty());
                 }
+
             }
         };
     }
-
     public String getLoginMethod() {
         return user.getLogin_method();
     }
@@ -244,4 +246,17 @@ public class MainPresenter {
         }
     }
 
+    // Clear, Set comment_list
+    public void clearComments(){
+        this.comment_adapter.clearComments();
+    }
+
+    public void setComments(ArrayList<Comment>comment_list){
+        this.comment_adapter.setComments(comment_list);
+    }
+
+    // notifyDataSetChanged()
+    public void notifyDataChanged(){
+        this.comment_adapter.notifyDataSetChanged();
+    }
 }

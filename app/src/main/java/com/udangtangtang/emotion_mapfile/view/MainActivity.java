@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -14,13 +15,16 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,9 +42,12 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private TextView TextView_menu2,TextView_menu3, userCity, temperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
+    private ArrayList<Comment> comments;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
+
+    private SwipeRefreshLayout swipeRefresh;
 
     //로그인 한 회원 정보 관련
     private FirebaseAuth mAuth;
@@ -82,7 +89,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             public void onClick(View v) {
                 //로그아웃 수행
                 String loginMethod = presenter.getLoginMethod();
-                switch (loginMethod){
+                switch (loginMethod) {
                     case "google":
                         presenter.logout_google(mAuth);
                         finish();
@@ -96,6 +103,30 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                 }
             }
         });
+
+        // 스와이프 새로고침
+        swipeRefresh.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                /*presenter.clearComments();
+                                comments.clear();
+                                comments.add(comment.getComment());
+                                comments.add(commentTwo);
+                                comments.add(commentThree);
+                                comments.add(commentFour);
+                                presenter.setComments(commentViewList);
+                                presenter.notifyDataChanged();*/
+                                swipeRefresh.setRefreshing(false);
+                            }
+                        }, 500);
+                    }
+                });
     }
 
     private void initView() {
@@ -113,6 +144,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
+        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
+        comments=new ArrayList<>();
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -168,7 +201,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             time = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
         } else if (System.currentTimeMillis() - time < 2000) {
-            finish();
+            finishAffinity();
         }
     }
 
