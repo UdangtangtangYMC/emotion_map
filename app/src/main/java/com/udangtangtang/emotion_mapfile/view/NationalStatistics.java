@@ -31,7 +31,6 @@ public class NationalStatistics extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
 
-
         Utils.init(NationalStatistics.this);
         System.out.println(barChart);
         barChart = (BarChart) findViewById(R.id.charting);

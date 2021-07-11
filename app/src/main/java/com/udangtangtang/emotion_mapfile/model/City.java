@@ -178,6 +178,8 @@ public class City {
 
         // comment의 위도, 경도, 구는 City 내의 정보들로 초기화.
         comment.setDistrict(district);
+        comment.setLatitude(latitude);
+        comment.setLongitude(longitude);
 
         try {
             DatabaseReference reference = firebaseDatabase.getReference(myCity);

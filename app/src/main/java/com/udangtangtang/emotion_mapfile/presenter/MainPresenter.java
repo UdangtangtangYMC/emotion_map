@@ -219,11 +219,6 @@ public class MainPresenter {
         });
     }
 
-    public void intent_SignInActivity() {
-        Intent intent = new Intent(context, SignInActivity.class);
-        context.startActivity(intent);
-    }
-
     // 아직 수정이 필요한 메소드
     @SuppressLint("MissingPermission")
     private void updateLocation(FusedLocationProviderClient loc) {

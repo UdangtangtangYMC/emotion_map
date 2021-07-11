@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
     private TextView TextView_menu2,TextView_menu3, userCity, temperature, angry, happy,
-            commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment, nationalStatistics;
+            commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
@@ -76,9 +76,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         //지역별 통계 더보기 클릭시
         TextView_menu3.setOnClickListener(v -> presenter.intent_NationalStatistics());
 
-        // 통계 더보기 클릭시
-        nationalStatistics.setOnClickListener(v->presenter.intent_nationalStatistics());
-
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +113,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
-        nationalStatistics = (TextView) findViewById(R.id.nationalStatisticsView);
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
