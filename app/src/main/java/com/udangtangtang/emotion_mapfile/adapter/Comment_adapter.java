@@ -56,4 +56,13 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
     public int getItemCount() {
         return comment_list.size();
     }
+
+    // Clear, Set comment_list
+    public void clearComments(){
+        this.comment_list.clear();
+    }
+
+    public void setComments(List<Comment>comment_list){
+        this.comment_list=comment_list;
+    }
 }

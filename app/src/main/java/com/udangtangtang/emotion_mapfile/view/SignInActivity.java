@@ -74,8 +74,6 @@ public class SignInActivity extends Activity {
         session = Session.getCurrentSession();
         session.addCallback(sessionCallback);
 
-        Log.d("GET_KEYHASH", getKeyHash());
-
         //회원가입
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,6 +121,9 @@ public class SignInActivity extends Activity {
         if(currentUser != null){
             updateUI_google(currentUser);
             finish();
+        }else if(Session.getCurrentSession().checkAndImplicitOpen()){
+            Log.d(TAG, "onStart: 로그인 세션 살아있음");
+            sessionCallback.requestMe();
         }
     }
 
@@ -221,27 +222,6 @@ public class SignInActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "google_login: request user_name fail", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    //카카로 로그인을 위한 키 해시값 구하기
-    private String getKeyHash() {
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-            if (packageInfo == null) return null;
-            for (Signature signature : packageInfo.signatures) {
-                try {
-                    MessageDigest md = MessageDigest.getInstance("SHA");
-                    md.update(signature.toByteArray());
-                    //캐해시값 반환
-                    return android.util.Base64.encodeToString(md.digest(), Base64.NO_WRAP);
-                } catch (NoSuchAlgorithmException e) {
-                    Log.w("getKeyHash", "Unable to get MessageDigest. signature=" + signature, e);
-                }
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.w("getPackageInfo", "Unable to getPackageInfo");
-        }
-        return null;
     }
 
     //뒤로가기 버튼 2번을 통해 시스템 종료

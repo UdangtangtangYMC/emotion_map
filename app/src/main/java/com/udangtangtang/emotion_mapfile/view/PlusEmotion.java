@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
@@ -45,7 +46,11 @@ public class PlusEmotion {
                 int happy_id = R.id.rg_btn1;
                 selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
-                plusEmotionPresenter.insert_emotion(selected_emotion, comment);
+                if(comment != null){
+                    plusEmotionPresenter.insert_emotion(selected_emotion, comment);
+                }else{
+                    Toast.makeText(context, "comment를 입력해주세요", Toast.LENGTH_SHORT).show();
+                }
                 dlg.dismiss();
             }
         });
@@ -53,6 +58,7 @@ public class PlusEmotion {
         btn_cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(context, "취소되었습니다", Toast.LENGTH_SHORT).show();
                 dlg.dismiss();
             }
         });

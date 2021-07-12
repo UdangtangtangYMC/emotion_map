@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,13 +17,16 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,12 +41,15 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_commentDetail, userCity, temperature, angry, happy,
+    private TextView TextView_menu2,TextView_menu3, userCity, temperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
+    private ArrayList<Comment> comments;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
+
+    private SwipeRefreshLayout swipeRefresh;
 
     //로그인 한 회원 정보 관련
     private FirebaseAuth mAuth;
@@ -51,7 +60,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        System.out.println(System.currentTimeMillis());
         //위젯 연결
         initView();
 
@@ -72,7 +80,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         btn_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
-        TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
+        TextView_menu2.setOnClickListener(v -> presenter.intent_CommentDetail());
+
+        //지역별 통계 더보기 클릭시
+        TextView_menu3.setOnClickListener(v -> presenter.intent_NationalStatistics());
 
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
@@ -94,6 +105,30 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                 }
             }
         });
+
+        // 스와이프 새로고침
+        swipeRefresh.setOnRefreshListener(
+                new SwipeRefreshLayout.OnRefreshListener() {
+                    @Override
+                    public void onRefresh() {
+                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                /*presenter.clearComments();
+                                comments.clear();
+                                comments.add(comment.getComment());
+                                comments.add(commentTwo);
+                                comments.add(commentThree);
+                                comments.add(commentFour);
+                                presenter.setComments(commentViewList);
+                                presenter.notifyDataChanged();*/
+                                swipeRefresh.setRefreshing(false);
+                            }
+                        }, 500);
+                    }
+                });
     }
 
     private void initView() {
@@ -102,15 +137,17 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         drawerView = findViewById(R.id.drawer);
         btn_plus = findViewById(R.id.btn_plus);
         btn_close = findViewById(R.id.btn_close);
-        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
+        TextView_menu2 = findViewById(R.id.textView_menu2);
+        TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
         temperature = (TextView) findViewById(R.id.txt_cityTemperature);
-        TextView_commentDetail = findViewById(R.id.textView_commentDetail);
         angry = (TextView) findViewById(R.id.txt_angry);
         happy = (TextView) findViewById(R.id.txt_happy);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
+        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
+        comments=new ArrayList<>();
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -166,7 +203,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             time = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
         } else if (System.currentTimeMillis() - time < 2000) {
-            finish();
+            finishAffinity();
         }
     }
 
@@ -191,7 +228,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
             }
-        System.out.println(System.currentTimeMillis());
     }
 
     // 권한 설정 후 사용자의 결정에 따라 구문 실행
@@ -206,5 +242,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                     .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
                     .show();
         }
+    }
+
+    public void blink(){
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.blink);
+        commentOne.startAnimation(animation);
     }
 }

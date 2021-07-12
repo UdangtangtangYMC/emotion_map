@@ -2,6 +2,7 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -78,6 +79,17 @@ public class MainPresenter {
             Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void intent_SignInActivity(){
+        Intent intent = new Intent(context, SignInActivity.class);
+        context.startActivity(intent);
+    }
+
+    public void intent_NationalStatistics(){
+        Intent intent = new Intent(context, NationalStatistics.class);
+        context.startActivity(intent);
+    }
+
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
@@ -169,10 +181,11 @@ public class MainPresenter {
         return String.valueOf(city.getHappyPeople());
     }
 
-    private MainPresenterCallBack createCallBack(MainActivity activity) {
+    public MainPresenterCallBack createCallBack(MainActivity activity) {
         return new MainPresenterCallBack() {
             @Override
             public void onSuccess(List<Comment> commentList, Optional<HashMap<String, String>> myComment) {
+                Toast.makeText(activity.getApplicationContext(), "새로고침 하였습니다.", Toast.LENGTH_SHORT).show();
                 // comment 상세보기에 쓰일 comment_adapter 생성
                 comment_adapter = new Comment_adapter(commentList);
                 // MainActivity 에 보일 ui 초기화
@@ -184,10 +197,10 @@ public class MainPresenter {
                 if (!myComment.isPresent()) {
                     activity.setInitInfo(comments, Optional.empty(), Optional.empty());
                 }
+                activity.blink();
             }
         };
     }
-
     public String getLoginMethod() {
         return user.getLogin_method();
     }
@@ -206,11 +219,6 @@ public class MainPresenter {
                 Log.d(TAG, "카카오 로그아웃 성공");
             }
         });
-    }
-
-    public void intent_SignInActivity() {
-        Intent intent = new Intent(context, SignInActivity.class);
-        context.startActivity(intent);
     }
 
     // 아직 수정이 필요한 메소드
@@ -238,4 +246,17 @@ public class MainPresenter {
         }
     }
 
+    // Clear, Set comment_list
+    public void clearComments(){
+        this.comment_adapter.clearComments();
+    }
+
+    public void setComments(ArrayList<Comment>comment_list){
+        this.comment_adapter.setComments(comment_list);
+    }
+
+    // notifyDataSetChanged()
+    public void notifyDataChanged(){
+        this.comment_adapter.notifyDataSetChanged();
+    }
 }

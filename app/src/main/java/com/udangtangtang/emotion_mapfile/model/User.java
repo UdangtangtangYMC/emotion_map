@@ -1,8 +1,11 @@
 package com.udangtangtang.emotion_mapfile.model;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private final String TAG = "User";
     private String ID;
     private String name;
     private String city;
@@ -14,8 +17,7 @@ public class User implements Serializable {
     }
 
     public void setID(String ID) {
-        ID = ID.replaceAll("@gmail.com", "");
-        this.ID = ID;
+        this.ID = ID.replaceFirst("@.*", "");
     }
 
     public String getName() {
