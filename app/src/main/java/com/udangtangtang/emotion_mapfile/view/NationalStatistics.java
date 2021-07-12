@@ -1,10 +1,16 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
@@ -16,20 +22,30 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Utils;
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class NationalStatistics extends Activity{
-    ArrayList<Integer> jsonList = new ArrayList<>(); // ArrayList 선언
-    ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
-    BarChart barChart;
-    TextView minuteTextview;
+    private NationalStatisticsPresenter nationalStatisticsPresenter;
+    private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
+    private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
+    private BarChart barChart;
+    private TextView minuteTextview;
+    private TableLayout tableLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
+
+        init();
+        nationalStatisticsPresenter.setActivity(this);
+        //표 세팅
+        nationalStatisticsPresenter.add_tableRow();
 
         Utils.init(NationalStatistics.this);
         System.out.println(barChart);
@@ -41,26 +57,22 @@ public class NationalStatistics extends Activity{
         barChart.getAxisRight().setAxisMaxValue(80);
         barChart.getAxisLeft().setAxisMaxValue(80);
     }
+
+    public void init(){
+        Intent intent = getIntent();
+        nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
+        tableLayout = findViewById(R.id.tablelayout);
+
+    }
+
+
     public void graphInitSetting(){
 
-        labelList.add("일");
-        labelList.add("월");
-        labelList.add("화");
-        labelList.add("수");
-        labelList.add("목");
-        labelList.add("금");
-        labelList.add("토");
-
-        jsonList.add(10);
-        jsonList.add(20);
-        jsonList.add(30);
-        jsonList.add(40);
-        jsonList.add(50);
-        jsonList.add(60);
-        jsonList.add(70);
-
-
-        BarChartGraph(labelList, jsonList);
+        //그래프 X축 받아오기
+        labelList = nationalStatisticsPresenter.get_label();
+        //그래프 Y축 받아오기
+        valueList = nationalStatisticsPresenter.get_value();
+        BarChartGraph(labelList, valueList);
         barChart.setTouchEnabled(false);
         barChart.getAxisRight().setAxisMaxValue(80);
         barChart.getAxisLeft().setAxisMaxValue(80);
@@ -77,7 +89,7 @@ public class NationalStatistics extends Activity{
             entries.add(new BarEntry(valList.get(i), i));
         }
 
-        BarDataSet depenses = new BarDataSet(entries, "일일 사용시간"); // 변수로 받아서 넣어줘도 됨
+        BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
         Description description = new Description();
         description.setText("description");
@@ -89,5 +101,37 @@ public class NationalStatistics extends Activity{
         barChart.setData(data);
         barChart.animateXY(1000, 1000);
         barChart.invalidate();
+    }
+
+    public void add_tableRow(String name, int angry_count, int happy_count, int total, int index){
+        //tableRow 생성
+        TableRow tableRow = new TableRow(this);
+        //tableRow의 속성 설정을 위한 LayoutParams 생성
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300);
+        layoutParams.bottomMargin = 5;
+        tableRow.setLayoutParams(layoutParams);
+
+        //한 행에 들어갈 textView 4개 생성
+        TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
+        for(int i=0;i<textViews.length;i++){
+            textView_setting(textViews[i], index);
+        }
+
+        textViews[0].setText(name);
+        textViews[1].setText(String.valueOf(angry_count + "명"));
+        textViews[2].setText(String.valueOf(happy_count+"명"));
+        textViews[3].setText(String.valueOf(total + "명"));
+    }
+
+    private void textView_setting(TextView textview, int index){
+        //TextView 속성 설정을 위한 layoutParams 생성
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, R.dimen.chart_txtHeight);
+        layoutParams.leftMargin = R.dimen.chart_marginLeft;
+        layoutParams.bottomMargin = 1;
+        if(index % 2 == 0)
+            textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
+        layoutParams.gravity = 17; // 17 - center\
+        textview.setLayoutParams(layoutParams);
+        textview.setPadding(3, 3, 3, 3);
     }
 }

@@ -1,5 +1,6 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
+import com.udangtangtang.emotion_mapfile.model.CityStatus;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 
 import java.util.HashMap;

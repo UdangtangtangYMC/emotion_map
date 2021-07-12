@@ -7,15 +7,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -45,6 +50,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
     private ArrayList<Comment> comments;
+
+    private TableLayout tableLayout;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
@@ -162,6 +169,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         commentViewList.add(commentThree);
         commentViewList.add(commentFour);
 
+        tableLayout = findViewById(R.id.tablelayout);
+
         //drawer
         txt_id = findViewById(R.id.txt_id);
         btn_logout = findViewById(R.id.btn_logout);
@@ -228,6 +237,38 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
             }
+    }
+
+    //표 텍스트 설정
+    public void setChart(String name, int angry_count, int happy_count, int total, int index){
+        TableRow tableRow = new TableRow(this);
+        //tableRow의 속성 설정을 위한 LayoutParams 생성
+        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300);
+        layoutParams.bottomMargin = 5;
+        tableRow.setLayoutParams(layoutParams);
+
+        //한 행에 들어갈 textView 4개 생성
+        TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
+        for(int i=0;i<textViews.length;i++){
+            textView_setting(textViews[i], index);
+        }
+
+        textViews[0].setText(name);
+        textViews[1].setText(String.valueOf(angry_count + "명"));
+        textViews[2].setText(String.valueOf(happy_count+"명"));
+        textViews[3].setText(String.valueOf(total + "명"));
+    }
+
+    private void textView_setting(TextView textview, int index){
+        //TextView 속성 설정을 위한 layoutParams 생성
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, R.dimen.chart_txtHeight);
+        layoutParams.leftMargin = R.dimen.chart_marginLeft;
+        layoutParams.bottomMargin = 1;
+        if(index % 2 == 0)
+            textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
+        layoutParams.gravity = 17; // 17 - center\
+        textview.setLayoutParams(layoutParams);
+        textview.setPadding(3, 3, 3, 3);
     }
 
     // 권한 설정 후 사용자의 결정에 따라 구문 실행

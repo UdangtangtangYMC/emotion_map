@@ -26,6 +26,7 @@ import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
+import com.udangtangtang.emotion_mapfile.model.CityStatus;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
@@ -48,6 +49,7 @@ public class MainPresenter {
     private final City city;
     private Comment_adapter comment_adapter;
     static final int PERMISSIONS_REQUEST = 0x0000001;
+    private List<CityStatus> cityStatusesList = new ArrayList<CityStatus>();
 
     public MainPresenter(Context context, User user) {
         this.context = context;
@@ -87,6 +89,8 @@ public class MainPresenter {
 
     public void intent_NationalStatistics(){
         Intent intent = new Intent(context, NationalStatistics.class);
+        NationalStatisticsPresenter nationalStatisticsPresenter  = new NationalStatisticsPresenter(cityStatusesList);
+        intent.putExtra("nationalStatisticsPresenter", nationalStatisticsPresenter);
         context.startActivity(intent);
     }
 
@@ -126,8 +130,8 @@ public class MainPresenter {
         updateLocation(locProvider);
         locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
-                    Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                     try {
+                        Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                         Geocoder geocoder = new Geocoder(context);
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                         Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
@@ -156,11 +160,11 @@ public class MainPresenter {
                     } catch (IOException e) {
                         Log.d(TAG, "onSuccess: failed");
                     } catch (NullPointerException e) {
-                        Log.d(TAG, "db에 존재 하지 않는 도시 입니다.");
-                        Toast.makeText(context, "db에 존재 하지 않는 도시 입니다.", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
                         Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
-                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_LONG).show();
+                    } catch (Exception e) {
+                        Log.d(TAG, "db통신을 실패하였습니다.");
+                        Toast.makeText(context, "db통신을 실패하였습니다.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -237,14 +241,48 @@ public class MainPresenter {
 
     }
 
-    public void intent_nationalStatistics(){
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(context, NationalStatistics.class);
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, "GPS 사용 권환 획득 실패", Toast.LENGTH_SHORT).show();
+    private void setChart(){
+        //sortByProportion실행 - 데이터 정렬
+        //메인화면에는 표의 data가 5개만 표시되므로
+        for(int i=0;i<5;i++){
+            //정렬된 리스트인 this.List<CityStatus>에서 부터
+            //각 index에 담긴 인스턴스에 설정된 속성 값들을 바탕으로
+            //MainActivity의 setChart()메서드 cityStatusesList[0].getName..등을 매개변수로 넘김
         }
+
     }
+
+    private void sortByProportion(){
+        //City클래스로 부터 List<CityStatus> 리스트를 받음
+        //받은 리스트안의 인스턴스들을 CityStatus[] cityStatus 배열에 넘김
+        //List<cityStatus> clear
+        //CityStatus[]를 sort_quick을 통해 정렬
+        //정렬된 CityStatus[] 배열안의 인스턴스들을 List<CityStatus> 리스트에 제 삽입
+        //this.List<CityStatus>에 정렬된 리스트 삽입
+    }
+
+    private void sort_quick(CityStatus[] cityStatuses, int left, int right){
+        int pl = left;
+        int pr = right;
+        int mid = cityStatuses[(pl+pr)/2].getRatio();
+
+        do{
+            while(cityStatuses[pl].getRatio() > mid) pl++;
+            while(cityStatuses[pr].getRatio() < mid) pr--;
+            if(pl <= pr){
+                swap(cityStatuses, pl++, pr--);
+            }
+        }while(pl <= pr);
+        if(left < pr) sort_quick(cityStatuses, left, pr);
+        if(left < right) sort_quick(cityStatuses, pl, right);
+    }
+
+    private void swap(CityStatus[] cityStatuses, int idx1, int idx2){
+        CityStatus cityStatus = cityStatuses[idx1];
+        cityStatuses[idx1] = cityStatuses[idx2];
+        cityStatuses[idx2] = cityStatus;
+    }
+
 
     // Clear, Set comment_list
     public void clearComments(){
