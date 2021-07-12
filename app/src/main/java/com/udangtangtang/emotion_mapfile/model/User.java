@@ -1,7 +1,5 @@
 package com.udangtangtang.emotion_mapfile.model;
 
-import android.util.Log;
-
 import java.io.Serializable;
 
 public class User implements Serializable {

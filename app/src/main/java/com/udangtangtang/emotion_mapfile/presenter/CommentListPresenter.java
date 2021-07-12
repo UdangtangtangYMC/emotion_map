@@ -5,7 +5,6 @@ import com.udangtangtang.emotion_mapfile.model.City;
 public class CommentListPresenter {
     private final City city;
 
-
     public CommentListPresenter() {
         this.city = City.getInstance();
     }

@@ -3,11 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -35,9 +31,6 @@ import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 
 public class SignInActivity extends Activity {
