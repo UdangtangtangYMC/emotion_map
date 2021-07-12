@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MainPresenterCallBack {
-        void onSuccess(List<Comment> commentsList, Optional<HashMap<String,String>> myComment);
+        void onSuccess(Optional<List<Comment>> commentsList, Optional<HashMap<String,String>> myComment);
 }

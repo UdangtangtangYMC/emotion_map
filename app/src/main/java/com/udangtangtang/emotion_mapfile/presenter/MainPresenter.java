@@ -80,12 +80,12 @@ public class MainPresenter {
         }
     }
 
-    public void intent_SignInActivity(){
+    public void intent_SignInActivity() {
         Intent intent = new Intent(context, SignInActivity.class);
         context.startActivity(intent);
     }
 
-    public void intent_NationalStatistics(){
+    public void intent_NationalStatistics() {
         Intent intent = new Intent(context, NationalStatistics.class);
         context.startActivity(intent);
     }
@@ -184,23 +184,37 @@ public class MainPresenter {
     public MainPresenterCallBack createCallBack(MainActivity activity) {
         return new MainPresenterCallBack() {
             @Override
-            public void onSuccess(List<Comment> commentList, Optional<HashMap<String, String>> myComment) {
+            public void onSuccess(Optional<List<Comment>> commentList, Optional<HashMap<String, String>> myComment) {
                 Toast.makeText(activity.getApplicationContext(), "새로고침 하였습니다.", Toast.LENGTH_SHORT).show();
-                // comment 상세보기에 쓰일 comment_adapter 생성
-                comment_adapter = new Comment_adapter(commentList);
-                // MainActivity 에 보일 ui 초기화
-                List<String> comments = new ArrayList<>();
-                for (Comment comment : commentList) {
-                    comments.add(comment.getComment());
+                commentList.ifPresent(c -> {
+                    // comment 상세보기에 쓰일 comment_adapter 생성
+                    comment_adapter = new Comment_adapter(c);
+                    // MainActivity 에 보일 ui 초기화
+                    List<String> comments = new ArrayList<>();
+                    for (Comment comment : c) {
+                        comments.add(comment.getComment());
+                    }
+
+                    // 자신의 이전 comment가 존재하는 경우
+                    myComment.ifPresent(mc -> {
+                        Log.d(TAG, "onSuccess: myComment"+mc.get("status")+" "+mc.get("comment"));
+                        // 타인의 comments, 자신의 이전 상태, 자신의 이전 comment를 매개변수로 전달
+                        activity.setInitInfo(Optional.of(comments), Optional.ofNullable(mc.get("status")), Optional.ofNullable(mc.get("comment")));
+                    });
+                    // 자신의 이전 comment가 없는 경우
+                    if (!myComment.isPresent()) {
+                        // 타인의 comments와 Optional.empty를 매개변수로 전달
+                        activity.setInitInfo(Optional.of(comments), Optional.empty(), Optional.empty());
+                    }
+                    activity.blink();
+                });
+                if (!commentList.isPresent()) {
+                    activity.setInitInfo(Optional.empty(),Optional.empty(),Optional.empty());
                 }
-                myComment.ifPresent(c -> activity.setInitInfo(comments, Optional.ofNullable(c.get("status")), Optional.ofNullable(c.get("comment"))));
-                if (!myComment.isPresent()) {
-                    activity.setInitInfo(comments, Optional.empty(), Optional.empty());
-                }
-                activity.blink();
             }
         };
     }
+
     public String getLoginMethod() {
         return user.getLogin_method();
     }
@@ -237,7 +251,7 @@ public class MainPresenter {
 
     }
 
-    public void intent_nationalStatistics(){
+    public void intent_nationalStatistics() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(context, NationalStatistics.class);
             context.startActivity(intent);
@@ -247,16 +261,16 @@ public class MainPresenter {
     }
 
     // Clear, Set comment_list
-    public void clearComments(){
+    public void clearComments() {
         this.comment_adapter.clearComments();
     }
 
-    public void setComments(ArrayList<Comment>comment_list){
+    public void setComments(ArrayList<Comment> comment_list) {
         this.comment_adapter.setComments(comment_list);
     }
 
     // notifyDataSetChanged()
-    public void notifyDataChanged(){
+    public void notifyDataChanged() {
         this.comment_adapter.notifyDataSetChanged();
     }
 }

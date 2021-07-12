@@ -144,9 +144,14 @@ public class City {
                     temperature = Long.parseLong(String.valueOf(cityInfo.get("Temperature")));
                     // user의 comment 정보 획득
                     Optional<HashMap<String, Object>> users = Optional.ofNullable((HashMap) cityInfo.get("users"));
-                    List<Comment> commentList = createCommentList(users);
-                    users.ifPresent(u->callBack.onSuccess(commentList,Optional.ofNullable((HashMap<String,String>)u.get(id))));
-                    // users가 비어있지 않으면 callback함수를 통해 결과 전송
+                    
+                    // comment가 존재하면 commentList와 자신의 comment를 매개변수로 onSuccess 메소드 호출
+                    users.ifPresent(u->callBack.onSuccess(Optional.of(createCommentList(users)),Optional.ofNullable((HashMap<String,String>)u.get(id))));
+                    
+                    // 해당 도시에 comment가 존재하지 않으면 Optional.empty()를 매개변수로 onSuccess 호출
+                    if (!users.isPresent()) {
+                        callBack.onSuccess(Optional.empty(), Optional.empty());
+                    }
                 } catch (NullPointerException e) { // 현재 DB에 등록되어 있지 않은 도시의 경우!
                     Log.d(TAG, "NullPointerException");
                     // Temperature를 0으로 초기화
@@ -158,8 +163,7 @@ public class City {
                     temperature = 0;
 
                     // 마찬가지로, 없던 도시였기 때문에 생성할 comment 리스트가 없음 -> Optional.empty()를 이용해 비어있는 Optional 객체 전달
-                    List<Comment> commentList = createCommentList(Optional.empty());
-                    callBack.onSuccess(commentList,Optional.empty());
+                    callBack.onSuccess(Optional.empty(),Optional.empty());
                 }
             }
 
