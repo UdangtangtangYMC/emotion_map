@@ -197,7 +197,7 @@ public class MainPresenter {
                 if (!myComment.isPresent()) {
                     activity.setInitInfo(comments, Optional.empty(), Optional.empty());
                 }
-
+                activity.blink();
             }
         };
     }

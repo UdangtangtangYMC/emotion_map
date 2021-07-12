@@ -55,11 +55,10 @@ public class City {
         Log.d(TAG, "현재시간" + String.valueOf(now_criteria));
         this.angryPeople = 0;
         this.happyPeople = 0;
-
         List<Comment> comments = new ArrayList<Comment>();
-
         // target이 비어있는 Optional 객체가 아닐 경우 commentList에 추가하는 작업을 진행
         target.ifPresent(t -> {
+            Log.d(TAG, "ifPresent 진입");
             for (String key : t.keySet()) {
                 HashMap<String, String> userInfo = (HashMap) t.get(key);
                 //userInfo 에서 타임을 String 값으로 받아오고 이를 정수형으로 변환
@@ -85,19 +84,17 @@ public class City {
                         this.angryPeople += 1;
                 }
             }
+            Comment[] comment_list = new Comment[comments.size()];
+            for (int i = 0; i < comments.size(); i++) {
+                comment_list[i] = comments.get(i);
+            }
+
+            sort_comment(comment_list, 0, comment_list.length - 1);
+
+            comments.clear();
+
+            comments.addAll(Arrays.asList(comment_list));
         });
-
-        Comment[] comment_list = new Comment[comments.size()];
-        for (int i = 0; i < comments.size(); i++) {
-            comment_list[i] = comments.get(i);
-        }
-
-        sort_comment(comment_list, 0, comment_list.length - 1);
-
-        comments.clear();
-
-        comments.addAll(Arrays.asList(comment_list));
-
         return comments;
     }
 
@@ -148,11 +145,10 @@ public class City {
                     // user의 comment 정보 획득
                     Optional<HashMap<String, Object>> users = Optional.ofNullable((HashMap) cityInfo.get("users"));
                     List<Comment> commentList = createCommentList(users);
-
-                    // users가 비어있지 않으면 callback함수를 통해 결과 전송
                     users.ifPresent(u->callBack.onSuccess(commentList,Optional.ofNullable((HashMap<String,String>)u.get(id))));
+                    // users가 비어있지 않으면 callback함수를 통해 결과 전송
                 } catch (NullPointerException e) { // 현재 DB에 등록되어 있지 않은 도시의 경우!
-
+                    Log.d(TAG, "NullPointerException");
                     // Temperature를 0으로 초기화
                     reference.child("Temperature").setValue(0);
                     // myCity 하위 데이터 획득

@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -240,5 +242,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                     .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
                     .show();
         }
+    }
+
+    public void blink(){
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.blink);
+        commentOne.startAnimation(animation);
     }
 }
