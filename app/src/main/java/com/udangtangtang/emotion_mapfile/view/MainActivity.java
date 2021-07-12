@@ -36,7 +36,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
     private TextView TextView_commentDetail, userCity, temperature, angry, happy,
-            commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment, nationalStatistics;
+            commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
 
     private ImageButton btn_close, btn_logout;
@@ -51,6 +51,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        System.out.println(System.currentTimeMillis());
         //위젯 연결
         initView();
 
@@ -72,9 +73,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
 
         //주변 상황 더보기 클릭시
         TextView_commentDetail.setOnClickListener(v -> presenter.intent_CommentDetail());
-
-        // 통계 더보기 클릭시
-        nationalStatistics.setOnClickListener(v->presenter.intent_nationalStatistics());
 
         //로그아웃 버튼 클릭 시
         btn_logout.setOnClickListener(new View.OnClickListener() {
@@ -113,7 +111,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
-        nationalStatistics = (TextView) findViewById(R.id.nationalStatisticsView);
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -194,6 +191,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
                 commentViewList.get(i).setText(commentList.get(i));
             }
+        System.out.println(System.currentTimeMillis());
     }
 
     // 권한 설정 후 사용자의 결정에 따라 구문 실행
