@@ -2,7 +2,6 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -34,7 +33,6 @@ import com.udangtangtang.emotion_mapfile.view.NationalStatistics;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,7 +91,6 @@ public class MainPresenter {
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
-
         Log.d(TAG, "checkPermissions: " + ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         // 위치권한이 획득 되어있지 않은 경우
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -138,9 +135,6 @@ public class MainPresenter {
 
                         Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
 
-                        // MainPresenterCallBack 생성
-                        MainPresenterCallBack mainPresenterCallBack = createCallBack(activity);
-
                         // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
                         if (locality == null) {
                             locality = address.getAdminArea();
@@ -149,15 +143,10 @@ public class MainPresenter {
                         city.setInitInfo(locality,
                                 address.getSubLocality(),
                                 location.getLatitude(),
-                                location.getLongitude(),
-                                mainPresenterCallBack,
-                                user.getID());
+                                location.getLongitude());
+                        setInitInfo(activity);
+                        Log.d(TAG, "getLocality: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + city.getMyCity());
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
-                    } catch (IOException e) {
-                        Log.d(TAG, "onSuccess: failed");
-                    } catch (NullPointerException e) {
-                        Log.d(TAG, "db에 존재 하지 않는 도시 입니다.");
-                        Toast.makeText(context, "db에 존재 하지 않는 도시 입니다.", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
                         Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
@@ -179,40 +168,6 @@ public class MainPresenter {
 
     public String getHappyPeople() {
         return String.valueOf(city.getHappyPeople());
-    }
-
-    public MainPresenterCallBack createCallBack(MainActivity activity) {
-        return new MainPresenterCallBack() {
-            @Override
-            public void onSuccess(Optional<List<Comment>> commentList, Optional<HashMap<String, String>> myComment) {
-                Toast.makeText(activity.getApplicationContext(), "새로고침 하였습니다.", Toast.LENGTH_SHORT).show();
-                commentList.ifPresent(c -> {
-                    // comment 상세보기에 쓰일 comment_adapter 생성
-                    comment_adapter = new Comment_adapter(c);
-                    // MainActivity 에 보일 ui 초기화
-                    List<String> comments = new ArrayList<>();
-                    for (Comment comment : c) {
-                        comments.add(comment.getComment());
-                    }
-
-                    // 자신의 이전 comment가 존재하는 경우
-                    myComment.ifPresent(mc -> {
-                        Log.d(TAG, "onSuccess: myComment"+mc.get("status")+" "+mc.get("comment"));
-                        // 타인의 comments, 자신의 이전 상태, 자신의 이전 comment를 매개변수로 전달
-                        activity.setInitInfo(Optional.of(comments), Optional.ofNullable(mc.get("status")), Optional.ofNullable(mc.get("comment")));
-                    });
-                    // 자신의 이전 comment가 없는 경우
-                    if (!myComment.isPresent()) {
-                        // 타인의 comments와 Optional.empty를 매개변수로 전달
-                        activity.setInitInfo(Optional.of(comments), Optional.empty(), Optional.empty());
-                    }
-                    activity.blink();
-                });
-                if (!commentList.isPresent()) {
-                    activity.setInitInfo(Optional.empty(),Optional.empty(),Optional.empty());
-                }
-            }
-        };
     }
 
     public String getLoginMethod() {
@@ -272,5 +227,86 @@ public class MainPresenter {
     // notifyDataSetChanged()
     public void notifyDataChanged() {
         this.comment_adapter.notifyDataSetChanged();
+    }
+
+    private void setInitInfo(MainActivity activity) {
+        setCommentList(activity);
+        setStatistics(activity);
+    }
+
+    private CommentListCallBack createCommentListCallBack(MainActivity activity) {
+        return new CommentListCallBack() {
+            @Override
+            public void onSuccess(Optional<List<Comment>> commentList) {
+                Log.d(TAG, "onSuccess: ");
+                commentList.ifPresent(c -> {
+                    // comment 상세보기에 쓰일 comment_adapter 생성
+                    comment_adapter = new Comment_adapter(c);
+
+                    // MainActivity 에 보일 ui 초기화
+                    List<String> comments = new ArrayList<>();
+
+                    for (Comment comment : c) {
+                        comments.add(comment.getComment());
+                    }
+
+                    activity.setComments(Optional.of(comments));
+
+                    city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
+                });
+            }
+
+            @Override
+            public void onFailed() {
+                Log.d(TAG, "onFailed: ");
+                activity.setComments(Optional.empty());
+                city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
+            }
+        };
+    }
+
+    private void setCommentList(MainActivity activity) {
+        city.getCommentList(createCommentListCallBack(activity), user.getID());
+    }
+
+    private void setStatistics(MainActivity activity) {
+        city.getStatistics(createStatisticsCallBack(activity));
+    }
+
+    private StatisticsCallBack createStatisticsCallBack(MainActivity activity) {
+        return new StatisticsCallBack() {
+            @Override
+            public void onSuccess(Optional<HashMap> statusList) {
+                statusList.ifPresent(status -> {
+                    HashMap<String, String> myCityStatus = (HashMap) status.get(city.getMyCity());
+                    String temperature = String.valueOf(myCityStatus.get("Temperature"));
+                    String happyPeople = String.valueOf(myCityStatus.get("happy_people"));
+                    String angryPeople = String.valueOf(myCityStatus.get("angry_people"));
+
+                    activity.setCityStats(temperature, happyPeople, angryPeople);
+
+                    // write your code here, SungMin or wherever you want.
+                });
+            }
+
+            @Override
+            public void onFailed() {
+                activity.setCityStats("0","0","0");
+            }
+        };
+    }
+
+    private MyCommentCallBack createMyCommentCallBack(MainActivity activity) {
+        return new MyCommentCallBack() {
+            @Override
+            public void onSuccess(String status, String comment) {
+                activity.setMyRecentComment(Optional.ofNullable(status), Optional.ofNullable(comment));
+            }
+
+            @Override
+            public void onFailed() {
+                activity.setMyRecentComment(Optional.empty(),Optional.empty());
+            }
+        };
     }
 }
