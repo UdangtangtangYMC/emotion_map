@@ -31,7 +31,6 @@ import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +45,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
     private ImageButton btn_plus; //감정 표시 버튼
-    private TextView TextView_menu2,TextView_menu3, userCity, temperature, angry, happy,
+    private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
     private ArrayList<Comment> comments;
@@ -147,14 +146,14 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
-        temperature = (TextView) findViewById(R.id.txt_cityTemperature);
+        textViewTemperature = (TextView) findViewById(R.id.txt_cityTemperature);
         angry = (TextView) findViewById(R.id.txt_angry);
         happy = (TextView) findViewById(R.id.txt_happy);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.layout_coordinator);
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
-        swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
-        comments=new ArrayList<>();
+        swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
+        comments = new ArrayList<>();
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -216,27 +215,16 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
     }
 
-    // TextView에 텍스트 설정
-    public void setInitInfo(List<String> commentList, Optional myStatus, Optional myComment) {
-        userCity.setText(presenter.getUserCity());
-        temperature.setText(getString(R.string.temperature,presenter.getCityTemperature()));
-        angry.setText(getString(R.string.people, presenter.getAngryPeople()));
-        happy.setText(getString(R.string.people, presenter.getHappyPeople()));
-
-        if (myStatus.isPresent() && myComment.isPresent()) {
-            recentStatus.setText(String.valueOf(myStatus.get()));
-            recentComment.setText(String.valueOf(myComment.get()));
-        } else{
-            recentStatus.setHeight(0);
-            recentComment.setText("지금 자신의 감정을 등록해보세요!");
-        }
-
-        if (commentList.size() == 0) {
-            commentOne.setText("첫 번째 상태를 등록해보세요!");
-        } else
-            for (int i = 0; i < Math.min(commentList.size(), commentViewList.size()); i++) {
-                commentViewList.get(i).setText(commentList.get(i));
+    public void setComments(Optional<List> comments) {
+        comments.ifPresent(c -> {
+            for (int i = 0; i < Math.min(c.size(), commentViewList.size()); i++) {
+                commentViewList.get(i).setText(String.valueOf(c.get(i)));
             }
+        });
+
+        if (!comments.isPresent()) {
+            commentOne.setText("첫 번째 상태를 등록해보세요!");
+        }
     }
 
     //표 텍스트 설정
@@ -285,8 +273,27 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
     }
 
-    public void blink(){
+    public void blink() {
         final Animation animation = AnimationUtils.loadAnimation(this, R.anim.blink);
         commentOne.startAnimation(animation);
+    }
+
+    public void setCityStats(String temperature, String happyPeople, String angryPeople) {
+        userCity.setText(presenter.getUserCity());
+        textViewTemperature.setText(getString(R.string.temperature, temperature));
+        happy.setText(getString(R.string.people, happyPeople));
+        angry.setText(getString(R.string.people, angryPeople));
+    }
+
+    public void setMyRecentComment(Optional<String> status, Optional<String> comment) {
+        if (status.isPresent() && comment.isPresent()) {
+            recentStatus.setHeight(80);
+            recentStatus.setText(status.get());
+            recentComment.setText(comment.get());
+        } else {
+            recentStatus.setHeight(0);
+            recentComment.setText("지금 당신의 상태를 기록해보세요!");
+        }
+
     }
 }

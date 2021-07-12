@@ -31,7 +31,7 @@ public class PlusEmotionPresenter {
 
         try {
             // 새로 등록하려는 comment와 user.getID()를 매개변수로 city.insertComment 메소드 호출
-            city.insert_comment(input_comment, user.getID());
+            city.insert_comment(input_comment, user.getID(), createInsertCommentCallBack());
         } catch (Exception e) {
             Toast.makeText(context, "감정 입력 오류", Toast.LENGTH_SHORT).show();
         }
@@ -40,5 +40,14 @@ public class PlusEmotionPresenter {
     public Long get_date(){
         Date time = new Date();
         return time.getTime();
+    }
+
+    private InsertCommentCallBack createInsertCommentCallBack(){
+        return new InsertCommentCallBack() {
+            @Override
+            public void onSuccess(boolean statusChanged, String status) {
+                city.changeStatus(statusChanged, status);
+            }
+        };
     }
 }
