@@ -8,6 +8,7 @@ import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 
 import java.util.Date;
+import java.util.Optional;
 
 public class PlusEmotionPresenter {
     private Context context;
@@ -45,7 +46,7 @@ public class PlusEmotionPresenter {
     private InsertCommentCallBack createInsertCommentCallBack(){
         return new InsertCommentCallBack() {
             @Override
-            public void onSuccess(boolean statusChanged, String status) {
+            public void onSuccess(Optional<Boolean> statusChanged, String status) {
                 city.changeStatus(statusChanged, status);
             }
         };

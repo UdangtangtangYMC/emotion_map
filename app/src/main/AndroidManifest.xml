@@ -3,7 +3,7 @@
     package="com.udangtangtang.emotion_mapfile">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".presenter.GlobalApplication"
@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Emotion_mapFile">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key"/>
+            android:value="@string/kakao_app_key" />
 
         <activity android:name=".view.SplashActivity">
             <intent-filter>
@@ -23,11 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.Comment_list"/>
+        <activity android:name=".view.Comment_list" />
+
         <service
             android:name=".view.MainActivity"
-            android:foregroundServiceType="location" >
-    </service>
+            android:foregroundServiceType="location">
+        </service>
         <activity android:name=".view.EmailSignUpActivity" />
         <activity android:name=".view.EmailSignInActivity" />
         <activity android:name=".view.SignInActivity" />
@@ -44,7 +45,7 @@
                     android:scheme="kakao14c0eb02333568e599c669cb59b7e30c" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.MainActivity"/>
-        <activity android:name=".view.NationalStatistics"/>
+        <activity android:name=".view.MainActivity" />
+        <activity android:name=".view.NationalStatistics" />
     </application>
 </manifest>

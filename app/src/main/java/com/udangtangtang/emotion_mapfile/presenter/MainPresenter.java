@@ -276,14 +276,18 @@ public class MainPresenter {
     private StatisticsCallBack createStatisticsCallBack(MainActivity activity) {
         return new StatisticsCallBack() {
             @Override
-            public void onSuccess(Optional<HashMap> statusList) {
+            public void onSuccess(Optional<HashMap> statusList, boolean myCityExist) {
                 statusList.ifPresent(status -> {
-                    HashMap<String, String> myCityStatus = (HashMap) status.get(city.getMyCity());
-                    String temperature = String.valueOf(myCityStatus.get("Temperature"));
-                    String happyPeople = String.valueOf(myCityStatus.get("happy_people"));
-                    String angryPeople = String.valueOf(myCityStatus.get("angry_people"));
-
-                    activity.setCityStats(temperature, happyPeople, angryPeople);
+                    Long temperature = Long.parseLong("0");
+                    Long happyPeople = Long.parseLong("0");
+                    Long angryPeople = Long.parseLong("0");
+                    if(myCityExist) {
+                        HashMap<String, Long> myCityStatus = (HashMap) status.get(city.getMyCity());
+                        temperature = myCityStatus.get("Temperature");
+                        happyPeople = myCityStatus.get("happy_people");
+                        angryPeople = myCityStatus.get("angry_people");
+                    }
+                    activity.setCityStats(String.valueOf(temperature), String.valueOf(happyPeople), String.valueOf(angryPeople));
 
                     // write your code here, SungMin or wherever you want.
                 });
