@@ -250,26 +250,30 @@ public class City {
                 Optional<HashMap> status = Optional.ofNullable((HashMap) snapshot.getValue());
                 // callBack 함수를 통해 읽어온 status를 매개변수로 전달. -> 이후 데이터 처리는 MainPresenter에서 처리.
                 DatabaseReference localStat = null;
-                //status가 존재하면
-                if (status.isPresent()) {
+                //status가 존재하면 -> DB 내에 어떤 데이터라도 존재함
+                status.ifPresent(s->{
                     setChartCallBack.SuccessGetStatus(status);
-                    try{
-                        //status에 자신의 위치에 해당하는 속성값들이 존재하는지 확인
-                        localStat = stat.child(myCity);
-                        //존재한다면
-                        callback.onSuccess(status);
-                    }catch (NullPointerException e){
-                        //존재하지 않다면
-                        Log.d(TAG, "");
-                        localStat.child("Temperature").setValue(0);
-                        localStat.child("happy_people").setValue(0);
-                        localStat.child("angry_people").setValue(0);
-                        callback.onFailed();
+                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하는 경우
+                    if(s.get(myCity) != null)
+                        callback.onSuccess(status,true);
+                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
+                    else {
+                        stat.child(myCity).child("Temperature").setValue(0);
+                        stat.child(myCity).child("happy_people").setValue(0);
+                        stat.child(myCity).child("angry_people").setValue(0);
+                        callback.onSuccess(status, false);
                     }
-                }else{
+                });
+
+                // DB 내에 진자 아무 데이터도 없음음
+               if (!status.isPresent()) {
+                    // DB의 초기값을 설정해준 후, callback.onFailed() 메소드 호출
+                    stat.child(myCity).child("Temperature").setValue(0);
+                    stat.child(myCity).child("happy_people").setValue(0);
+                    stat.child(myCity).child("angry_people").setValue(0);
+                    callback.onFailed();
                     setChartCallBack.OnFailGetStatus();
                 }
-                //추가작업
             }
 
             @Override
