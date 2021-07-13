@@ -4,6 +4,6 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public interface StatisticsCallBack {
-    void onSuccess(Optional<HashMap> statusList);
+    void onSuccess(Optional<HashMap> statusList, boolean myCityExist);
     void onFailed();
 }

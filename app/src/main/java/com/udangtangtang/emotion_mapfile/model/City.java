@@ -129,9 +129,10 @@ public class City {
 
     /**
      * 매개변수를 통해 City 객체의 속성들을 초기화하는 메소드
-     * @param myCity 자신이 현재 위치하고 있는 시
-     * @param district 자신이 현재 위치하고 있는 구
-     * @param latitude 자신이 현재 위치하고 있는 위도
+     *
+     * @param myCity    자신이 현재 위치하고 있는 시
+     * @param district  자신이 현재 위치하고 있는 구
+     * @param latitude  자신이 현재 위치하고 있는 위도
      * @param longitude 자신이 현재 위치하고 있는 경도
      */
     public void setInitInfo(String myCity, String district, double latitude, double longitude) {
@@ -143,8 +144,9 @@ public class City {
 
     /**
      * FirebaseDatabase에 자신의 Comment를 등록하는 메소드
-     * @param comment 등록하려는 Comment 객체
-     * @param id 현재 로그인 되어있는 회원의 ID
+     *
+     * @param comment  등록하려는 Comment 객체
+     * @param id       현재 로그인 되어있는 회원의 ID
      * @param callBack 작업이 완료되면 그 결과를 전달할 콜백함수
      * @throws Exception
      */
@@ -173,7 +175,7 @@ public class City {
                         // 실제 db에 comment를 등록하는 라인
                         reference.child(id).setValue(comment);
                         // callBack을 통해 작업이 완료됐음을 알림 -> 매개변수로 이전 comment와 비교하여 상태가 바뀌었는지, 현재 등록한 comment의 상태를 전달
-                        callBack.onSuccess(statusChanged, comment.getStatus());
+                        callBack.onSuccess(Optional.of(statusChanged), comment.getStatus());
                     });
 
                     // 비어있는 경우 새로운 comment를 db에 등록
@@ -181,7 +183,7 @@ public class City {
                         reference.child(id).setValue(comment);
 
                         // callBack을 통해 작업이 완료 되었음을 알림. 이전 comment가 없기 때문에 첫 번째 매개변수는 false를 전달
-                        callBack.onSuccess(false, comment.getStatus());
+                        callBack.onSuccess(Optional.empty(), comment.getStatus());
                     }
                 }
 
@@ -199,8 +201,9 @@ public class City {
 
     /**
      * FirebaseDatabase로부터 자신의 위치를 기반으로 해당 도시의 Comment들을 읽어오는 메소드
+     *
      * @param callBack 작업이 완료되면 그 결과를 전달할 콜백함수
-     * @param id 현재 로그인 되어있는 회원의 ID
+     * @param id       현재 로그인 되어있는 회원의 ID
      */
     public void getCommentList(CommentListCallBack callBack, String id) {
         Log.d(TAG, "getCommentList: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + myCity);
@@ -234,6 +237,7 @@ public class City {
 
     /**
      * FirebaseDatabase로부터 모든 도시의 Status(온도, 행복한 사람수, 화난 사람수)에 대한 정보를 읽어오는 메소드
+     *
      * @param callback 작업이 완료되면 그 결과를 전달할 콜백함수
      */
     public void getStatistics(StatisticsCallBack callback, SetChartCallBack setChartCallBack) {
@@ -246,26 +250,30 @@ public class City {
                 Optional<HashMap> status = Optional.ofNullable((HashMap) snapshot.getValue());
                 // callBack 함수를 통해 읽어온 status를 매개변수로 전달. -> 이후 데이터 처리는 MainPresenter에서 처리.
                 DatabaseReference localStat = null;
-                //status가 존재하면
-                if (status.isPresent()) {
+                //status가 존재하면 -> DB 내에 어떤 데이터라도 존재함
+                status.ifPresent(s->{
                     setChartCallBack.SuccessGetStatus(status);
-                    try{
-                        //status에 자신의 위치에 해당하는 속성값들이 존재하는지 확인
-                        localStat = stat.child(myCity);
-                        //존재한다면
-                        callback.onSuccess(status);
-                    }catch (NullPointerException e){
-                        //존재하지 않다면
-                        Log.d(TAG, "");
-                        localStat.child("Temperature").setValue(0);
-                        localStat.child("happy_people").setValue(0);
-                        localStat.child("angry_people").setValue(0);
-                        callback.onFailed();
+                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하는 경우
+                    if(s.get(myCity) != null)
+                        callback.onSuccess(status,true);
+                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
+                    else {
+                        stat.child(myCity).child("Temperature").setValue(0);
+                        stat.child(myCity).child("happy_people").setValue(0);
+                        stat.child(myCity).child("angry_people").setValue(0);
+                        callback.onSuccess(status, false);
                     }
-                }else{
+                });
+
+                // DB 내에 진자 아무 데이터도 없음음
+               if (!status.isPresent()) {
+                    // DB의 초기값을 설정해준 후, callback.onFailed() 메소드 호출
+                    stat.child(myCity).child("Temperature").setValue(0);
+                    stat.child(myCity).child("happy_people").setValue(0);
+                    stat.child(myCity).child("angry_people").setValue(0);
+                    callback.onFailed();
                     setChartCallBack.OnFailGetStatus();
                 }
-                //추가작업
             }
 
             @Override
@@ -277,29 +285,55 @@ public class City {
 
     /**
      * City의 insert_comment 메소드를 호출한 이후 해당 comment에 따라 해당 도시의 status(기온 등등)에 변화를 주는 메소드
-     * @param statusChanged 자신의 이전 Comment의 status가 바뀌었는지 즉, 감정이 변화되었는지 여부
-     * @param status 자신이 현재 등록한 Comment의 status
+     *
+     * @param statusChanged 자신의 이전 Comment의 status가 바뀌었는지 즉, 감정이 변화되었는지 여부 -> Optional.empty()인 경우는 이전 comment가 없는 경우
+     * @param status        자신이 현재 등록한 Comment의 status
      */
-    public void changeStatus(boolean statusChanged, String status) {
+    public void changeStatus(Optional<Boolean> statusChanged, String status) {
         DatabaseReference statRef = firebaseDatabase.getReference("status").child(myCity);
         Log.d(TAG, "changeStatus: ");
         // 감정이 변화되었을 경우에만 작업을 처리함.
-        if (statusChanged) {
-            Log.d(TAG, "changeStatus: if entered");
-            // 현재 위치하고 있는 도시의 status 레퍼런스 획득 및 이벤트 리스너 등록
+        statusChanged.ifPresent(isChanged -> {
+            if (isChanged) {
+                Log.d(TAG, "changeStatus: if entered");
+                // 현재 위치하고 있는 도시의 status 레퍼런스 획득 및 이벤트 리스너 등록
+                statRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                        // HashMap 형태로 snapshot으로 부터 데이터를 읽어들임.
+                        HashMap<String, Long> stats = (HashMap) snapshot.getValue();
+                        // 등록한 comment의 status가 빡침일 경우 -> 해당 도시의 화난 사람 += 1, 기쁜 사람 -= 1, 기온 += 1
+                        if (status.equals("빡침")) {
+                            statRef.child("angry_people").setValue(stats.get("angry_people") + 1);
+                            statRef.child("happy_people").setValue(stats.get("happy_people") - 1);
+                            statRef.child("Temperature").setValue(stats.get("Temperature") + 1);
+                        } else {
+                            // 등록한 comment의 status가 기쁨일 경우 -> 해당 도시의 화난 사람 -= 1, 기쁜 사람 += 1, 기온 -= 1
+                            statRef.child("angry_people").setValue(stats.get("angry_people") - 1);
+                            statRef.child("happy_people").setValue(stats.get("happy_people") + 1);
+                            statRef.child("Temperature").setValue(stats.get("Temperature") - 1);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                        Log.d(TAG, "onCancelled: ");
+                    }
+                });
+            }
+        });
+        // comment를 처음 등록하셨군요!!
+        if (!statusChanged.isPresent()) {
             statRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    // HashMap 형태로 snapshot으로 부터 데이터를 읽어들임.
                     HashMap<String, Long> stats = (HashMap) snapshot.getValue();
-                    // 등록한 comment의 status가 빡침일 경우 -> 해당 도시의 화난 사람 += 1, 기쁜 사람 -= 1, 기온 += 1
+                    // 등록한 comment의 status가 빡침일 경우 -> 해당 도시의 화난 사람 += 1, 기온 += 1
                     if (status.equals("빡침")) {
                         statRef.child("angry_people").setValue(stats.get("angry_people") + 1);
-                        statRef.child("happy_people").setValue(stats.get("happy_people") - 1);
                         statRef.child("Temperature").setValue(stats.get("Temperature") + 1);
                     } else {
-                        // 등록한 comment의 status가 기쁨일 경우 -> 해당 도시의 화난 사람 -= 1, 기쁜 사람 += 1, 기온 -= 1
-                        statRef.child("angry_people").setValue(stats.get("angry_people") - 1);
+                        // 등록한 comment의 status가 기쁨일 경우 -> 해당 도시의 기쁜 사람 += 1, 기온 -= 1
                         statRef.child("happy_people").setValue(stats.get("happy_people") + 1);
                         statRef.child("Temperature").setValue(stats.get("Temperature") - 1);
                     }
@@ -315,7 +349,8 @@ public class City {
 
     /**
      * Comment를 등록한 경우 MainActivity에 존재하는 최근 정보를 갱신하기 위한 메소드
-     * @param id 현재 로그인 되어있는 유저의 ID
+     *
+     * @param id       현재 로그인 되어있는 유저의 ID
      * @param callBack 작업이 완료되면 그 결과를 전달할 콜백함수
      */
     public void addMyCommentListener(String id, MyCommentCallBack callBack) {
@@ -327,7 +362,7 @@ public class City {
                 // HashMap 형태로 snapshot으로부터 데이터를 읽어들임.
                 Optional<HashMap> myComment = Optional.ofNullable((HashMap) snapshot.getValue());
                 // callBack 함수를 통해 자신의 최신 status와 comment를 매개변수로 전달.
-                myComment.ifPresent(c->callBack.onSuccess(String.valueOf(c.get("status")),String.valueOf(c.get("comment"))));
+                myComment.ifPresent(c -> callBack.onSuccess(String.valueOf(c.get("status")), String.valueOf(c.get("comment"))));
                 if (!myComment.isPresent()) {
                     callBack.onFailed();
                 }
