@@ -3,17 +3,12 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -23,7 +18,6 @@ import com.github.mikephil.charting.utils.Utils;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -32,6 +26,7 @@ public class NationalStatistics extends Activity{
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
     private BarChart barChart;
+
     private LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,19 +40,20 @@ public class NationalStatistics extends Activity{
 
         Utils.init(NationalStatistics.this);
         System.out.println(barChart);
-        barChart = (BarChart) findViewById(R.id.charting);
         System.out.println(barChart);
         graphInitSetting();       //그래프 기본 세팅
 
         barChart.setTouchEnabled(false);
-        barChart.getAxisRight().setAxisMaxValue(80);
-        barChart.getAxisLeft().setAxisMaxValue(80);
+        barChart.getAxisRight().setAxisMaxValue(100);
+        barChart.getAxisLeft().setAxisMaxValue(100);
+        barChart.setDrawValueAboveBar(false);
     }
 
     public void init(){
         Intent intent = getIntent();
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
         linearLayout = findViewById(R.id.linearLayout_menu3);
+        barChart = (BarChart) findViewById(R.id.charting);
 
     }
 
@@ -70,8 +66,8 @@ public class NationalStatistics extends Activity{
         valueList = nationalStatisticsPresenter.get_value();
         BarChartGraph(labelList, valueList);
         barChart.setTouchEnabled(false);
-        barChart.getAxisRight().setAxisMaxValue(80);
-        barChart.getAxisLeft().setAxisMaxValue(80);
+        barChart.getAxisRight().setAxisMaxValue(100);
+        barChart.getAxisLeft().setAxisMaxValue(100);
     }
 
     /**
@@ -82,20 +78,23 @@ public class NationalStatistics extends Activity{
         // BarChart 메소드
         ArrayList<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < valList.size(); i++) {
-            entries.add(new BarEntry(valList.get(i), i));
+            entries.add(new BarEntry((Integer)valList.get(i), i));
         }
 
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
-        Description description = new Description();
-        description.setText("description");
-        barChart.setDescription(description);
+        barChart.setDescription(" ");
 
-        BarData data = new BarData(depenses); // 라이브러리 v3.x 사용하면 에러 발생함
+        ArrayList<String> labels = new ArrayList<String>();
+        for(int i=0;i<labelList.size();i++){
+            labels.add((String) labelList.get(i));
+        }
+
+        BarData data = new BarData(labels, depenses); // 라이브러리 v3.x 사용하면 에러 발생함
         depenses.setColors(ColorTemplate.LIBERTY_COLORS); //
 
         barChart.setData(data);
-        barChart.animateXY(1000, 1000);
+        barChart.animateXY(100, 100);
         barChart.invalidate();
     }
 

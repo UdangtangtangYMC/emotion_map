@@ -236,8 +236,8 @@ public class MainPresenter {
             int angry_people = Integer.parseInt(angry_temp);
             int happy_people = Integer.parseInt(happy_temp);
             int total = angry_people + happy_people;
-            double ratio = (double) angry_people / total * 100;
-            Log.d(TAG, cityName + " " + angry_temp +" "+ happy_temp + ratio);
+            double ratio = (double)angry_people / (double)total * 100;
+            Log.d(TAG, cityName + " " + angry_temp +" "+ happy_temp +" "+ ratio);
 
             cityStatus.setAngry_count(angry_people);
             cityStatus.setHappy_count(happy_people);

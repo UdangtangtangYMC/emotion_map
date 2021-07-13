@@ -54,26 +54,14 @@ public class NationalStatisticsPresenter implements Serializable {
 
     public ArrayList<Integer> get_value(){
         ArrayList<Integer> value_list = new ArrayList<Integer>();
-        int angry_value = 0;
-        int happy_value = 0;
-        int total = 0;
-        if(cityStatuses.size() < 5){
-            for(int i=0;i<cityStatuses.size();i++){
-                angry_value = cityStatuses.get(i).getAngry_count();
-                happy_value = cityStatuses.get(i).getHappy_count();
-                total = angry_value + happy_value;
-                try{
-                    value_list.add(angry_value/total * 100);
-                }catch (ArithmeticException e){
-                    Log.d(TAG, "divide by zero");
-                }
+        if(cityStatuses.size() < 5) {
+            for (int i = 0; i < cityStatuses.size(); i++) {
+                value_list.add(cityStatuses.get(i).getRatio());
             }
         }else{
             for(int i=0;i<5;i++){
-                angry_value = cityStatuses.get(i).getAngry_count();
-                happy_value = cityStatuses.get(i).getHappy_count();
-                total = angry_value + happy_value;
-                value_list.add(angry_value/total * 100);
+                value_list.add(cityStatuses.get(i).getRatio());
+                Log.d(TAG, "우하하 "+String.valueOf(cityStatuses.get(i).getRatio()));
             }
         }
         return value_list;
