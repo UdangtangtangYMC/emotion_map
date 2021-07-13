@@ -30,6 +30,8 @@ public class PlusEmotionPresenter {
         input_comment.setStatus(selected_emotion);
         input_comment.setCreate_at(get_date());
 
+
+
         try {
             // 새로 등록하려는 comment와 user.getID()를 매개변수로 city.insertComment 메소드 호출
             city.insert_comment(input_comment, user.getID(), createInsertCommentCallBack());

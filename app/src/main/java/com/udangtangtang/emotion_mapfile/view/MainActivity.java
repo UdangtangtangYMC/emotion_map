@@ -7,19 +7,25 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.Comment;
@@ -36,6 +42,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private final String TAG = "MainActivity";
     private MainPresenter presenter;
+    private LinearLayout linearLayout;
     private DrawerLayout drawerLayout;
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
@@ -44,6 +51,8 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
     private ArrayList<Comment> comments;
+
+    private TableLayout tableLayout;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
@@ -64,7 +73,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
 
         //presenter 생성 및 위치권한 요청
         Intent intent = getIntent();
-        presenter = new MainPresenter(MainActivity.this, (User) intent.getSerializableExtra("user"));
+        presenter = new MainPresenter(MainActivity.this, (User) intent.getSerializableExtra("user"), MainActivity.this);
         presenter.checkPermissions(this);
 
         //user 이름을 받아옴
@@ -115,17 +124,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                /*presenter.clearComments();
-                                comments.clear();
-                                comments.add(comment.getComment());
-                                comments.add(commentTwo);
-                                comments.add(commentThree);
-                                comments.add(commentFour);
-                                presenter.setComments(commentViewList);
-                                presenter.notifyDataChanged();*/
                                 swipeRefresh.setRefreshing(false);
                             }
                         }, 500);
+                        refresh();
                     }
                 });
     }
@@ -160,6 +162,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         commentViewList.add(commentTwo);
         commentViewList.add(commentThree);
         commentViewList.add(commentFour);
+
+        linearLayout = findViewById(R.id.linearLayout);
+        tableLayout = findViewById(R.id.tablelayout);
 
         //drawer
         txt_id = findViewById(R.id.txt_id);
@@ -206,6 +211,14 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
     }
 
+    public void refresh(){
+        Intent intent = getIntent();
+        finish();
+        overridePendingTransition(0, 0); //인텐트 애니메이션 제거
+        startActivity(intent); //현재 액티비티 재실행 실시
+        overridePendingTransition(0,0); //인텐트 애나메이션 제거
+    }
+
     public void setComments(Optional<List> comments) {
         comments.ifPresent(c -> {
             for (int i = 0; i < Math.min(c.size(), commentViewList.size()); i++) {
@@ -216,6 +229,44 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         if (!comments.isPresent()) {
             commentOne.setText("첫 번째 상태를 등록해보세요!");
         }
+    }
+
+    //표 텍스트 설정
+    public void setChart(String name, int angry_count, int happy_count, int total, int index){
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        //한 행에 들어갈 textView 4개 생성
+        TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
+
+        for(int i=0;i<textViews.length;i++){
+            textView_setting(textViews[i], index);
+        }
+
+        textViews[0].setText(name);
+        textViews[1].setText(String.valueOf(angry_count + "명"));
+        textViews[2].setText(String.valueOf(happy_count+"명"));
+        textViews[3].setText(String.valueOf(total + "명"));
+
+        for(TextView textView : textViews){
+            linearLayout.addView(textView);
+        }
+        this.linearLayout.addView(linearLayout);
+    }
+
+    private void textView_setting(TextView textview, int index){
+        //TextView 속성 설정을 위한 layoutParams 생성
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(230, 105);
+        layoutParams.leftMargin = 14;
+        layoutParams.bottomMargin = 5;
+        textview.setLayoutParams(layoutParams);
+        textview.setGravity(17);
+        if(index % 2 == 0)
+            textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
+        textview.setPadding(3, 3, 3, 3);
     }
 
     // 권한 설정 후 사용자의 결정에 따라 구문 실행
@@ -230,11 +281,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                     .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
                     .show();
         }
-    }
-
-    public void blink() {
-        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.blink);
-        commentOne.startAnimation(animation);
     }
 
     public void setCityStats(String temperature, String happyPeople, String angryPeople) {

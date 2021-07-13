@@ -20,7 +20,7 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
     private final String TAG = "Comment_adapter";
     private List<Comment> comment_list = new ArrayList<Comment>();
 
-    protected class MyViewHolder extends RecyclerView.ViewHolder{
+    protected class MyViewHolder extends RecyclerView.ViewHolder {
         private TextView txt_comment;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -30,7 +30,7 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
         }
     }
 
-    public Comment_adapter(List<Comment> comment_list){
+    public Comment_adapter(List<Comment> comment_list) {
         this.comment_list = comment_list;
     }
 
@@ -58,11 +58,11 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
     }
 
     // Clear, Set comment_list
-    public void clearComments(){
+    public void clearComments() {
         this.comment_list.clear();
     }
 
-    public void setComments(List<Comment>comment_list){
-        this.comment_list=comment_list;
+    public void setComments(List<Comment> comment_list) {
+        this.comment_list = comment_list;
     }
 }

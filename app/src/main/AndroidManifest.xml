@@ -15,8 +15,7 @@
         android:theme="@style/Theme.Emotion_mapFile">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key" />
-
+            android:value="@string/kakao_app_key"/>
         <activity android:name=".view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +25,8 @@
         <activity android:name=".view.Comment_list" />
 
         <service
-            android:name=".view.MainActivity"
-            android:foregroundServiceType="location">
+            android:name=".view.SplashActivity"
+            android:foregroundServiceType="location" >
         </service>
         <activity android:name=".view.EmailSignUpActivity" />
         <activity android:name=".view.EmailSignInActivity" />
