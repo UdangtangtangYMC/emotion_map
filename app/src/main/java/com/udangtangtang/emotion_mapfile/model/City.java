@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListCallBack;
 import com.udangtangtang.emotion_mapfile.presenter.InsertCommentCallBack;
 import com.udangtangtang.emotion_mapfile.presenter.MyCommentCallBack;
+import com.udangtangtang.emotion_mapfile.presenter.SetChartCallBack;
 import com.udangtangtang.emotion_mapfile.presenter.StatisticsCallBack;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -214,9 +216,11 @@ public class City {
                     comments.ifPresent(u -> callBack.onSuccess(Optional.of(createCommentList(u))));
                     if (!comments.isPresent()) {
                         // 데이터가 없다면 onFailed() 호출
+                        Log.d(TAG, "사용자 위치에 comment없음");
                         callBack.onFailed();
                     }
                 } catch (NullPointerException e) {
+                    Log.d(TAG, "사용자 위치에 comment없음");
                     callBack.onFailed();
                 }
             }
@@ -232,7 +236,7 @@ public class City {
      * FirebaseDatabase로부터 모든 도시의 Status(온도, 행복한 사람수, 화난 사람수)에 대한 정보를 읽어오는 메소드
      * @param callback 작업이 완료되면 그 결과를 전달할 콜백함수
      */
-    public void getStatistics(StatisticsCallBack callback) {
+    public void getStatistics(StatisticsCallBack callback, SetChartCallBack setChartCallBack) {
         // 레퍼런스 선언 및 이벤트 리스너 등록
         DatabaseReference stat = firebaseDatabase.getReference("status");
         stat.addValueEventListener(new ValueEventListener() {
@@ -241,14 +245,27 @@ public class City {
                 // snapshot으로 부터 HashMap 형태로 데이터를 읽어옴.
                 Optional<HashMap> status = Optional.ofNullable((HashMap) snapshot.getValue());
                 // callBack 함수를 통해 읽어온 status를 매개변수로 전달. -> 이후 데이터 처리는 MainPresenter에서 처리.
-                if (!status.isPresent()) {
-                    DatabaseReference localStat = stat.child(myCity);
-                    localStat.child("Temperature").setValue(0);
-                    localStat.child("happy_people").setValue(0);
-                    localStat.child("angry_people").setValue(0);
-                    callback.onFailed();
-                } else
-                    callback.onSuccess(status);
+                DatabaseReference localStat = null;
+                //status가 존재하면
+                if (status.isPresent()) {
+                    setChartCallBack.SuccessGetStatus(status);
+                    try{
+                        //status에 자신의 위치에 해당하는 속성값들이 존재하는지 확인
+                        localStat = stat.child(myCity);
+                        //존재한다면
+                        callback.onSuccess(status);
+                    }catch (NullPointerException e){
+                        //존재하지 않다면
+                        Log.d(TAG, "");
+                        localStat.child("Temperature").setValue(0);
+                        localStat.child("happy_people").setValue(0);
+                        localStat.child("angry_people").setValue(0);
+                        callback.onFailed();
+                    }
+                }else{
+                    setChartCallBack.OnFailGetStatus();
+                }
+                //추가작업
             }
 
             @Override

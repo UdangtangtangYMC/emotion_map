@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.presenter.AddEmotionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
 
 public class PlusEmotion {
@@ -32,7 +33,7 @@ public class PlusEmotion {
 
     }
 
-    public void callFunciton(){
+    public void callFunciton(AddEmotionCallback addEmotionCallback){
         final Dialog dlg = new Dialog(context);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.setContentView(R.layout.dialog_plus);
@@ -52,6 +53,7 @@ public class PlusEmotion {
                     Toast.makeText(context, "comment를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
                 dlg.dismiss();
+                addEmotionCallback.onSuccess();
             }
         });
 

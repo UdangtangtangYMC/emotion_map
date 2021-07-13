@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.common.api.Api;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -35,9 +36,14 @@ import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import kotlin.reflect.KMutableProperty2;
 
 public class MainPresenter {
 
@@ -48,11 +54,13 @@ public class MainPresenter {
     private Comment_adapter comment_adapter;
     static final int PERMISSIONS_REQUEST = 0x0000001;
     private List<CityStatus> cityStatusesList = new ArrayList<CityStatus>();
+    private MainActivity activity;
 
-    public MainPresenter(Context context, User user) {
+    public MainPresenter(Context context, User user, MainActivity activity) {
         this.context = context;
         this.user = user;
         this.city = City.getInstance();
+        this.activity = activity;
     }
 
     public String get_userName() {
@@ -64,7 +72,7 @@ public class MainPresenter {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
             PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-            plusEmotion.callFunciton();
+            plusEmotion.callFunciton(addEmotionCallback());
         } else {
             Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         }
@@ -87,7 +95,8 @@ public class MainPresenter {
 
     public void intent_NationalStatistics() {
         Intent intent = new Intent(context, NationalStatistics.class);
-        NationalStatisticsPresenter nationalStatisticsPresenter  = new NationalStatisticsPresenter(cityStatusesList);
+        NationalStatisticsPresenter nationalStatisticsPresenter = new NationalStatisticsPresenter(this.cityStatusesList);
+        Log.d(TAG, "cityStatusList size" + String.valueOf(cityStatusesList.size()));
         intent.putExtra("nationalStatisticsPresenter", nationalStatisticsPresenter);
         context.startActivity(intent);
     }
@@ -210,48 +219,76 @@ public class MainPresenter {
 
     }
 
-    public void intent_nationalStatistics() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Intent intent = new Intent(context, NationalStatistics.class);
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, "GPS 사용 권환 획득 실패", Toast.LENGTH_SHORT).show();
-    private void setChart(){
-        //sortByProportion실행 - 데이터 정렬
+
+    private void setChart(HashMap statuses) {
+        CityStatus[] cityStatuses = new CityStatus[statuses.size()];
+        this.cityStatusesList.clear();
+        int index = 0;
+        //status로 부터 값을 꺼내와
+        for(Object key : statuses.keySet()){
+            CityStatus cityStatus = new CityStatus();
+            String cityName = key.toString();
+            cityStatus.setName(cityName);
+
+            HashMap<String, String> status = (HashMap) statuses.get(key);
+            String angry_temp = String.valueOf(status.get("angry_people"));
+            String happy_temp = String.valueOf(status.get("happy_people"));
+            int angry_people = Integer.parseInt(angry_temp);
+            int happy_people = Integer.parseInt(happy_temp);
+            int total = angry_people + happy_people;
+            double ratio = (double) angry_people / total * 100;
+            Log.d(TAG, cityName + " " + angry_temp +" "+ happy_temp + ratio);
+
+            cityStatus.setAngry_count(angry_people);
+            cityStatus.setHappy_count(happy_people);
+            cityStatus.setTotal(total);
+            cityStatus.setRatio((int) ratio);
+            cityStatuses[index] = cityStatus;
+            index++;
+        }
+        Log.d(TAG, String.valueOf(cityStatuses.length));
+        sortByProportion(cityStatuses, 0, cityStatuses.length-1);
+
+        this.cityStatusesList.addAll(Arrays.asList(cityStatuses));
+
+
         //메인화면에는 표의 data가 5개만 표시되므로
-        for(int i=0;i<5;i++){
-            //정렬된 리스트인 this.List<CityStatus>에서 부터
-            //각 index에 담긴 인스턴스에 설정된 속성 값들을 바탕으로
-            //MainActivity의 setChart()메서드 cityStatusesList[0].getName..등을 매개변수로 넘김
+        Log.d(TAG, "cityStatusesList.size() = "+String.valueOf(cityStatusesList.size()));
+        if(cityStatusesList.size() < 5){
+            for(int i=0;i<cityStatusesList.size();i++){
+                activity.setChart(cityStatusesList.get(i).getName(), cityStatusesList.get(i).getAngry_count(),
+                        cityStatusesList.get(i).getHappy_count(), cityStatusesList.get(i).getTotal(), i);
+            }
+        }else{
+            for (int i = 0; i < 5; i++) {
+                //정렬된 리스트인 this.List<CityStatus>에서 부터
+                //각 index에 담긴 인스턴스에 설정된 속성 값들을 바탕으로
+                //MainActivity의 ()메서드 cityStatusesList[0].getName..등을 매개변수로 넘김
+                activity.setChart(cityStatusesList.get(i).getName(), cityStatusesList.get(i).getAngry_count(),
+                        cityStatusesList.get(i).getHappy_count(), cityStatusesList.get(i).getTotal(), i);
+            }
         }
     }
 
-    private void sortByProportion(){
-        //City클래스로 부터 List<CityStatus> 리스트를 받음
-        //받은 리스트안의 인스턴스들을 CityStatus[] cityStatus 배열에 넘김
-        //List<cityStatus> clear
+    private void sortByProportion(CityStatus[] cityStatuses, int left, int right) {
         //CityStatus[]를 sort_quick을 통해 정렬
-        //정렬된 CityStatus[] 배열안의 인스턴스들을 List<CityStatus> 리스트에 제 삽입
-        //this.List<CityStatus>에 정렬된 리스트 삽입
-    }
-
-    private void sort_quick(CityStatus[] cityStatuses, int left, int right){
         int pl = left;
         int pr = right;
-        int mid = cityStatuses[(pl+pr)/2].getRatio();
+        int mid = cityStatuses[(pl + pr) / 2].getRatio();
 
-        do{
-            while(cityStatuses[pl].getRatio() > mid) pl++;
-            while(cityStatuses[pr].getRatio() < mid) pr--;
-            if(pl <= pr){
+        do {
+            Log.d(TAG, String.valueOf(pl) + String.valueOf(pr));
+            while (cityStatuses[pl].getRatio() > mid) pl++;
+            while (cityStatuses[pr].getRatio() < mid) pr--;
+            if (pl <= pr) {
                 swap(cityStatuses, pl++, pr--);
             }
-        }while(pl <= pr);
-        if(left < pr) sort_quick(cityStatuses, left, pr);
-        if(left < right) sort_quick(cityStatuses, pl, right);
+        } while (pl <= pr);
+        if (left < pr) sortByProportion(cityStatuses, left, pr);
+        if (left < right) sortByProportion(cityStatuses, pl, right);
     }
 
-    private void swap(CityStatus[] cityStatuses, int idx1, int idx2){
+    private void swap(CityStatus[] cityStatuses, int idx1, int idx2) {
         CityStatus cityStatus = cityStatuses[idx1];
         cityStatuses[idx1] = cityStatuses[idx2];
         cityStatuses[idx2] = cityStatus;
@@ -313,7 +350,7 @@ public class MainPresenter {
     }
 
     private void setStatistics(MainActivity activity) {
-        city.getStatistics(createStatisticsCallBack(activity));
+        city.getStatistics(createStatisticsCallBack(activity), setChartCallBack());
     }
 
     private StatisticsCallBack createStatisticsCallBack(MainActivity activity) {
@@ -321,6 +358,8 @@ public class MainPresenter {
             @Override
             public void onSuccess(Optional<HashMap> statusList) {
                 statusList.ifPresent(status -> {
+                    //표 세팅을 위한 setChart 메서드 호출
+                    //사용자가 위치한 위치정보에 해당하는 속성 값 세팅
                     HashMap<String, String> myCityStatus = (HashMap) status.get(city.getMyCity());
                     String temperature = String.valueOf(myCityStatus.get("Temperature"));
                     String happyPeople = String.valueOf(myCityStatus.get("happy_people"));
@@ -334,7 +373,7 @@ public class MainPresenter {
 
             @Override
             public void onFailed() {
-                activity.setCityStats("0","0","0");
+                activity.setCityStats("0", "0", "0");
             }
         };
     }
@@ -348,7 +387,31 @@ public class MainPresenter {
 
             @Override
             public void onFailed() {
-                activity.setMyRecentComment(Optional.empty(),Optional.empty());
+                activity.setMyRecentComment(Optional.empty(), Optional.empty());
+            }
+        };
+    }
+
+    private SetChartCallBack setChartCallBack(){
+        return new SetChartCallBack() {
+            @Override
+            public void SuccessGetStatus(Optional<HashMap> statusList) {
+                //statusList를 불러오기 성공한 상태임으로 setChart실행
+                statusList.ifPresent(u -> setChart(u));
+            }
+
+            @Override
+            public void OnFailGetStatus() {
+                Toast.makeText(context, "표 불러오기 실패", Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
+    private AddEmotionCallback addEmotionCallback(){
+        return new AddEmotionCallback() {
+            @Override
+            public void onSuccess() {
+                activity.refresh();
             }
         };
     }

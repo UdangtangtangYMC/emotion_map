@@ -32,9 +32,7 @@ public class NationalStatistics extends Activity{
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
     private BarChart barChart;
-    private TextView minuteTextview;
-    private TableLayout tableLayout;
-
+    private LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +57,7 @@ public class NationalStatistics extends Activity{
     public void init(){
         Intent intent = getIntent();
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
-        tableLayout = findViewById(R.id.tablelayout);
+        linearLayout = findViewById(R.id.linearLayout_menu3);
 
     }
 
@@ -101,13 +99,15 @@ public class NationalStatistics extends Activity{
         barChart.invalidate();
     }
 
-    public void add_tableRow(String name, int angry_count, int happy_count, int total, int index){
-        //tableRow 생성
-        TableRow tableRow = new TableRow(this);
-        //tableRow의 속성 설정을 위한 LayoutParams 생성
-        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300);
-        layoutParams.bottomMargin = 5;
-        tableRow.setLayoutParams(layoutParams);
+    public void add_chartRow(String name, int angry_count, int happy_count, int total, int index){
+        //LinearLayout 생성
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        linearLayout.setLayoutParams(layoutParams);
 
         //한 행에 들어갈 textView 4개 생성
         TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
@@ -119,17 +119,28 @@ public class NationalStatistics extends Activity{
         textViews[1].setText(String.valueOf(angry_count + "명"));
         textViews[2].setText(String.valueOf(happy_count+"명"));
         textViews[3].setText(String.valueOf(total + "명"));
+
+        for(TextView textView : textViews){
+            linearLayout.addView(textView);
+        }
+        this.linearLayout.addView(linearLayout);
     }
 
     private void textView_setting(TextView textview, int index){
         //TextView 속성 설정을 위한 layoutParams 생성
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, R.dimen.chart_txtHeight);
-        layoutParams.leftMargin = R.dimen.chart_marginLeft;
-        layoutParams.bottomMargin = 1;
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(230, 105);
+        layoutParams.leftMargin = 14;
+        layoutParams.bottomMargin = 5;
         if(index % 2 == 0)
             textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
-        layoutParams.gravity = 17; // 17 - center\
+        textview.setGravity(17);
         textview.setLayoutParams(layoutParams);
         textview.setPadding(3, 3, 3, 3);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
