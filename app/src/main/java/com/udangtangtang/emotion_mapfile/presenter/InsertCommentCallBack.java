@@ -1,5 +1,7 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
+import java.util.Optional;
+
 public interface InsertCommentCallBack {
-    void onSuccess(boolean statusChanged, String status);
+    void onSuccess(Optional<Boolean> statusChanged, String status);
 }
