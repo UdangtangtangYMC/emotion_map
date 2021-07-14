@@ -47,13 +47,13 @@ public class PlusEmotion {
                 int happy_id = R.id.rg_btn1;
                 selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
-                if(comment != null){
+                if(!comment.equals("")){
                     plusEmotionPresenter.insert_emotion(selected_emotion, comment);
+                    addEmotionCallback.onSuccess();
                 }else{
                     Toast.makeText(context, "comment를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
                 dlg.dismiss();
-                addEmotionCallback.onSuccess();
             }
         });
 

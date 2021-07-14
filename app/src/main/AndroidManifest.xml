@@ -29,7 +29,6 @@
             android:foregroundServiceType="location" >
         </service>
         <activity android:name=".view.EmailSignUpActivity" />
-        <activity android:name=".view.EmailSignInActivity" />
         <activity android:name=".view.SignInActivity" />
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">
             <intent-filter>

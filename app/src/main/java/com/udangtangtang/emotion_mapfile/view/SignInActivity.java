@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -34,14 +37,19 @@ import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
 
 
 public class SignInActivity extends Activity {
-    private long time = 0;
     private final String TAG = "SignInActivity";
+    private final String key = "Auto_login";
+
+    private long time = 0;
     private Button signUpButton;
     private Button signInButton;
-    private SignInButton googleSignInButton;
+    private ImageButton googleSignInButton;
     private ImageButton kakaoSignInButton;
     private SignInPresenter signInPresenter;
     private FirebaseUser currentUser;
+    private EditText edt_email, edt_password;
+    private CheckBox check_autoLogin;
+    private boolean check_auto;
 
 
     //구글 로그인을 위해 필요한 변수 선언
@@ -61,8 +69,10 @@ public class SignInActivity extends Activity {
 
         initView();
 
-        signInPresenter = new SignInPresenter(SignInActivity.this);
+        signInPresenter = new SignInPresenter(SignInActivity.this, key);
 
+        //구글 세션 초기화
+        currentUser = mAuth.getCurrentUser();
         //카카오세션 초기화
         session = Session.getCurrentSession();
         session.addCallback(sessionCallback);
@@ -71,6 +81,7 @@ public class SignInActivity extends Activity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                signInPresenter.intent_EmailSignUpActivity();
             }
         });
@@ -79,7 +90,10 @@ public class SignInActivity extends Activity {
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signInPresenter.intent_EmailSignInActivity();
+                signInPresenter.setAutoLogin(key, check_auto);
+                String id = edt_email.getText().toString();
+                String password = edt_password.getText().toString();
+                signInPresenter.emailLogin(id, password);
             }
         });
 
@@ -87,6 +101,7 @@ public class SignInActivity extends Activity {
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                signInPresenter.setAutoLogin(key, check_auto);
                 login_google();
             }
         });
@@ -95,6 +110,7 @@ public class SignInActivity extends Activity {
         kakaoSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                signInPresenter.setAutoLogin(key, check_auto);
                 if (Session.getCurrentSession().checkAndImplicitOpen()){
                     Log.d(TAG, "onClick: 로그인 세션 살아있음");
                     sessionCallback.requestMe();
@@ -105,18 +121,24 @@ public class SignInActivity extends Activity {
             }
         });
 
+        //자동로그인 리스터
+        check_autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                check_auto = isChecked;
+                Log.d(TAG, "체크박스 리스너 : " + check_auto);
+            }
+        });
+
     }
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            updateUI_google(currentUser);
-            finish();
-        }else if(Session.getCurrentSession().checkAndImplicitOpen()){
-            Log.d(TAG, "onStart: 로그인 세션 살아있음");
-            sessionCallback.requestMe();
+        get_checkAutoLogin();
+        if (check_auto){
+            check_autoLogin.setChecked(true);
+            checkSession();
         }
     }
 
@@ -125,9 +147,27 @@ public class SignInActivity extends Activity {
         signInButton = findViewById(R.id.signInButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
         kakaoSignInButton = findViewById(R.id.kakaoSignInButton);
+        edt_email = findViewById(R.id.signInEmailInput);
+        edt_password = findViewById(R.id.signInPasswordInput);
         mAuth = FirebaseAuth.getInstance();
+        check_autoLogin = findViewById(R.id.check_autoLogin);
+
+    }
+    //자동로그인 여부 확인
+    private void get_checkAutoLogin() {
+        this.check_auto = signInPresenter.check_autoLogin(key);
+        Log.d(TAG, "자동로그인 확인 "+check_auto);
     }
 
+    private void checkSession(){
+        if(currentUser != null){
+            updateUI_google(currentUser);
+            finish();
+        }else if(Session.getCurrentSession().checkAndImplicitOpen()){
+            Log.d(TAG, "onStart: 로그인 세션 살아있음");
+            sessionCallback.requestMe();
+        }
+    }
     //구글 로그인
     public void login_google(){
         //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함

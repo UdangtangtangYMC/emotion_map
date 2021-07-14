@@ -10,7 +10,7 @@
     <string name="happy">기쁨</string>
     <string name="people">%s 명</string>
     <string name="temperature">%s ℃</string>
-    <string name="mainSignUpButtonText">회원가입</string>
+    <string name="mainSignUpButtonText">회원이 아니신가요?</string>
     <string name="mainSignInButtonText">로그인</string>
 
     <string name="signUpTitle">회원가입</string>
@@ -27,7 +27,7 @@
     <string name="menu3">지역별 통계</string>
     <string name="menu3.1">지역</string>
     <string name="menu3.2">빡침</string>
-    <string name="menu3.3">행복</string>
+    <string name="menu3.3">기쁨</string>
     <string name="menu3.4">총합</string>
 
     <!---카카오-->
