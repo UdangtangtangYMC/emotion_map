@@ -3,6 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -127,7 +128,7 @@ public class NationalStatistics extends Activity{
 
     private void textView_setting(TextView textview, int index){
         //TextView 속성 설정을 위한 layoutParams 생성
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(230, 105);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 105, 1);
         layoutParams.leftMargin = 14;
         layoutParams.bottomMargin = 5;
         if(index % 2 == 0)

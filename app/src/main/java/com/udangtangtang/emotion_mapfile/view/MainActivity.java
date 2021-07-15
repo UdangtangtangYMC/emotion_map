@@ -6,6 +6,9 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -18,12 +21,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,24 +44,22 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class MainActivity extends Activity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private final String TAG = "MainActivity";
     private MainPresenter presenter;
+    private NavigationView navigationView;
     private LinearLayout linearLayout;
     private DrawerLayout drawerLayout;
     private CoordinatorLayout coordinatorLayout;
     private View drawerView;
-    private ImageButton btn_plus; //감정 표시 버튼
     private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
     private ArrayList<Comment> comments;
 
-    private TableLayout tableLayout;
-
-    private ImageButton btn_close, btn_logout;
+    private ImageButton btn_logout;
     private TextView txt_id;
 
     private SwipeRefreshLayout swipeRefresh;
@@ -67,6 +72,11 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //toolbar 세팅
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayShowTitleEnabled(false);
 
         //위젯 연결
         initView();
@@ -79,13 +89,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         //user 이름을 받아옴
         txt_id.setText(presenter.get_userName());
 
+
         //옆 메뉴 출력
         drawerLayout.setDrawerListener(listener);
         drawerLayout.setOnTouchListener((v, event) -> false);
-        btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
-
-        //감정 표시 버튼 클릭 시
-        btn_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
         TextView_menu2.setOnClickListener(v -> presenter.intent_CommentDetail());
@@ -132,12 +139,28 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
                 });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_titlebar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.btn_plus:
+                presenter.add_emotion();
+                break;
+            default:
+        }
+        return true;
+    }
+
     private void initView() {
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerView = findViewById(R.id.drawer);
-        btn_plus = findViewById(R.id.btn_plus);
-        btn_close = findViewById(R.id.btn_close);
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
@@ -164,11 +187,10 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         commentViewList.add(commentFour);
 
         linearLayout = findViewById(R.id.linearLayout);
-        tableLayout = findViewById(R.id.tablelayout);
 
         //drawer
-        txt_id = findViewById(R.id.txt_id);
         btn_logout = findViewById(R.id.btn_logout);
+        txt_id = findViewById(R.id.txt_id);
         //로그인 정보를 위한 변수 초기화
         try {
             mAuth = FirebaseAuth.getInstance();
@@ -259,7 +281,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
 
     private void textView_setting(TextView textview, int index){
         //TextView 속성 설정을 위한 layoutParams 생성
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(230, 105);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 105, 1);
         layoutParams.leftMargin = 14;
         layoutParams.bottomMargin = 5;
         textview.setLayoutParams(layoutParams);
@@ -272,6 +294,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     // 권한 설정 후 사용자의 결정에 따라 구문 실행
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "onRequestPermissionsResult: if statement entered");
 

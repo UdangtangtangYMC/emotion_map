@@ -1,4 +1,5 @@
 <resources>
+    <!-- 타이틀바 텍스트   -->
     <string name="app_name">Emotion_mapFile</string>
     <string name="recent_emotion">최근 내 상태</string>
     <string name="comment_list">주변 상황</string>

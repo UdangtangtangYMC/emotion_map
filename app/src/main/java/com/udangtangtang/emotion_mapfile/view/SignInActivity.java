@@ -123,7 +123,7 @@ public class SignInActivity extends Activity {
             }
         });
 
-        //자동로그인 리스터
+        //자동로그인 리스너
         check_autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
