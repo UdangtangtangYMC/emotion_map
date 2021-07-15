@@ -15,12 +15,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 
+import java.util.Locale;
+
 public class EmailSignUpActivity extends Activity {
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Locale m = getResources().getConfiguration().locale;
         setContentView(R.layout.activity_signup);
         mAuth = FirebaseAuth.getInstance();
         findViewById(R.id.signUpSubmitButton).setOnClickListener(onClickListener);

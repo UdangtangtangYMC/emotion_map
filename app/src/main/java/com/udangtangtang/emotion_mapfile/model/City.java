@@ -258,17 +258,15 @@ public class City {
                         callback.onSuccess(status,true);
                     // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
                     else {
-                        stat.child(myCity).child("Temperature").setValue(0);
                         stat.child(myCity).child("happy_people").setValue(0);
                         stat.child(myCity).child("angry_people").setValue(0);
                         callback.onSuccess(status, false);
                     }
                 });
 
-                // DB 내에 진자 아무 데이터도 없음음
+                // DB 내에 진자 아무 데이터도 없음
                if (!status.isPresent()) {
                     // DB의 초기값을 설정해준 후, callback.onFailed() 메소드 호출
-                    stat.child(myCity).child("Temperature").setValue(0);
                     stat.child(myCity).child("happy_people").setValue(0);
                     stat.child(myCity).child("angry_people").setValue(0);
                     callback.onFailed();
@@ -303,17 +301,13 @@ public class City {
                         // HashMap 형태로 snapshot으로 부터 데이터를 읽어들임.
                         HashMap<String, Long> stats = (HashMap) snapshot.getValue();
                         // 등록한 comment의 status가 빡침일 경우 -> 해당 도시의 화난 사람 += 1, 기쁜 사람 -= 1
-                        // -> 원래 기쁨으로 온도를 1도 낮췄기 때문에기온 += 2
                         if (status.equals("빡침")) {
                             statRef.child("angry_people").setValue(stats.get("angry_people") + 1);
                             statRef.child("happy_people").setValue(stats.get("happy_people") - 1);
-                            statRef.child("Temperature").setValue(stats.get("Temperature") + 2);
                         } else {
                             // 등록한 comment의 status가 기쁨일 경우 -> 해당 도시의 화난 사람 -= 1, 기쁜 사람 += 1
-                            // -> 원래 화남으로 온도를 1도 높혔기 때문 기온 -= 2
                             statRef.child("angry_people").setValue(stats.get("angry_people") - 1);
                             statRef.child("happy_people").setValue(stats.get("happy_people") + 1);
-                            statRef.child("Temperature").setValue(stats.get("Temperature") - 2);
                         }
                     }
 
@@ -333,11 +327,9 @@ public class City {
                     // 등록한 comment의 status가 빡침일 경우 -> 해당 도시의 화난 사람 += 1, 기온 += 1
                     if (status.equals("빡침")) {
                         statRef.child("angry_people").setValue(stats.get("angry_people") + 1);
-                        statRef.child("Temperature").setValue(stats.get("Temperature") + 1);
                     } else {
                         // 등록한 comment의 status가 기쁨일 경우 -> 해당 도시의 기쁜 사람 += 1, 기온 -= 1
                         statRef.child("happy_people").setValue(stats.get("happy_people") + 1);
-                        statRef.child("Temperature").setValue(stats.get("Temperature") - 1);
                     }
                 }
 
@@ -357,6 +349,7 @@ public class City {
      */
     public void addMyCommentListener(String id, MyCommentCallBack callBack) {
         // 자신의 Comment에 대한 레퍼런스 획득 및 이벤트 리스너 등록
+
         DatabaseReference myInfo = firebaseDatabase.getReference("users").child(myCity).child(id);
         myInfo.addValueEventListener(new ValueEventListener() {
             @Override

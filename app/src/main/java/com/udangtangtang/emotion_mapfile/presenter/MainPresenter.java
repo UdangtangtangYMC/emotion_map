@@ -15,7 +15,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -37,9 +36,7 @@ import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +66,7 @@ public class MainPresenter {
     }
 
     public void add_emotion() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && user.getID() != null) {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
             PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
             plusEmotion.callFunciton(addEmotionCallback());
@@ -363,9 +360,9 @@ public class MainPresenter {
                     Long angryPeople = Long.parseLong("0");
                     if(myCityExist) {
                         HashMap<String, Long> myCityStatus = (HashMap) status.get(city.getMyCity());
-                        temperature = myCityStatus.get("Temperature");
                         happyPeople = myCityStatus.get("happy_people");
                         angryPeople = myCityStatus.get("angry_people");
+                        temperature = angryPeople - happyPeople;
                     }
                     activity.setCityStats(String.valueOf(temperature), String.valueOf(happyPeople), String.valueOf(angryPeople));
 
