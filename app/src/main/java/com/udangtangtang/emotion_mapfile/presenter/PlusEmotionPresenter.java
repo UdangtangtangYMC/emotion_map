@@ -1,8 +1,19 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.location.Location;
+import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
@@ -11,14 +22,17 @@ import java.util.Date;
 import java.util.Optional;
 
 public class PlusEmotionPresenter {
+    private final String TAG = "PlusEmotionPresenter";
     private Context context;
     private final City city;
     private final User user;
+    private FusedLocationProviderClient loc;
 
     public PlusEmotionPresenter(Context context, City city, User user){
         this.context = context;
         this.city = city;
         this.user = user;
+        this.loc = LocationServices.getFusedLocationProviderClient(context);
     }
 
     public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "기쁨" : "빡침"; }
@@ -30,9 +44,8 @@ public class PlusEmotionPresenter {
         input_comment.setStatus(selected_emotion);
         input_comment.setCreate_at(get_date());
 
-
-
         try {
+            updateLocation(loc);
             // 새로 등록하려는 comment와 user.getID()를 매개변수로 city.insertComment 메소드 호출
             city.insert_comment(input_comment, user.getID(), createInsertCommentCallBack());
         } catch (Exception e) {
@@ -52,5 +65,20 @@ public class PlusEmotionPresenter {
                 city.changeStatus(statusChanged, status);
             }
         };
+    }
+
+    // 아직 수정이 필요한 메소드
+    @SuppressLint("MissingPermission")
+    private void updateLocation(FusedLocationProviderClient loc) {
+        Log.d(TAG, "updateLocation: ");
+        LocationRequest locationRequest = LocationRequest.create().
+                setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        loc.requestLocationUpdates(locationRequest, new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                Location lastLocation = locationResult.getLastLocation();
+                Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
+            }
+        }, Looper.getMainLooper());
     }
 }
