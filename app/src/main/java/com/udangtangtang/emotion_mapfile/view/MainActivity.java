@@ -63,8 +63,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private DrawerLayout drawerLayout;
     private CoordinatorLayout coordinatorLayout;
     private ImageView weatherIcon;
-    private TextView text_plus; //감정 표시 버튼
-    private View drawerView;
     private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
@@ -105,9 +103,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //옆 메뉴 출력
         drawerLayout.setDrawerListener(listener);
         drawerLayout.setOnTouchListener((v, event) -> false);
-
-        //감정 표시 버튼 클릭 시
-        text_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
         TextView_menu2.setOnClickListener(v -> presenter.intent_CommentDetail());
@@ -175,8 +170,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private void initView() {
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
-        text_plus = findViewById(R.id.txt_plus);
-        drawerView = findViewById(R.id.drawer);
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
@@ -308,8 +301,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         layoutParams.bottomMargin = 5;
         textview.setLayoutParams(layoutParams);
         textview.setGravity(17);
-        if (index % 2 == 0)
+        textview.setTextColor(getResources().getColor(R.color.white,null));
+        if (index % 2 == 0){
+            textview.setTextColor(getResources().getColor(R.color.black,null));
             textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+        }
         textview.setPadding(3, 3, 3, 3);
     }
 

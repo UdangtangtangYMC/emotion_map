@@ -11,4 +11,5 @@
     <color name="cloudy_bottom_gradient">#283048</color>
     <color name="clearSky_upper_gradient">#56ccf2</color>
     <color name="clearSky_bottom_gradient">#2f80ed</color>
+    <color name="black">#000000</color>
 </resources>
