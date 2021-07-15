@@ -13,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
@@ -76,7 +78,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //로그인 한 회원 정보 관련
     private FirebaseAuth mAuth;
 
-
+    //색상
+    private int clearSky;
+    private int cloudy;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -212,6 +216,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
         }
+
+        clearSky = getResources().getColor(R.color.clearSky_upper_gradient);
+        cloudy = getResources().getColor(R.color.cloudy_upper_gradient);
     }
 
     //메뉴창
@@ -328,15 +335,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Drawable cloudy = getResources().getDrawable(R.drawable.cloudy, null);
 
         // 기온이 0도 보다 높으면 clearSky 적용, 0도 이하이면 cloudy 적용
-        temperature = "30";
         if (Integer.parseInt(temperature) > 0) {
             weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.sunny_icon, null));
             drawerLayout.setBackground(clearSky);
+            setStatusBarColor(this.clearSky);
         } else {
             weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.rainy_icon, null));
             weatherIcon.setScaleX(Float.parseFloat("2"));
             weatherIcon.setScaleY(Float.parseFloat("2"));
             drawerLayout.setBackground(cloudy);
+            setStatusBarColor(this.cloudy);
         }
 
         Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
@@ -346,6 +354,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         textViewTemperature.setText(getString(R.string.temperature, temperature));
         happy.setText(getString(R.string.people, happyPeople));
         angry.setText(getString(R.string.people, angryPeople));
+    }
+
+    private void setStatusBarColor(int color){
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(color);
     }
 
     public void setMyRecentComment(Optional<String> status, Optional<String> comment) {
