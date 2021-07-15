@@ -35,6 +35,8 @@ import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
 
+import java.util.Locale;
+
 
 public class SignInActivity extends Activity {
     private final String TAG = "SignInActivity";
@@ -129,6 +131,11 @@ public class SignInActivity extends Activity {
                 Log.d(TAG, "체크박스 리스너 : " + check_auto);
             }
         });
+
+        String language = getResources().getConfiguration().getLocales().get(0).getLanguage();
+        if (!language.equals("ko")) {
+            disableAll();
+        }
 
     }
     @Override
@@ -268,39 +275,14 @@ public class SignInActivity extends Activity {
         }
     }
 
-       /*
-    *kakao logout code
-        btn_login_out.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UserApiClient.getInstance().logout(error -> {
-                    if (error != null) {
-                        Log.e(TAG, "로그아웃 실패, SDK에서 토큰 삭제됨", error);
-                    }else{
-                        Log.e(TAG, "로그아웃 성공, SDK에서 토큰 삭제됨");
-                    }
-                    return null;
-                });
-            }
-        });
+    private void disableAll(){
+        Toast.makeText(SignInActivity.this, "시스템 언어가 한국어가 아닙니다.", Toast.LENGTH_LONG).show();
+        signUpButton.setEnabled(false);
+        signInButton.setEnabled(false);
+        googleSignInButton.setEnabled(false);
+        kakaoSignInButton.setEnabled(false);
+        edt_email.setEnabled(false);
+        edt_password.setEnabled(false);
+        check_autoLogin.setEnabled(false);
     }
-
-});
-     */
-
-      /*
-        logoutButton.setOnClickListner(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>(){
-                    @Override
-                    public Unit invoke(Throwable throwable){
-                        //updateKakaoLoginUI();
-                        return null;
-                    }
-                });
-            }
-        });
-        */
-
 }

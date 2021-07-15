@@ -16,15 +16,31 @@
       "oauth_client": [
         {
           "client_id": "866090862234-1lk57862u2n2bq5ic4l5ln3kq444c1ub.apps.googleusercontent.com",
-          "client_type": 3,
+          "client_type": 1,
           "android_info": {
             "package_name": "com.udangtangtang.emotion_mapfile",
             "certificate_hash": "3837c8f4dc9776630087a433de8c1b74f0a6aed2"
           }
         },
         {
-          "client_id": "866090862234-4rto4tuake8r6i5o7u59t93hrqur3380.apps.googleusercontent.com",
-          "client_type": 3,
+          "client_id": "866090862234-4hilji9rub0nm9bve8uhnguang1fjoq8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udangtangtang.emotion_mapfile",
+            "certificate_hash": "01d3276c4081ed48d55f585fb4b3e43ba489b6d4"
+          }
+        },
+        {
+          "client_id": "866090862234-dqb9jib673cao968fapf7bqoipmv2krs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udangtangtang.emotion_mapfile",
+            "certificate_hash": "dff6eb1a2d3600844f3c42d03c720f03f21ad6fa"
+          }
+        },
+        {
+          "client_id": "866090862234-kk8ioovk4ao17daap8m18quvdlc7h85t.apps.googleusercontent.com",
+          "client_type": 1,
           "android_info": {
             "package_name": "com.udangtangtang.emotion_mapfile",
             "certificate_hash": "d01d73ef2f32203e777845bf3abd8839373d3729"

@@ -215,7 +215,6 @@ public class MainPresenter {
                 Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
             }
         }, Looper.getMainLooper());
-
     }
 
 
