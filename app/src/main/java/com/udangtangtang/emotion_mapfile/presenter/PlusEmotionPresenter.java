@@ -14,35 +14,51 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
+import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 import java.util.Optional;
 
-public class PlusEmotionPresenter {
+public class PlusEmotionPresenter extends LocationCallback {
     private final String TAG = "PlusEmotionPresenter";
     private Context context;
     private final City city;
     private final User user;
     private FusedLocationProviderClient loc;
 
-    public PlusEmotionPresenter(Context context, City city, User user){
+    public PlusEmotionPresenter(Context context, City city, User user) {
         this.context = context;
         this.city = city;
         this.user = user;
         this.loc = LocationServices.getFusedLocationProviderClient(context);
     }
 
-    public String get_emotion(int id, int happy_id){ return (id==happy_id) ? "기쁨" : "빡침"; }
+    public String get_emotion(int id, int happy_id) {
+        return (id == happy_id) ? "기쁨" : "빡침";
+    }
 
-    public void insert_emotion(String selected_emotion, String comment){
+    public void insert_emotion(String selected_emotion, String comment) {
         Comment input_comment = new Comment();
 
         input_comment.setComment(comment);
         input_comment.setStatus(selected_emotion);
         input_comment.setCreate_at(get_date());
+
 
         try {
             updateLocation(loc);
@@ -53,12 +69,12 @@ public class PlusEmotionPresenter {
         }
     }
 
-    public Long get_date(){
+    public Long get_date() {
         Date time = new Date();
         return time.getTime();
     }
 
-    private InsertCommentCallBack createInsertCommentCallBack(){
+    private InsertCommentCallBack createInsertCommentCallBack() {
         return new InsertCommentCallBack() {
             @Override
             public void onSuccess(Optional<Boolean> statusChanged, String status) {
@@ -67,18 +83,33 @@ public class PlusEmotionPresenter {
         };
     }
 
-    // 아직 수정이 필요한 메소드
     @SuppressLint("MissingPermission")
     private void updateLocation(FusedLocationProviderClient loc) {
-        Log.d(TAG, "updateLocation: ");
-        LocationRequest locationRequest = LocationRequest.create().
-                setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        loc.requestLocationUpdates(locationRequest, new LocationCallback() {
+        Log.d(TAG, "updateLocation: plusEmotion");
+        Task<Location> currentLocation = loc.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
             @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location lastLocation = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
+            public boolean isCancellationRequested() {
+                Log.d(TAG, "isCancellationRequested: ");
+                return false;
             }
-        }, Looper.getMainLooper());
+
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull @NotNull OnTokenCanceledListener onTokenCanceledListener) {
+                return null;
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<Location> task) {
+                Location result = task.getResult();
+                Log.d(TAG, "onComplete: " + result.getLatitude() + " " + result.getLongitude());
+            }
+        });
+    }
+
+    @Override
+    public void onLocationResult(@NonNull @NotNull LocationResult locationResult) {
+        Location lastLocation = locationResult.getLastLocation();
+        Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + " " + lastLocation.getLongitude());
     }
 }

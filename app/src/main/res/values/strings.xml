@@ -2,6 +2,7 @@
     <!-- 타이틀바 텍스트   -->
     <string name="app_name">Emotion_mapFile</string>
     <string name="recent_emotion">최근 내 상태</string>
+    <string name="plus_emotion">+</string>
     <string name="comment_list">주변 상황</string>
     <string name="expand">더 보기</string>
     <string name="confirm">확인</string>

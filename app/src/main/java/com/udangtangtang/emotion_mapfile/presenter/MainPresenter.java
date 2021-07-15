@@ -80,6 +80,7 @@ public class MainPresenter {
     public void intent_CommentDetail() {
         if (comment_adapter != null) {
             Intent intent = new Intent(context, Comment_list.class);
+            intent.putExtra("isCloudy", city.getTemperature() > 0);
             intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
             context.startActivity(intent);
         } else {
@@ -96,6 +97,7 @@ public class MainPresenter {
         Intent intent = new Intent(context, NationalStatistics.class);
         NationalStatisticsPresenter nationalStatisticsPresenter = new NationalStatisticsPresenter(this.cityStatusesList);
         Log.d(TAG, "cityStatusList size" + String.valueOf(cityStatusesList.size()));
+        intent.putExtra("isSunny", city.getTemperature() > 0);
         intent.putExtra("nationalStatisticsPresenter", nationalStatisticsPresenter);
         context.startActivity(intent);
     }
@@ -132,7 +134,6 @@ public class MainPresenter {
     public void getLocality(MainActivity activity) {
         Log.d(TAG, "getLocality entered: ");
         FusedLocationProviderClient locProvider = LocationServices.getFusedLocationProviderClient(activity);
-        updateLocation(locProvider);
         locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
                     try {
@@ -212,7 +213,7 @@ public class MainPresenter {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location lastLocation = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
+                Log.d(TAG, "onLocationResult: ");
             }
         }, Looper.getMainLooper());
     }

@@ -23,18 +23,18 @@ import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 import java.util.ArrayList;
 
 public class NationalStatistics extends Activity{
+    private LinearLayout linearLayout;
     private NationalStatisticsPresenter nationalStatisticsPresenter;
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
     private BarChart barChart;
 
-    private LinearLayout linearLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
 
-        init();
+        init((Boolean)getIntent().getSerializableExtra("isSunny"));
         nationalStatisticsPresenter.setActivity(this);
         //표 세팅
         nationalStatisticsPresenter.add_tableRow();
@@ -50,11 +50,18 @@ public class NationalStatistics extends Activity{
         barChart.setDrawValueAboveBar(false);
     }
 
-    public void init(){
+    public void init(boolean isSunny){
         Intent intent = getIntent();
+        linearLayout = findViewById(R.id.statistics_layout);
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
         linearLayout = findViewById(R.id.linearLayout_menu3);
         barChart = (BarChart) findViewById(R.id.charting);
+
+        if (isSunny) {
+            linearLayout.setBackground(getResources().getDrawable(R.drawable.clear_sky, null));
+        } else{
+            linearLayout.setBackground(getResources().getDrawable(R.drawable.cloudy, null));
+        }
 
     }
 
