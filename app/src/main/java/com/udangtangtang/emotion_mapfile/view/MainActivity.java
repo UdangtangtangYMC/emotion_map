@@ -3,6 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,8 +38,11 @@ import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 

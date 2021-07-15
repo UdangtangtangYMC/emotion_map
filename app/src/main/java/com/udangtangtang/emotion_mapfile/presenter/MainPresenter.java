@@ -134,7 +134,6 @@ public class MainPresenter {
     public void getLocality(MainActivity activity) {
         Log.d(TAG, "getLocality entered: ");
         FusedLocationProviderClient locProvider = LocationServices.getFusedLocationProviderClient(activity);
-        updateLocation(locProvider);
         locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
                     try {
@@ -214,7 +213,7 @@ public class MainPresenter {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 Location lastLocation = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + lastLocation.getLongitude());
+                Log.d(TAG, "onLocationResult: ");
             }
         }, Looper.getMainLooper());
     }
