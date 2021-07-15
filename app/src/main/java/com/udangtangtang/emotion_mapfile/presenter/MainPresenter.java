@@ -66,12 +66,14 @@ public class MainPresenter {
     }
 
     public void add_emotion() {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && user.getID() != null) {
+        if(user.getID() == null){
+            Toast.makeText(context, "Kakao login : 이메일 정보제공에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
+        }else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
+        } else {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
             PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
             plusEmotion.callFunciton(addEmotionCallback());
-        } else {
-            Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -222,7 +224,7 @@ public class MainPresenter {
         this.cityStatusesList.clear();
         int index = 0;
         //status로 부터 값을 꺼내와
-        for(Object key : statuses.keySet()){
+        for (Object key : statuses.keySet()) {
             CityStatus cityStatus = new CityStatus();
             String cityName = key.toString();
             cityStatus.setName(cityName);
@@ -233,8 +235,8 @@ public class MainPresenter {
             int angry_people = Integer.parseInt(angry_temp);
             int happy_people = Integer.parseInt(happy_temp);
             int total = angry_people + happy_people;
-            double ratio = (double)angry_people / (double)total * 100;
-            Log.d(TAG, cityName + " " + angry_temp +" "+ happy_temp +" "+ ratio);
+            double ratio = (double) angry_people / (double) total * 100;
+            Log.d(TAG, cityName + " " + angry_temp + " " + happy_temp + " " + ratio);
 
             cityStatus.setAngry_count(angry_people);
             cityStatus.setHappy_count(happy_people);
@@ -244,19 +246,19 @@ public class MainPresenter {
             index++;
         }
         Log.d(TAG, String.valueOf(cityStatuses.length));
-        sortByProportion(cityStatuses, 0, cityStatuses.length-1);
+        sortByProportion(cityStatuses, 0, cityStatuses.length - 1);
 
         this.cityStatusesList.addAll(Arrays.asList(cityStatuses));
 
 
         //메인화면에는 표의 data가 5개만 표시되므로
-        Log.d(TAG, "cityStatusesList.size() = "+String.valueOf(cityStatusesList.size()));
-        if(cityStatusesList.size() < 5){
-            for(int i=0;i<cityStatusesList.size();i++){
+        Log.d(TAG, "cityStatusesList.size() = " + String.valueOf(cityStatusesList.size()));
+        if (cityStatusesList.size() < 5) {
+            for (int i = 0; i < cityStatusesList.size(); i++) {
                 activity.setChart(cityStatusesList.get(i).getName(), cityStatusesList.get(i).getAngry_count(),
                         cityStatusesList.get(i).getHappy_count(), cityStatusesList.get(i).getTotal(), i);
             }
-        }else{
+        } else {
             for (int i = 0; i < 5; i++) {
                 //정렬된 리스트인 this.List<CityStatus>에서 부터
                 //각 index에 담긴 인스턴스에 설정된 속성 값들을 바탕으로
@@ -328,8 +330,8 @@ public class MainPresenter {
                     }
 
                     activity.setComments(Optional.of(comments));
-
                     city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
+
                 });
             }
 
@@ -337,7 +339,8 @@ public class MainPresenter {
             public void onFailed() {
                 Log.d(TAG, "onFailed: ");
                 activity.setComments(Optional.empty());
-                city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
+
+                activity.setMyRecentComment("kakao login 이메일 정보 제공 비동의", "이메일 정보제공 비동의시 감정표현이 불가능 합니다");
             }
         };
     }
@@ -358,7 +361,7 @@ public class MainPresenter {
                     Long temperature = Long.parseLong("0");
                     Long happyPeople = Long.parseLong("0");
                     Long angryPeople = Long.parseLong("0");
-                    if(myCityExist) {
+                    if (myCityExist) {
                         HashMap<String, Long> myCityStatus = (HashMap) status.get(city.getMyCity());
                         happyPeople = myCityStatus.get("happy_people");
                         angryPeople = myCityStatus.get("angry_people");
@@ -391,7 +394,7 @@ public class MainPresenter {
         };
     }
 
-    private SetChartCallBack setChartCallBack(){
+    private SetChartCallBack setChartCallBack() {
         return new SetChartCallBack() {
             @Override
             public void SuccessGetStatus(Optional<HashMap> statusList) {
@@ -406,7 +409,7 @@ public class MainPresenter {
         };
     }
 
-    private AddEmotionCallback addEmotionCallback(){
+    private AddEmotionCallback addEmotionCallback() {
         return new AddEmotionCallback() {
             @Override
             public void onSuccess() {

@@ -251,12 +251,12 @@ public class City {
                 // callBack 함수를 통해 읽어온 status를 매개변수로 전달. -> 이후 데이터 처리는 MainPresenter에서 처리.
                 DatabaseReference localStat = null;
                 //status가 존재하면 -> DB 내에 어떤 데이터라도 존재함
-                status.ifPresent(s->{
+                status.ifPresent(s -> {
                     setChartCallBack.SuccessGetStatus(status);
                     // 자신이 위치하고 있는 도시에 대한 DB가 존재하는 경우
-                    if(s.get(myCity) != null)
-                        callback.onSuccess(status,true);
-                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
+                    if (s.get(myCity) != null)
+                        callback.onSuccess(status, true);
+                        // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
                     else {
                         stat.child(myCity).child("happy_people").setValue(0);
                         stat.child(myCity).child("angry_people").setValue(0);
@@ -265,7 +265,7 @@ public class City {
                 });
 
                 // DB 내에 진자 아무 데이터도 없음
-               if (!status.isPresent()) {
+                if (!status.isPresent()) {
                     // DB의 초기값을 설정해준 후, callback.onFailed() 메소드 호출
                     stat.child(myCity).child("happy_people").setValue(0);
                     stat.child(myCity).child("angry_people").setValue(0);
@@ -349,24 +349,29 @@ public class City {
      */
     public void addMyCommentListener(String id, MyCommentCallBack callBack) {
         // 자신의 Comment에 대한 레퍼런스 획득 및 이벤트 리스너 등록
-
-        DatabaseReference myInfo = firebaseDatabase.getReference("users").child(myCity).child(id);
-        myInfo.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                // HashMap 형태로 snapshot으로부터 데이터를 읽어들임.
-                Optional<HashMap> myComment = Optional.ofNullable((HashMap) snapshot.getValue());
-                // callBack 함수를 통해 자신의 최신 status와 comment를 매개변수로 전달.
-                myComment.ifPresent(c -> callBack.onSuccess(String.valueOf(c.get("status")), String.valueOf(c.get("comment"))));
-                if (!myComment.isPresent()) {
-                    callBack.onFailed();
+        //이메일 정보제공 미 동의시
+        if (id == null) {
+            callBack.onSuccess("kakao login 이메일 정보 제공 미동의", "이메일 정보제공 미동의시 감정표현이 불가능 합니다");
+            Log.d(TAG, "kakao 이메일 정보 제공 미동의");
+        } else {
+            DatabaseReference myInfo = firebaseDatabase.getReference("users").child(myCity).child(id);
+            myInfo.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                    // HashMap 형태로 snapshot으로부터 데이터를 읽어들임.
+                    Optional<HashMap> myComment = Optional.ofNullable((HashMap) snapshot.getValue());
+                    // callBack 함수를 통해 자신의 최신 status와 comment를 매개변수로 전달.
+                    myComment.ifPresent(c -> callBack.onSuccess(String.valueOf(c.get("status")), String.valueOf(c.get("comment"))));
+                    if (!myComment.isPresent()) {
+                        callBack.onFailed();
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-                Log.d(TAG, "onCancelled: ");
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                    Log.d(TAG, "onCancelled: ");
+                }
+            });
+        }
     }
 }

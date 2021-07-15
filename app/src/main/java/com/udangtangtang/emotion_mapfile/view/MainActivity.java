@@ -295,10 +295,16 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             recentStatus.setHeight(80);
             recentStatus.setText(status.get());
             recentComment.setText(comment.get());
+            Log.d(TAG, "params : "+status.get() + comment.get());
+
         } else {
             recentStatus.setHeight(0);
             recentComment.setText("지금 당신의 상태를 기록해보세요!");
         }
 
+    }
+    public void setMyRecentComment(String s, String s1) {
+        recentStatus.setText(s);
+        recentComment.setText(s1);
     }
 }
