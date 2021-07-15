@@ -67,10 +67,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
 
-    private ImageButton btn_close, btn_logout;
-    private ArrayList<Comment> comments;
-
     private ImageButton btn_logout;
+
     private TextView txt_id;
 
     private SwipeRefreshLayout swipeRefresh;
@@ -103,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //옆 메뉴 출력
         drawerLayout.setDrawerListener(listener);
         drawerLayout.setOnTouchListener((v, event) -> false);
-        btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
 
         //감정 표시 버튼 클릭 시
         text_plus.setOnClickListener(v -> presenter.add_emotion());
@@ -175,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
         text_plus = findViewById(R.id.txt_plus);
-        btn_close = findViewById(R.id.btn_close);
         drawerView = findViewById(R.id.drawer);
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
