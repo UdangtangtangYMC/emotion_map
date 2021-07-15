@@ -101,6 +101,7 @@ public class City {
 
         comments.addAll(Arrays.asList(comment_list));
 
+        this.temperature = angryPeople - happyPeople;
         return comments;
     }
 

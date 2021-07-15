@@ -37,73 +37,88 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="30dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/txt_userCity"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/black"
-                                android:textSize="30sp" />
-
-                            <ImageButton
-                                android:id="@+id/btn_plus"
-                                android:layout_width="50dp"
-                                android:layout_height="50dp"
-                                android:layout_gravity="right"
-                                android:background="@android:color/transparent"
-                                android:scaleType="fitCenter"
-                                android:src="@drawable/add" />
-
-                            <TextView
-                                android:id="@+id/txt_cityTemperature"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/black"
-                                android:textSize="40sp" />
+                            android:orientation="horizontal"
+                            android:weightSum="2">
 
                             <LinearLayout
+                                android:id="@+id/cityLayout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:orientation="horizontal">
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
                                 <TextView
+                                    android:id="@+id/txt_userCity"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginEnd="20dp"
-                                    android:text="@string/angry"
-                                    android:textColor="@color/black"
-                                    android:textSize="20sp" />
+                                    android:textColor="@color/white"
+                                    android:textSize="60sp" />
 
                                 <TextView
-                                    android:id="@+id/txt_angry"
+                                    android:id="@+id/txt_cityTemperature"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textColor="@color/black"
-                                    android:textSize="20sp" />
+                                    android:textColor="@color/white"
+                                    android:textSize="40sp" />
                             </LinearLayout>
 
                             <LinearLayout
+                                android:id="@+id/icon_layout"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
                                 android:orientation="horizontal">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginEnd="20dp"
-                                    android:text="@string/happy"
-                                    android:textColor="@color/black"
-                                    android:textSize="20sp" />
-
-                                <TextView
-                                    android:id="@+id/txt_happy"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/black"
-                                    android:textSize="20sp" />
+                                <ImageView
+                                    android:id="@+id/weather_icon"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="fitCenter"/>
                             </LinearLayout>
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="20dp"
+                                android:text="@string/angry"
+                                android:textColor="@color/white"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/txt_angry"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="20dp"
+                                android:text="@string/happy"
+                                android:textColor="@color/white"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:id="@+id/txt_happy"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -111,29 +126,48 @@
                             android:layout_marginBottom="30dp"
                             android:orientation="vertical">
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="20dp"
                                 android:background="@drawable/menu_bottom_border"
+                                android:orientation="horizontal"
                                 android:paddingBottom="10dp"
-                                android:text="@string/recent_emotion"
-                                android:textColor="@color/black"
-                                android:textSize="20sp" />
+                                android:weightSum="2">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/recent_emotion"
+                                    android:textAlignment="viewStart"
+                                    android:textColor="@color/white"
+                                    android:textSize="20sp" />
+
+                                <TextView
+                                    android:id="@+id/txt_plus"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="@string/plus_emotion"
+                                    android:textAlignment="viewEnd"
+                                    android:textColor="@color/white"
+                                    android:textSize="30sp" />
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/recent_status"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="5dp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="18sp" />
 
                             <TextView
                                 android:id="@+id/recent_comment"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="16sp" />
                         </LinearLayout>
 
@@ -150,14 +184,14 @@
                                     android:layout_column="1"
                                     android:paddingBottom="10dp"
                                     android:text="@string/comment_list"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/white"
                                     android:textSize="20sp" />
 
                                 <TextView
                                     android:id="@+id/textView_menu2"
                                     android:paddingBottom="10dp"
                                     android:text="@string/expand"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/white"
                                     android:textSize="14sp" />
                             </TableRow>
                         </TableLayout>
@@ -172,28 +206,28 @@
                                 android:id="@+id/commentOne"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/commentTwo"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/commentThree"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="16sp" />
 
                             <TextView
                                 android:id="@+id/commentFour"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:textSize="16sp" />
                         </LinearLayout>
 
@@ -215,14 +249,14 @@
                                         android:layout_column="1"
                                         android:paddingBottom="10dp"
                                         android:text="@string/menu3"
-                                        android:textColor="@color/black"
+                                        android:textColor="@color/white"
                                         android:textSize="20sp" />
 
                                     <TextView
                                         android:id="@+id/textView_menu3Detail"
                                         android:paddingBottom="10dp"
                                         android:text="@string/expand"
-                                        android:textColor="@color/black"
+                                        android:textColor="@color/white"
                                         android:textSize="14sp" />
                                 </TableRow>
                             </TableLayout>
@@ -277,6 +311,7 @@
                                 </TableRow>
                             </TableLayout>
                         </LinearLayout>
+
                         <LinearLayout
                             android:id="@+id/linearLayout"
                             android:layout_width="match_parent"

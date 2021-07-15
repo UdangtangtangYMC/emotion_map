@@ -3,6 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -21,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -42,17 +45,14 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private final String TAG = "MainActivity";
     private MainPresenter presenter;
-    private LinearLayout linearLayout;
+    private LinearLayout linearLayout, cityLayout, weatherLayout;
     private DrawerLayout drawerLayout;
     private CoordinatorLayout coordinatorLayout;
-    private View drawerView;
-    private ImageButton btn_plus; //감정 표시 버튼
+    private ImageView weatherIcon;
+    private TextView text_plus; //감정 표시 버튼
     private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
-    private ArrayList<Comment> comments;
-
-    private TableLayout tableLayout;
 
     private ImageButton btn_close, btn_logout;
     private TextView txt_id;
@@ -85,7 +85,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         btn_close.setOnClickListener(v -> drawerLayout.closeDrawers());
 
         //감정 표시 버튼 클릭 시
-        btn_plus.setOnClickListener(v -> presenter.add_emotion());
+        text_plus.setOnClickListener(v -> presenter.add_emotion());
 
         //주변 상황 더보기 클릭시
         TextView_menu2.setOnClickListener(v -> presenter.intent_CommentDetail());
@@ -135,8 +135,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     private void initView() {
         //뷰 세팅
         drawerLayout = findViewById(R.id.drawer_layout);
-        drawerView = findViewById(R.id.drawer);
-        btn_plus = findViewById(R.id.btn_plus);
+        text_plus = findViewById(R.id.txt_plus);
         btn_close = findViewById(R.id.btn_close);
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
@@ -148,7 +147,9 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         recentStatus = (TextView) findViewById(R.id.recent_status);
         recentComment = (TextView) findViewById(R.id.recent_comment);
         swipeRefresh = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
-        comments = new ArrayList<>();
+        weatherIcon = (ImageView) findViewById(R.id.weather_icon);
+        cityLayout = (LinearLayout) findViewById(R.id.cityLayout);
+        weatherLayout = (LinearLayout) findViewById(R.id.icon_layout);
 
         // comment를 보여줄 TextView
         commentOne = (TextView) findViewById(R.id.commentOne);
@@ -164,7 +165,6 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         commentViewList.add(commentFour);
 
         linearLayout = findViewById(R.id.linearLayout);
-        tableLayout = findViewById(R.id.tablelayout);
 
         //drawer
         txt_id = findViewById(R.id.txt_id);
@@ -211,12 +211,12 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
     }
 
-    public void refresh(){
+    public void refresh() {
         Intent intent = getIntent();
         finish();
         overridePendingTransition(0, 0); //인텐트 애니메이션 제거
         startActivity(intent); //현재 액티비티 재실행 실시
-        overridePendingTransition(0,0); //인텐트 애나메이션 제거
+        overridePendingTransition(0, 0); //인텐트 애나메이션 제거
     }
 
     public void setComments(Optional<List> comments) {
@@ -232,7 +232,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     }
 
     //표 텍스트 설정
-    public void setChart(String name, int angry_count, int happy_count, int total, int index){
+    public void setChart(String name, int angry_count, int happy_count, int total, int index) {
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -242,30 +242,30 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         //한 행에 들어갈 textView 4개 생성
         TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
 
-        for(int i=0;i<textViews.length;i++){
+        for (int i = 0; i < textViews.length; i++) {
             textView_setting(textViews[i], index);
         }
 
         textViews[0].setText(name);
         textViews[1].setText(String.valueOf(angry_count + "명"));
-        textViews[2].setText(String.valueOf(happy_count+"명"));
+        textViews[2].setText(String.valueOf(happy_count + "명"));
         textViews[3].setText(String.valueOf(total + "명"));
 
-        for(TextView textView : textViews){
+        for (TextView textView : textViews) {
             linearLayout.addView(textView);
         }
         this.linearLayout.addView(linearLayout);
     }
 
-    private void textView_setting(TextView textview, int index){
+    private void textView_setting(TextView textview, int index) {
         //TextView 속성 설정을 위한 layoutParams 생성
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(230, 105);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 105, 1);
         layoutParams.leftMargin = 14;
         layoutParams.bottomMargin = 5;
         textview.setLayoutParams(layoutParams);
         textview.setGravity(17);
-        if(index % 2 == 0)
-            textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
+        if (index % 2 == 0)
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
         textview.setPadding(3, 3, 3, 3);
     }
 
@@ -284,6 +284,26 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
     }
 
     public void setCityStats(String temperature, String happyPeople, String angryPeople) {
+
+        // 필요한 drawable 객체 선언
+        Drawable clearSky = getResources().getDrawable(R.drawable.clear_sky, null);
+        Drawable cloudy = getResources().getDrawable(R.drawable.cloudy, null);
+
+        // 기온이 0도 보다 높으면 clearSky 적용, 0도 이하이면 cloudy 적용
+        temperature = "30";
+        if (Integer.parseInt(temperature) > 0) {
+            weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.sunny_icon, null));
+            drawerLayout.setBackground(clearSky);
+        } else {
+            weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.rainy_icon, null));
+            weatherIcon.setScaleX(Float.parseFloat("2"));
+            weatherIcon.setScaleY(Float.parseFloat("2"));
+            drawerLayout.setBackground(cloudy);
+        }
+
+        Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
         userCity.setText(presenter.getUserCity());
         textViewTemperature.setText(getString(R.string.temperature, temperature));
         happy.setText(getString(R.string.people, happyPeople));
@@ -295,7 +315,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
             recentStatus.setHeight(80);
             recentStatus.setText(status.get());
             recentComment.setText(comment.get());
-            Log.d(TAG, "params : "+status.get() + comment.get());
+            Log.d(TAG, "params : " + status.get() + comment.get());
 
         } else {
             recentStatus.setHeight(0);
@@ -303,6 +323,7 @@ public class MainActivity extends Activity implements ActivityCompat.OnRequestPe
         }
 
     }
+
     public void setMyRecentComment(String s, String s1) {
         recentStatus.setText(s);
         recentComment.setText(s1);
