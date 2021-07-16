@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,6 +33,8 @@ public class NationalStatistics extends Activity{
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
     private BarChart barChart;
+    private int clearSky;
+    private int cloudy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,17 +65,26 @@ public class NationalStatistics extends Activity{
         linearLayout_chart = findViewById(R.id.linearLayout_menu3);
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
         barChart = (BarChart) findViewById(R.id.charting);
-
+        clearSky = getResources().getColor(R.color.clearSky_upper_gradient);
+        cloudy = getResources().getColor(R.color.cloudy_upper_gradient);
         if (isSunny) {
             linearLayout.setBackground(getResources().getDrawable(R.drawable.clear_sky, null));
             Log.d(TAG, "isSunny");
+            setStatusBarColor(clearSky);
         } else{
             linearLayout.setBackground(getResources().getDrawable(R.drawable.cloudy, null));
             Log.d(TAG, "isCloudy");
+            setStatusBarColor(cloudy);
         }
 
     }
 
+    private void setStatusBarColor(int color){
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(color);
+    }
 
     public void graphInitSetting(){
 

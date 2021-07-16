@@ -1,9 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,13 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,25 +26,18 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 
@@ -252,11 +239,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     public void refresh() {
-        Intent intent = getIntent();
-        finish();
-        overridePendingTransition(0, 0); //인텐트 애니메이션 제거
-        startActivity(intent); //현재 액티비티 재실행 실시
-        overridePendingTransition(0, 0); //인텐트 애나메이션 제거
+        this.linearLayout.removeAllViewsInLayout();
+        presenter.checkPermissions(this);
     }
 
     public void setComments(Optional<List> comments) {
