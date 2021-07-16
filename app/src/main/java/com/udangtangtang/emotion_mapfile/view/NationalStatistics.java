@@ -3,6 +3,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,7 +24,9 @@ import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 import java.util.ArrayList;
 
 public class NationalStatistics extends Activity{
+    private static final String TAG = "NationalStatics";
     private LinearLayout linearLayout;
+    private LinearLayout linearLayout_chart;
     private NationalStatisticsPresenter nationalStatisticsPresenter;
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
@@ -34,7 +37,7 @@ public class NationalStatistics extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
 
-        init((Boolean)getIntent().getSerializableExtra("isSunny"));
+        init((boolean)getIntent().getSerializableExtra("isSunny"));
         nationalStatisticsPresenter.setActivity(this);
         //표 세팅
         nationalStatisticsPresenter.add_tableRow();
@@ -48,19 +51,23 @@ public class NationalStatistics extends Activity{
         barChart.getAxisRight().setAxisMaxValue(100);
         barChart.getAxisLeft().setAxisMaxValue(100);
         barChart.setDrawValueAboveBar(false);
+
     }
 
     public void init(boolean isSunny){
+        Log.d(TAG, String.valueOf(isSunny));
         Intent intent = getIntent();
         linearLayout = findViewById(R.id.statistics_layout);
+        linearLayout_chart = findViewById(R.id.linearLayout_menu3);
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
-        linearLayout = findViewById(R.id.linearLayout_menu3);
         barChart = (BarChart) findViewById(R.id.charting);
 
         if (isSunny) {
             linearLayout.setBackground(getResources().getDrawable(R.drawable.clear_sky, null));
+            Log.d(TAG, "isSunny");
         } else{
             linearLayout.setBackground(getResources().getDrawable(R.drawable.cloudy, null));
+            Log.d(TAG, "isCloudy");
         }
 
     }
@@ -130,7 +137,7 @@ public class NationalStatistics extends Activity{
         for(TextView textView : textViews){
             linearLayout.addView(textView);
         }
-        this.linearLayout.addView(linearLayout);
+        this.linearLayout_chart.addView(linearLayout);
     }
 
     private void textView_setting(TextView textview, int index){
@@ -138,10 +145,13 @@ public class NationalStatistics extends Activity{
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 105, 1);
         layoutParams.leftMargin = 14;
         layoutParams.bottomMargin = 5;
-        if(index % 2 == 0)
-            textview.setBackground(ContextCompat.getDrawable(this,R.drawable.round_border1));
-        textview.setGravity(17);
         textview.setLayoutParams(layoutParams);
+        textview.setGravity(17);
+        textview.setTextColor(getResources().getColor(R.color.white,null));
+        if (index % 2 == 0){
+            textview.setTextColor(getResources().getColor(R.color.black,null));
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+        }
         textview.setPadding(3, 3, 3, 3);
     }
 

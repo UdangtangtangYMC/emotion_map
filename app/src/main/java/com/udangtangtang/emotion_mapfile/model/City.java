@@ -256,6 +256,7 @@ public class City {
                     setChartCallBack.SuccessGetStatus(status);
                     // 자신이 위치하고 있는 도시에 대한 DB가 존재하는 경우
                     if (s.get(myCity) != null)
+
                         callback.onSuccess(status, true);
                         // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
                     else {

@@ -57,15 +57,21 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
+                    android:textAlignment="center"
                     android:layout_marginBottom="1dp"
+                    android:textColor="@color/white"
                     android:padding="3dp"
-                    android:text="@string/menu3.1" />
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:text="@string/menu3.1"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="1dp"
                     android:padding="3dp"
                     android:text="@string/menu3.2" />
@@ -73,7 +79,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="1dp"
                     android:padding="3dp"
                     android:text="@string/menu3.3" />
@@ -81,7 +90,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="1dp"
                     android:padding="3dp"
                     android:text="@string/menu3.4" />

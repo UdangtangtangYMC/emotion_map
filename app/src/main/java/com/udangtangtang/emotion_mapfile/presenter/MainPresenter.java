@@ -81,7 +81,7 @@ public class MainPresenter {
     public void intent_CommentDetail() {
         if (comment_adapter != null) {
             Intent intent = new Intent(context, Comment_list.class);
-            intent.putExtra("isSunny", city.getTemperature() > 0);
+            intent.putExtra("isSunny", activity.temperature > 0);
             intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
             context.startActivity(intent);
         } else {
@@ -98,7 +98,7 @@ public class MainPresenter {
         Intent intent = new Intent(context, NationalStatistics.class);
         NationalStatisticsPresenter nationalStatisticsPresenter = new NationalStatisticsPresenter(this.cityStatusesList);
         Log.d(TAG, "cityStatusList size" + String.valueOf(cityStatusesList.size()));
-        intent.putExtra("isSunny", city.getTemperature() > 0);
+        intent.putExtra("isSunny", activity.temperature > 0);
         intent.putExtra("nationalStatisticsPresenter", nationalStatisticsPresenter);
         context.startActivity(intent);
     }
