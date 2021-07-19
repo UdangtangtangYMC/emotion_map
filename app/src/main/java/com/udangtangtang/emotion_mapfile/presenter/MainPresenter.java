@@ -194,6 +194,8 @@ public class MainPresenter extends LocationCallback {
         return String.valueOf(city.getHappyPeople());
     }
 
+    public String getUserEmail() {return this.user.getEmail();}
+
     public String getLoginMethod() {
         return user.getLogin_method();
     }

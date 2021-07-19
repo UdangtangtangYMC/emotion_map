@@ -51,8 +51,7 @@ public class NationalStatistics extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
-
-
+        ab.setDisplayShowTitleEnabled(false);
 
         init((boolean)getIntent().getSerializableExtra("isSunny"));
         nationalStatisticsPresenter.setActivity(this);
@@ -65,6 +64,10 @@ public class NationalStatistics extends AppCompatActivity {
         barChart.setTouchEnabled(false);
         barChart.getAxisRight().setAxisMaxValue(100);
         barChart.getAxisLeft().setAxisMaxValue(100);
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.setGridBackgroundColor(Color.WHITE);
         barChart.setDrawValueAboveBar(false);
         Legend l = barChart.getLegend();
         l.setTextSize(20);
@@ -148,8 +151,9 @@ public class NationalStatistics extends AppCompatActivity {
 
         barChart.setData(data);
         barChart.animateXY(100, 100);
-        barChart.invalidate();
+        barChart.getAxisLeft().setDrawGridLines(false);
         barChart.getBarData().setValueTextSize(15);
+        barChart.invalidate();
     }
 
     public void add_chartRow(String name, int angry_count, int happy_count, int total, int index) {

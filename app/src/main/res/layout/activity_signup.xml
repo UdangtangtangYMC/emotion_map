@@ -11,14 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="96dp"
         android:text="@string/signUpTitle"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
+    <Button
         android:id="@+id/signUpSubmitButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,8 +26,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordRepeatInput"
-        app:srcCompat="@android:drawable/btn_dialog" />
+        android:text="회원가입"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@+id/passwordRepeatInput"/>
 
     <EditText
         android:id="@+id/nameInput"

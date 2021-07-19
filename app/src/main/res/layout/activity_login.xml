@@ -6,15 +6,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <ImageView
         android:id="@+id/signInTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="90dp"
         android:gravity="center"
-        android:text="@string/signInTitle"
-        android:textColor="@color/white"
-        android:textSize="48sp" />
+        android:src="@mipmap/ic_udang"/>
 
     <EditText
         android:id="@+id/signInEmailInput"
