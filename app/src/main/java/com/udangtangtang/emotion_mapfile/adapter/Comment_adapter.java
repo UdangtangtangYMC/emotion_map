@@ -1,5 +1,6 @@
 package com.udangtangtang.emotion_mapfile.adapter;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,25 +14,16 @@ import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyViewHolder> implements Serializable {
     private final String TAG = "Comment_adapter";
-    private List<Comment> comment_list = new ArrayList<Comment>();
+    private List<Comment> comment_list;
+    private boolean isDetail;
 
-    protected class MyViewHolder extends RecyclerView.ViewHolder {
-        private TextView txt_comment;
-
-        public MyViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            txt_comment = itemView.findViewById(R.id.txt_comment);
-        }
-    }
-
-    public Comment_adapter(List<Comment> comment_list) {
+    public Comment_adapter(List<Comment> comment_list, boolean isDetail) {
         this.comment_list = comment_list;
+        this.isDetail = isDetail;
     }
 
     @NonNull
@@ -39,15 +31,31 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
     //recyclerview에 레이아웃 지정정
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         //Inflater : xml에 표기된 레이아웃들을 메모리에 객체화 하는 행동 수행
-        View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment, viewGroup, false);
-        MyViewHolder myViewHolder = new MyViewHolder(holderView);
-        return myViewHolder;
+        if (isDetail) {
+            View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment_detail, viewGroup, false);
+            MyViewHolder myViewHolder = new MyViewHolder(holderView);
+            return myViewHolder;
+        } else {
+            View holderView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.comment, viewGroup, false);
+            MyViewHolder myViewHolder = new MyViewHolder(holderView);
+            return myViewHolder;
+        }
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Comment comment = comment_list.get(position);
-        holder.txt_comment.setText(comment.getComment());
+        String status = comment.getStatus();
+        String rawComment = comment.getComment();
+        holder.txt_comment.setText(rawComment);
+        holder.txt_status.setText(status);
+
+        if (status.equals("빡침")) {
+            holder.txt_status.setTextColor(Color.parseColor("#D60620"));
+        } else {
+            holder.txt_status.setTextColor(Color.parseColor("#035096"));
+        }
         Log.d(TAG, String.valueOf(position));
         Log.d(TAG, String.valueOf(getItemCount()));
     }
@@ -64,5 +72,16 @@ public class Comment_adapter extends RecyclerView.Adapter<Comment_adapter.MyView
 
     public void setComments(List<Comment> comment_list) {
         this.comment_list = comment_list;
+    }
+
+    protected class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView txt_comment;
+        private TextView txt_status;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            txt_status = itemView.findViewById(R.id.txt_status);
+            txt_comment = itemView.findViewById(R.id.txt_comment);
+        }
     }
 }

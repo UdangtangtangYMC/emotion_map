@@ -15,19 +15,22 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-            android:value="@string/kakao_app_key"/>
+            android:value="@string/kakao_app_key" />
+
         <activity android:name=".view.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.Comment_list" />
+        <activity
+            android:name=".view.Comment_list"
+            android:parentActivityName=".view.MainActivity" />
 
         <service
             android:name=".view.SplashActivity"
-            android:foregroundServiceType="location" >
-        </service>
+            android:foregroundServiceType="location"/>
+
         <activity android:name=".view.EmailSignUpActivity" />
         <activity android:name=".view.SignInActivity" />
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity">

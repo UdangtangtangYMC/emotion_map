@@ -1,9 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,13 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,32 +26,48 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.api.Distribution;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 
 public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private final String TAG = "MainActivity";
+    //메뉴창
+    DrawerLayout.DrawerListener listener = new DrawerLayout.DrawerListener() {
+        @Override
+        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+        }
+
+        @Override
+        public void onDrawerOpened(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerClosed(@NonNull View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
+    };
+
+    private long time = 0; // 뒤로가기 두 번 클릭 시 종료하기 위해 사용되는 변수
     private MainPresenter presenter;
     private LinearLayout linearLayout, cityLayout, weatherLayout;
     private DrawerLayout drawerLayout;
@@ -66,19 +76,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
-
     private ImageButton btn_logout;
-
     private TextView txt_id;
-
     private SwipeRefreshLayout swipeRefresh;
-
     //로그인 한 회원 정보 관련
     private FirebaseAuth mAuth;
-
     //색상
     private int clearSky;
     private int cloudy;
+
 
     public int temperature;
 
@@ -97,10 +103,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //presenter 생성 및 위치권한 요청
         Intent intent = getIntent();
-        presenter = new MainPresenter(MainActivity.this, (User) intent.getSerializableExtra("user"), MainActivity.this);
-        presenter.checkPermissions(this);
+        if(presenter == null) {
+            presenter = new MainPresenter(MainActivity.this, MainActivity.this);
+            presenter.checkPermissions(this);
+        }
 
         //user 이름을 받아옴
+        Log.d(TAG, "onCreate: presenter "+presenter);
         txt_id.setText(presenter.get_userName());
 
         //옆 메뉴 출력
@@ -136,19 +145,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         // 스와이프 새로고침
         swipeRefresh.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefresh.setRefreshing(false);
-                            }
-                        }, 500);
-                        refresh();
-                    }
+                () -> {
+                    Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefresh.setRefreshing(false);
+                        }
+                    }, 500);
+                    refresh();
                 });
     }
 
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.btn_plus:
                 presenter.add_emotion();
                 break;
@@ -213,32 +219,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
         }
 
-        clearSky = getResources().getColor(R.color.clearSky_upper_gradient);
-        cloudy = getResources().getColor(R.color.cloudy_upper_gradient);
+        clearSky = getResources().getColor(R.color.clearSky_upper_gradient, null);
+        cloudy = getResources().getColor(R.color.cloudy_upper_gradient, null);
     }
-
-    //메뉴창
-    DrawerLayout.DrawerListener listener = new DrawerLayout.DrawerListener() {
-        @Override
-        public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-
-        }
-
-        @Override
-        public void onDrawerOpened(@NonNull View drawerView) {
-
-        }
-
-        @Override
-        public void onDrawerClosed(@NonNull View drawerView) {
-
-        }
-
-        @Override
-        public void onDrawerStateChanged(int newState) {
-
-        }
-    };
 
     //뒤로가기 버튼 2번을 통해 시스템 종료
     @Override
@@ -259,10 +242,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         overridePendingTransition(0, 0); //인텐트 애나메이션 제거
     }
 
-    public void setComments(Optional<List> comments) {
+    public void setComments(Optional<List<Comment>> comments) {
         comments.ifPresent(c -> {
             for (int i = 0; i < Math.min(c.size(), commentViewList.size()); i++) {
-                commentViewList.get(i).setText(String.valueOf(c.get(i)));
+                commentViewList.get(i).setText(getString(R.string.comment, c.get(i).getStatus(), c.get(i).getComment()));
             }
         });
 
@@ -305,10 +288,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         layoutParams.bottomMargin = 5;
         textview.setLayoutParams(layoutParams);
         textview.setGravity(17);
-        textview.setTextColor(getResources().getColor(R.color.white,null));
-        if (index % 2 == 0){
-            textview.setTextColor(getResources().getColor(R.color.black,null));
-            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+        textview.setTextColor(getResources().getColor(R.color.white, null));
+        if (index % 2 == 0) {
+            textview.setTextColor(getResources().getColor(R.color.black, null));
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border));
         }
         textview.setPadding(3, 3, 3, 3);
     }
@@ -349,15 +332,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherLayout" + weatherLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherIcon" + weatherIcon.getMeasuredHeight());
         userCity.setText(presenter.getUserCity());
         textViewTemperature.setText(getString(R.string.temperature, temperature));
         happy.setText(getString(R.string.people, happyPeople));
         angry.setText(getString(R.string.people, angryPeople));
     }
 
-    private void setStatusBarColor(int color){
+    private void setStatusBarColor(int color) {
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -377,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
     }
+
     public void setMyRecentComment(String s, String s1) {
         recentStatus.setText(s);
         recentComment.setText(s1);

@@ -19,7 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -35,13 +34,13 @@ import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
 
-import java.util.Locale;
-
 
 public class SignInActivity extends Activity {
+    //구글 로그인을 위해 필요한 변수 선언
+    private static final int RC_SIGN_IN = 9001;
     private final String TAG = "SignInActivity";
     private final String key = "Auto_login";
-
+    Session session;
     private long time = 0;
     private Button signUpButton;
     private Button signInButton;
@@ -52,17 +51,11 @@ public class SignInActivity extends Activity {
     private EditText edt_email, edt_password;
     private CheckBox check_autoLogin;
     private boolean check_auto;
-
-
-    //구글 로그인을 위해 필요한 변수 선언
-    private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
-
     //카카오 로그인을 위해 필요한 변수 선언
     private SessionCallback sessionCallback = new SessionCallback(SignInActivity.this);
-    Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +77,7 @@ public class SignInActivity extends Activity {
             @Override
             public void onClick(View view) {
 
-               signInPresenter.intent_EmailSignUpActivity();
+                signInPresenter.intent_EmailSignUpActivity();
             }
         });
 
@@ -113,12 +106,12 @@ public class SignInActivity extends Activity {
             @Override
             public void onClick(View v) {
                 signInPresenter.setAutoLogin(key, check_auto);
-                if (Session.getCurrentSession().checkAndImplicitOpen()){
+                if (Session.getCurrentSession().checkAndImplicitOpen()) {
                     Log.d(TAG, "onClick: 로그인 세션 살아있음");
                     sessionCallback.requestMe();
-                }else{
+                } else {
                     Log.d(TAG, "onClick: 로그인 세션 끝남");
-                    session.open(AuthType.KAKAO_LOGIN_ALL,SignInActivity.this);
+                    session.open(AuthType.KAKAO_LOGIN_ALL, SignInActivity.this);
                 }
             }
         });
@@ -138,18 +131,19 @@ public class SignInActivity extends Activity {
         }
 
     }
+
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         get_checkAutoLogin();
-        if (check_auto){
+        if (check_auto) {
             check_autoLogin.setChecked(true);
             checkSession();
         }
     }
 
-    private void initView(){
+    private void initView() {
         signUpButton = findViewById(R.id.signUpButton);
         signInButton = findViewById(R.id.signInButton);
         googleSignInButton = findViewById(R.id.googleSignInButton);
@@ -160,32 +154,34 @@ public class SignInActivity extends Activity {
         check_autoLogin = findViewById(R.id.check_autoLogin);
 
     }
+
     //자동로그인 여부 확인
     private void get_checkAutoLogin() {
         this.check_auto = signInPresenter.check_autoLogin(key);
-        Log.d(TAG, "자동로그인 확인 "+check_auto);
+        Log.d(TAG, "자동로그인 확인 " + check_auto);
     }
 
-    private void checkSession(){
-        if(currentUser != null){
+    private void checkSession() {
+        if (currentUser != null) {
             updateUI_google(currentUser);
             finish();
-        }else if(Session.getCurrentSession().checkAndImplicitOpen()){
+        } else if (Session.getCurrentSession().checkAndImplicitOpen()) {
             Log.d(TAG, "onStart: 로그인 세션 살아있음");
             sessionCallback.requestMe();
         }
     }
+
     //구글 로그인
-    public void login_google(){
+    public void login_google() {
         //mAuth - firebaseAuth를 사용하기 위해 인스턴스를 꼭 받아와야함
-        try{
+        try {
             this.gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))
                     .requestEmail()
                     .build();
             mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
             signIn();
-        }catch(Exception e){
+        } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "google_login: requestIdToken Fail", Toast.LENGTH_SHORT);
         }
     }
@@ -213,7 +209,7 @@ public class SignInActivity extends Activity {
             }
         }
 
-        if(Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)){
+        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
     }
@@ -249,16 +245,16 @@ public class SignInActivity extends Activity {
     private void updateUI_google(FirebaseUser user) { //update ui code here
         if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
-            User login_user = new User();
-            try{
+            User login_user = User.getInstance();
+            try {
                 login_user.setLogin_method("google");
                 login_user.setName(user.getDisplayName());
                 login_user.setID(user.getEmail());
-                Log.d(TAG, "updateUI_google: "+user.getEmail());
-                intent.putExtra("user",login_user);
+                Log.d(TAG, "updateUI_google: " + user.getEmail());
+                intent.putExtra("user", login_user);
                 this.startActivity(intent);
                 finish();
-            }catch (Exception e){
+            } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "google_login: request user_name fail", Toast.LENGTH_SHORT).show();
             }
         }
@@ -275,7 +271,7 @@ public class SignInActivity extends Activity {
         }
     }
 
-    private void disableAll(){
+    private void disableAll() {
         Toast.makeText(SignInActivity.this, "시스템 언어가 한국어가 아닙니다.", Toast.LENGTH_LONG).show();
         signUpButton.setEnabled(false);
         signInButton.setEnabled(false);

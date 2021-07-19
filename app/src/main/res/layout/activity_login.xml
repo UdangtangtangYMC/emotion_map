@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <TextView
         android:id="@+id/signInTitle"
         android:layout_width="match_parent"
@@ -43,15 +44,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signInEmailInput" />
 
-        <Button
-            android:id="@+id/signUpButton"
-            android:layout_width="wrap_content"
-            android:layout_height="31dp"
-            android:layout_marginLeft="65dp"
-            android:text="@string/mainSignUpButtonText"
-            android:textSize="10sp"
-            android:gravity="top"
-            android:background="#00ff0000"/>
+    <Button
+        android:id="@+id/signUpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="31dp"
+        android:layout_marginLeft="65dp"
+        android:background="#00ff0000"
+        android:gravity="top"
+        android:text="@string/mainSignUpButtonText"
+        android:textSize="10sp" />
 
     <CheckBox
         android:id="@+id/check_autoLogin"

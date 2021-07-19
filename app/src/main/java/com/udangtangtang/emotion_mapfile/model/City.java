@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +31,7 @@ import lombok.Setter;
 @Setter
 public class City {
 
+    private static City singletonCity;
     private final String TAG = "City";
     private final FirebaseDatabase firebaseDatabase;
     private double latitude;
@@ -41,7 +41,6 @@ public class City {
     private long temperature;
     private long happyPeople;
     private long angryPeople;
-    private static City singletonCity;
 
     private City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
@@ -56,6 +55,7 @@ public class City {
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
     private List<Comment> createCommentList(HashMap<String, Object> target) {
+        Log.d(TAG, "createCommentList: "+target);
         long twoDay = 1000 * 60 * 60 * 24 * 2;
         Date nowDate = new Date();
         Long now_criteria = nowDate.getTime();
@@ -69,8 +69,7 @@ public class City {
             //userInfo 에서 타임을 String 값으로 받아오고 이를 정수형으로 변환
             //정수형으로 변환된 time 값을 현재 날짜의 2일 전 값과 비교
             Log.d(TAG, "userInfo size: " + userInfo.size());
-            String temp = String.valueOf(userInfo.get("create_at"));
-            long write_date = Long.parseLong(temp);
+            long write_date = Long.parseLong(String.valueOf(userInfo.get("create_at")));
             Log.d(TAG, "userInfo size: " + write_date);
 
             //받아온 date가 현재 시간 기준 2일 안에 해당된다면
@@ -81,7 +80,7 @@ public class City {
                 comment.setComment(userInfo.get("comment"));
                 comment.setCreate_at(write_date);
                 comment.setDistrict("district");
-                comment.setStatus("status");
+                comment.setStatus(userInfo.get("status"));
                 comments.add(comment);
                 if (userInfo.get("status").equals("기쁨"))
                     this.happyPeople += 1;
@@ -90,18 +89,21 @@ public class City {
             }
         }
 
-        Comment[] comment_list = new Comment[comments.size()];
-        for (int i = 0; i < comments.size(); i++) {
-            comment_list[i] = comments.get(i);
+        if (comments.size() > 0) {
+            Comment[] comment_list = new Comment[comments.size()];
+            for (int i = 0; i < comments.size(); i++) {
+                comment_list[i] = comments.get(i);
+            }
+
+            sort_comment(comment_list, 0, comment_list.length - 1);
+
+            comments.clear();
+
+            comments.addAll(Arrays.asList(comment_list));
         }
 
-        sort_comment(comment_list, 0, comment_list.length - 1);
-
-        comments.clear();
-
-        comments.addAll(Arrays.asList(comment_list));
-
         this.temperature = angryPeople - happyPeople;
+
         return comments;
     }
 
@@ -250,19 +252,23 @@ public class City {
                 // snapshot으로 부터 HashMap 형태로 데이터를 읽어옴.
                 Optional<HashMap> status = Optional.ofNullable((HashMap) snapshot.getValue());
                 // callBack 함수를 통해 읽어온 status를 매개변수로 전달. -> 이후 데이터 처리는 MainPresenter에서 처리.
-                DatabaseReference localStat = null;
                 //status가 존재하면 -> DB 내에 어떤 데이터라도 존재함
                 status.ifPresent(s -> {
                     setChartCallBack.SuccessGetStatus(status);
+                    List<Long> people = new ArrayList<>(2);
                     // 자신이 위치하고 있는 도시에 대한 DB가 존재하는 경우
-                    if (s.get(myCity) != null)
-
-                        callback.onSuccess(status, true);
-                        // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
+                    if (s.get(myCity) != null) {
+                        people.add(happyPeople);
+                        people.add(angryPeople);
+                        callback.onSuccess(people, true);
+                    }
+                    // 자신이 위치하고 있는 도시에 대한 DB가 존재하지 않는 경우
                     else {
+                        people.add(Long.parseLong("0"));
+                        people.add(Long.parseLong("0"));
                         stat.child(myCity).child("happy_people").setValue(0);
                         stat.child(myCity).child("angry_people").setValue(0);
-                        callback.onSuccess(status, false);
+                        callback.onSuccess(people, false);
                     }
                 });
 
