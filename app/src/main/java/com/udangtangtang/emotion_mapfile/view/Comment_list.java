@@ -80,7 +80,7 @@ public class Comment_list extends AppCompatActivity {
             case R.id.btn_plus:
                 commentListPresenter.add_emotion();
                 return true;
-            case R.id.home:
+            case android.R.id.home:
                 onBackPressed();
                 return true;
         }

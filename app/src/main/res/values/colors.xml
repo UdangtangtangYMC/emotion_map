@@ -9,7 +9,7 @@
     <color name="statusBarColor">#F4F6FA</color>
     <color name="cloudy_upper_gradient">#859398</color>
     <color name="cloudy_bottom_gradient">#283048</color>
-    <color name="clearSky_upper_gradient">#56ccf2</color>
-    <color name="clearSky_bottom_gradient">#2f80ed</color>
+    <color name="clearSky_upper_gradient">#a0dfff</color>
+    <color name="clearSky_bottom_gradient">#4092d2</color>
     <color name="black">#000000</color>
 </resources>

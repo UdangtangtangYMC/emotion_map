@@ -320,9 +320,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             setStatusBarColor(this.clearSky);
         } else {
             weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.rainy_icon, null));
-            weatherIcon.setScaleX(Float.parseFloat("2"));
-            weatherIcon.setScaleY(Float.parseFloat("2"));
-            drawerLayout.setBackground(cloudy);
+            weatherIcon.setScaleX(Float.parseFloat("1.5"));
+            weatherIcon.setScaleY(Float.parseFloat("1.5"));
+            drawerLayout.setBackground(clearSky);
             setStatusBarColor(this.cloudy);
         }
 
