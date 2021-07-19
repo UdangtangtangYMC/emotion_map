@@ -85,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private int clearSky;
     private int cloudy;
 
+
+    public int temperature;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -258,6 +261,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT);
+        linearLayout.setLayoutParams(layoutParams);
 
         //한 행에 들어갈 textView 4개 생성
         TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
@@ -312,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         // 필요한 drawable 객체 선언
         Drawable clearSky = getResources().getDrawable(R.drawable.clear_sky, null);
         Drawable cloudy = getResources().getDrawable(R.drawable.cloudy, null);
+        this.temperature = Integer.parseInt(temperature);
 
         // 기온이 0도 보다 높으면 clearSky 적용, 0도 이하이면 cloudy 적용
         if (Integer.parseInt(temperature) > 0) {
