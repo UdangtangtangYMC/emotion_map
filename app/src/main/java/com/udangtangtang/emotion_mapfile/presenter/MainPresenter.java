@@ -136,7 +136,6 @@ public class MainPresenter extends LocationCallback {
             updateLocation();
             //getLocality(activity);
         }
-        Log.d(TAG, "getLocality 메서드 실행");
 
     }
 

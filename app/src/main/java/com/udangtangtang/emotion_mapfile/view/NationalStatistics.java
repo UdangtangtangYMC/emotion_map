@@ -145,7 +145,7 @@ public class NationalStatistics extends Activity {
         textview.setTextColor(getResources().getColor(R.color.white,null));
         if (index % 2 == 0){
             textview.setTextColor(getResources().getColor(R.color.black,null));
-            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border));
         }
         textview.setPadding(3, 3, 3, 3);
     }
