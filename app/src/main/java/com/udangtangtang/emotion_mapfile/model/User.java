@@ -3,12 +3,22 @@ package com.udangtangtang.emotion_mapfile.model;
 import java.io.Serializable;
 
 public class User implements Serializable {
+    private static User singletonUser;
     private final String TAG = "User";
     private String ID;
     private String name;
     private String city;
     private String login_method;
-    private Comment myComment;
+
+    private User() {
+    }
+
+    public static User getInstance() {
+        if (singletonUser == null) {
+            singletonUser = new User();
+        }
+        return singletonUser;
+    }
 
     public String getID() {
         return ID;

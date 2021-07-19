@@ -90,17 +90,18 @@ public class PreferenceManager {
 
     /**
      * String 값 로드
+     *
      * @param context
      * @param key
      * @return
      */
-    public static String getString(Context context, String key){
+    public static String getString(Context context, String key) {
         SharedPreferences prefs = getPreferences(context);
         String value = prefs.getString(key, DEFAULT_VALUE_STRING);
         return value;
     }
 
-    public static boolean getBoolean(Context context, String key) throws NullPointerException{
+    public static boolean getBoolean(Context context, String key) throws NullPointerException {
         SharedPreferences prefs = getPreferences(context);
         boolean value = prefs.getBoolean(key, DEFAULT_VALUE_BOOLEAN);
         return value;

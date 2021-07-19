@@ -39,56 +39,56 @@
                 app:layout_constraintVertical_bias="0.471" />
 
             <TableLayout
+                android:id="@+id/tablelayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:stretchColumns="*"
-                android:id="@+id/tablelayout">
+                android:stretchColumns="*">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp" />
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
+                <TableRow
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
-                    android:layout_marginBottom="1dp"
-                    android:padding="3dp"
-                    android:text="@string/menu3.1" />
+                    android:layout_marginBottom="5dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
-                    android:layout_marginBottom="1dp"
-                    android:padding="3dp"
-                    android:text="@string/menu3.2" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/chart_marginLeft"
+                        android:layout_marginBottom="1dp"
+                        android:padding="3dp"
+                        android:text="@string/menu3.1" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
-                    android:layout_marginBottom="1dp"
-                    android:padding="3dp"
-                    android:text="@string/menu3.3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/chart_marginLeft"
+                        android:layout_marginBottom="1dp"
+                        android:padding="3dp"
+                        android:text="@string/menu3.2" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/chart_marginLeft"
-                    android:layout_marginBottom="1dp"
-                    android:padding="3dp"
-                    android:text="@string/menu3.4" />
-            </TableRow>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/chart_marginLeft"
+                        android:layout_marginBottom="1dp"
+                        android:padding="3dp"
+                        android:text="@string/menu3.3" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/chart_marginLeft"
+                        android:layout_marginBottom="1dp"
+                        android:padding="3dp"
+                        android:text="@string/menu3.4" />
+                </TableRow>
 
 
             </TableLayout>
         </LinearLayout>
     </ScrollView>
-        </LinearLayout>
+</LinearLayout>

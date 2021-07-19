@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,8 +19,9 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.protobuf.StringValue;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
@@ -35,41 +35,44 @@ import com.udangtangtang.emotion_mapfile.view.NationalStatistics;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
 import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import kotlin.reflect.KMutableProperty2;
+public class MainPresenter extends LocationCallback {
 
-public class MainPresenter {
-
+    static final int PERMISSIONS_REQUEST = 0x0000001;
     private final String TAG = "MainPresenter";
     private final Context context;
     private final User user;
     private final City city;
     private Comment_adapter comment_adapter;
-    static final int PERMISSIONS_REQUEST = 0x0000001;
-    private List<CityStatus> cityStatusesList = new ArrayList<CityStatus>();
+    private List<Comment> commentList;
+    private List<CityStatus> cityStatusesList = new ArrayList<>();
     private MainActivity activity;
+    private FusedLocationProviderClient loc;
 
-    public MainPresenter(Context context, User user, MainActivity activity) {
+    public MainPresenter(Context context, MainActivity activity) {
         this.context = context;
-        this.user = user;
+        this.user = User.getInstance();
         this.city = City.getInstance();
         this.activity = activity;
     }
 
     public String get_userName() {
+        Log.d(TAG, "get_userName: "+user);
         Log.d(TAG, user.getName());
         return user.getName();
     }
 
     public void add_emotion() {
-        if(user.getID() == null){
+        if (user.getID() == null) {
             Toast.makeText(context, "Kakao login : 이메일 정보제공에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
-        }else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         } else {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
@@ -82,7 +85,7 @@ public class MainPresenter {
         if (comment_adapter != null) {
             Intent intent = new Intent(context, Comment_list.class);
             intent.putExtra("isSunny", city.getTemperature() > 0);
-            intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", comment_adapter);
+            intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", new Comment_adapter(commentList, true));
             context.startActivity(intent);
         } else {
             Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
@@ -125,7 +128,13 @@ public class MainPresenter {
         } else {
             Log.d(TAG, "checkPermissions: else entered");
             // 권한이 이미 승인되어있다면 getLocality() 호출
-            getLocality(activity);
+            /**
+             * updateLocation() -> 현재 위치를 획득하기 위해 하드웨어 리소스 사용, 로딩 시간 약간 증가
+             * getLocality() -> 가장 최근에 기록된 위치를 사용, 이전 기록이 없을 시 에러 발생
+             *                  이전 기록이 오래되었을 경우 사용자 이용 경험에 불편 발생
+             */
+            updateLocation();
+            //getLocality(activity);
         }
         Log.d(TAG, "getLocality 메서드 실행");
 
@@ -203,22 +212,6 @@ public class MainPresenter {
             }
         });
     }
-
-    // 아직 수정이 필요한 메소드
-    @SuppressLint("MissingPermission")
-    private void updateLocation(FusedLocationProviderClient loc) {
-        Log.d(TAG, "updateLocation: ");
-        LocationRequest locationRequest = LocationRequest.create().
-                setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        loc.requestLocationUpdates(locationRequest, new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                Location lastLocation = locationResult.getLastLocation();
-                Log.d(TAG, "onLocationResult: ");
-            }
-        }, Looper.getMainLooper());
-    }
-
 
     private void setChart(HashMap statuses) {
         CityStatus[] cityStatuses = new CityStatus[statuses.size()];
@@ -317,20 +310,14 @@ public class MainPresenter {
     private CommentListCallBack createCommentListCallBack(MainActivity activity) {
         return new CommentListCallBack() {
             @Override
-            public void onSuccess(Optional<List<Comment>> commentList) {
+            public void onSuccess(Optional<List<Comment>> comments) {
                 Log.d(TAG, "onSuccess: ");
-                commentList.ifPresent(c -> {
+                comments.ifPresent(c -> {
+                    commentList = c;
                     // comment 상세보기에 쓰일 comment_adapter 생성
-                    comment_adapter = new Comment_adapter(c);
+                    comment_adapter = new Comment_adapter(c, false);
 
-                    // MainActivity 에 보일 ui 초기화
-                    List<String> comments = new ArrayList<>();
-
-                    for (Comment comment : c) {
-                        comments.add(comment.getComment());
-                    }
-
-                    activity.setComments(Optional.of(comments));
+                    activity.setComments(Optional.of(c));
                     city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
 
                 });
@@ -357,21 +344,17 @@ public class MainPresenter {
     private StatisticsCallBack createStatisticsCallBack(MainActivity activity) {
         return new StatisticsCallBack() {
             @Override
-            public void onSuccess(Optional<HashMap> statusList, boolean myCityExist) {
-                statusList.ifPresent(status -> {
-                    Long temperature = Long.parseLong("0");
-                    Long happyPeople = Long.parseLong("0");
-                    Long angryPeople = Long.parseLong("0");
-                    if (myCityExist) {
-                        HashMap<String, Long> myCityStatus = (HashMap) status.get(city.getMyCity());
-                        happyPeople = myCityStatus.get("happy_people");
-                        angryPeople = myCityStatus.get("angry_people");
-                        temperature = angryPeople - happyPeople;
-                    }
-                    activity.setCityStats(String.valueOf(temperature), String.valueOf(happyPeople), String.valueOf(angryPeople));
+            public void onSuccess(List<Long> people, boolean myCityExist) {
+                Long temperature = Long.parseLong("0");
+                Long happyPeople = Long.parseLong("0");
+                Long angryPeople = Long.parseLong("0");
+                if (myCityExist) {
+                    happyPeople = people.get(0);
+                    angryPeople = people.get(1);
+                    temperature = angryPeople - happyPeople;
+                }
+                activity.setCityStats(String.valueOf(temperature), String.valueOf(happyPeople), String.valueOf(angryPeople));
 
-                    // write your code here, SungMin or wherever you want.
-                });
             }
 
             @Override
@@ -417,5 +400,60 @@ public class MainPresenter {
                 activity.refresh();
             }
         };
+    }
+
+    @SuppressLint("MissingPermission")
+    private void updateLocation() {
+        Log.d(TAG, "updateLocation: plusEmotion");
+        loc = LocationServices.getFusedLocationProviderClient(context);
+        loc.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+            @Override
+            public boolean isCancellationRequested() {
+                Log.d(TAG, "isCancellationRequested: ");
+                return false;
+            }
+
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull @NotNull OnTokenCanceledListener onTokenCanceledListener) {
+                return null;
+            }
+        }).addOnCompleteListener(task -> {
+            Location location = task.getResult();
+            try {
+                Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
+                Geocoder geocoder = new Geocoder(context);
+                // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
+                Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
+
+                // Address 객체에서 Locality 속성을 획득
+                // subLocality는 구로 고정 되어있음, 속해있는 도가 없는 경우 -> getAdminArea를 통해 해당 시 접근, 도가 있는 존재하는 경우 -> getLocality를 통해 시 획득
+                String locality = address.getLocality();
+
+                Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
+
+                // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
+                if (locality == null) {
+                    locality = address.getAdminArea();
+                }
+                // 위도, 경도, 도시명을 City 객체에 저장
+                city.setInitInfo(locality,
+                        address.getSubLocality(),
+                        location.getLatitude(),
+                        location.getLongitude());
+                setInitInfo(activity);
+                Log.d(TAG, "getLocality: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + city.getMyCity());
+                // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
+            } catch (Exception e) {
+                Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
+                Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onLocationResult(@NonNull @NotNull LocationResult locationResult) {
+        Location lastLocation = locationResult.getLastLocation();
+        Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + " " + lastLocation.getLongitude());
     }
 }

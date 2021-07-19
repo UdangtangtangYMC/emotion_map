@@ -2,6 +2,8 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -27,15 +29,16 @@ public class PlusEmotion {
     private String comment;
 
 
-    public PlusEmotion(Context context, PlusEmotionPresenter plusEmotionPresenter){
+    public PlusEmotion(Context context, PlusEmotionPresenter plusEmotionPresenter) {
         this.context = context;
         this.plusEmotionPresenter = plusEmotionPresenter;
 
     }
 
-    public void callFunciton(AddEmotionCallback addEmotionCallback){
+    public void callFunciton(AddEmotionCallback addEmotionCallback) {
         final Dialog dlg = new Dialog(context);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dlg.setContentView(R.layout.dialog_plus);
         dlg.show();
 
@@ -47,13 +50,13 @@ public class PlusEmotion {
                 int happy_id = R.id.rg_btn1;
                 selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
-                if(!comment.equals("")){
+                if (!comment.equals("")) {
                     plusEmotionPresenter.insert_emotion(selected_emotion, comment);
                     addEmotionCallback.onSuccess();
-                }else{
-                    Toast.makeText(context, "comment를 입력해주세요", Toast.LENGTH_SHORT).show();
+                    dlg.dismiss();
+                } else {
+                    Toast.makeText(context, "를 입력해주세요", Toast.LENGTH_SHORT).show();
                 }
-                dlg.dismiss();
             }
         });
 
@@ -66,7 +69,7 @@ public class PlusEmotion {
         });
     }
 
-    public void init(Dialog dlg){
+    public void init(Dialog dlg) {
         rdg = dlg.findViewById(R.id.rdg);
         rd_btn1 = dlg.findViewById(R.id.rg_btn1);
         rd_btn2 = dlg.findViewById(R.id.rg_btn2);

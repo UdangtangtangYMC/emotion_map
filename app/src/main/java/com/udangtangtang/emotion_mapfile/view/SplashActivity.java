@@ -8,16 +8,17 @@ import android.os.Handler;
 import com.udangtangtang.emotion_mapfile.R;
 
 public class SplashActivity extends Activity {
-    private final int SPLASH_DISPLAY_TIME=3000;
+    private final int SPLASH_DISPLAY_TIME = 3000;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable(){
+        handler.postDelayed(new Runnable() {
             @Override
-            public void run(){
+            public void run() {
                 startActivity(new Intent(getApplication(), SignInActivity.class));
                 SplashActivity.this.finish();
             }
@@ -25,5 +26,6 @@ public class SplashActivity extends Activity {
     }
 
     @Override
-    public void onBackPressed() {}
+    public void onBackPressed() {
+    }
 }

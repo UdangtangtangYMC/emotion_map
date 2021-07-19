@@ -19,17 +19,6 @@ import java.util.Locale;
 
 public class EmailSignUpActivity extends Activity {
     private FirebaseAuth mAuth;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Locale m = getResources().getConfiguration().locale;
-        setContentView(R.layout.activity_signup);
-        mAuth = FirebaseAuth.getInstance();
-        findViewById(R.id.signUpSubmitButton).setOnClickListener(onClickListener);
-    }
-
     View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -40,6 +29,15 @@ public class EmailSignUpActivity extends Activity {
             }
         }
     };
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_signup);
+        mAuth = FirebaseAuth.getInstance();
+        findViewById(R.id.signUpSubmitButton).setOnClickListener(onClickListener);
+    }
 
     private void signUp() {
         String name = ((EditText) findViewById(R.id.nameInput)).getText().toString();
@@ -60,11 +58,9 @@ public class EmailSignUpActivity extends Activity {
                                     if (task.getException().toString() != null) {
                                         if (password.length() < 6) {
                                             Toast.makeText(EmailSignUpActivity.this, "6자리 이상의 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show();
-                                        }
-                                        else if (email.length()==0){
+                                        } else if (email.length() == 0) {
                                             Toast.makeText(EmailSignUpActivity.this, "이메일을 입력하세요.", Toast.LENGTH_SHORT).show();
-                                        }
-                                        else{
+                                        } else {
                                             Toast.makeText(EmailSignUpActivity.this, task.getException().toString(), Toast.LENGTH_SHORT).show();
                                         }
                                     }

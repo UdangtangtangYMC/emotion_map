@@ -3,5 +3,5 @@
     <item
         android:id="@+id/btn_logout"
         android:icon="@drawable/logout"
-        android:title="로그아웃"/>
+        android:title="로그아웃" />
 </menu>

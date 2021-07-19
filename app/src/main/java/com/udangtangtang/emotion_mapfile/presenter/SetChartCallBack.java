@@ -5,5 +5,6 @@ import java.util.Optional;
 
 public interface SetChartCallBack {
     public void SuccessGetStatus(Optional<HashMap> statusList);
+
     public void OnFailGetStatus();
 }
