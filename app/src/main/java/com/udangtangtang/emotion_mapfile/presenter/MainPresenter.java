@@ -77,7 +77,7 @@ public class MainPresenter extends LocationCallback {
         } else {
             PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
             PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-            plusEmotion.callFunciton(addEmotionCallback());
+            plusEmotion.callFunction(addEmotionCallback());
         }
     }
 

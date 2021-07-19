@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -19,13 +20,8 @@ import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
 public class PlusEmotion {
     private PlusEmotionPresenter plusEmotionPresenter;
     private Context context;
-    private RadioGroup rdg;
-    private RadioButton rd_btn1, rd_btn2;
     private EditText edt_ment;
-    private Button btn_ok;
-    private Button btn_cancel;
 
-    private String selected_emotion;
     private String comment;
 
 
@@ -35,20 +31,28 @@ public class PlusEmotion {
 
     }
 
-    public void callFunciton(AddEmotionCallback addEmotionCallback) {
+    public void callFunction(AddEmotionCallback addEmotionCallback) {
         final Dialog dlg = new Dialog(context);
         dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dlg.setContentView(R.layout.dialog_plus);
+
+        dlg.getWindow().getAttributes().windowAnimations = R.style.AnimationPopup;
+
+        WindowManager.LayoutParams params = dlg.getWindow().getAttributes();
+        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+
+        dlg.getWindow().setAttributes(params);
         dlg.show();
 
-        init(dlg);
+        /*init(dlg);
         btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int emotion_id = rdg.getCheckedRadioButtonId();
-                int happy_id = R.id.rg_btn1;
-                selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
+                //int happy_id = R.id.rg_btn1;
+                //selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
                 comment = edt_ment.getText().toString();
                 if (!comment.equals("")) {
                     plusEmotionPresenter.insert_emotion(selected_emotion, comment);
@@ -66,15 +70,15 @@ public class PlusEmotion {
                 Toast.makeText(context, "취소되었습니다", Toast.LENGTH_SHORT).show();
                 dlg.dismiss();
             }
-        });
+        });*/
     }
 
     public void init(Dialog dlg) {
-        rdg = dlg.findViewById(R.id.rdg);
+        /*rdg = dlg.findViewById(R.id.rdg);
         rd_btn1 = dlg.findViewById(R.id.rg_btn1);
-        rd_btn2 = dlg.findViewById(R.id.rg_btn2);
+        rd_btn2 = dlg.findViewById(R.id.rg_btn2);*/
         edt_ment = dlg.findViewById(R.id.edt_ment);
-        btn_ok = dlg.findViewById(R.id.btn_ok);
-        btn_cancel = dlg.findViewById(R.id.btn_cancel);
+        /*btn_ok = dlg.findViewById(R.id.btn_ok);
+        btn_cancel = dlg.findViewById(R.id.btn_cancel);*/
     }
 }
