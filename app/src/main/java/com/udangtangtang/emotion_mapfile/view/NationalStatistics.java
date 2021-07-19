@@ -22,10 +22,9 @@ import com.github.mikephil.charting.utils.Utils;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
-
 import java.util.ArrayList;
 
-public class NationalStatistics extends Activity{
+public class NationalStatistics extends Activity {
     private static final String TAG = "NationalStatics";
     private LinearLayout linearLayout;
     private LinearLayout linearLayout_chart;
@@ -47,8 +46,6 @@ public class NationalStatistics extends Activity{
         nationalStatisticsPresenter.add_tableRow();
 
         Utils.init(NationalStatistics.this);
-        System.out.println(barChart);
-        System.out.println(barChart);
         graphInitSetting();       //그래프 기본 세팅
 
         barChart.setTouchEnabled(false);
@@ -58,8 +55,7 @@ public class NationalStatistics extends Activity{
 
     }
 
-    public void init(boolean isSunny){
-        Log.d(TAG, String.valueOf(isSunny));
+    public void init(boolean isSunny) {
         Intent intent = getIntent();
         linearLayout = findViewById(R.id.statistics_layout);
         linearLayout_chart = findViewById(R.id.linearLayout_menu3);
@@ -86,7 +82,7 @@ public class NationalStatistics extends Activity{
         window.setStatusBarColor(color);
     }
 
-    public void graphInitSetting(){
+    public void graphInitSetting() {
 
         //그래프 X축 받아오기
         labelList = nationalStatisticsPresenter.get_label();
@@ -106,7 +102,7 @@ public class NationalStatistics extends Activity{
         // BarChart 메소드
         ArrayList<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < valList.size(); i++) {
-            entries.add(new BarEntry((Integer)valList.get(i), i));
+            entries.add(new BarEntry((Integer) valList.get(i), i));
         }
 
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
@@ -114,7 +110,7 @@ public class NationalStatistics extends Activity{
         barChart.setDescription(" ");
 
         ArrayList<String> labels = new ArrayList<String>();
-        for(int i=0;i<labelList.size();i++){
+        for (int i = 0; i < labelList.size(); i++) {
             labels.add((String) labelList.get(i));
         }
 
@@ -126,7 +122,7 @@ public class NationalStatistics extends Activity{
         barChart.invalidate();
     }
 
-    public void add_chartRow(String name, int angry_count, int happy_count, int total, int index){
+    public void add_chartRow(String name, int angry_count, int happy_count, int total, int index) {
         //LinearLayout 생성
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -138,22 +134,22 @@ public class NationalStatistics extends Activity{
 
         //한 행에 들어갈 textView 4개 생성
         TextView[] textViews = {new TextView(this), new TextView(this), new TextView(this), new TextView(this)};
-        for(int i=0;i<textViews.length;i++){
+        for (int i = 0; i < textViews.length; i++) {
             textView_setting(textViews[i], index);
         }
 
         textViews[0].setText(name);
         textViews[1].setText(String.valueOf(angry_count + "명"));
-        textViews[2].setText(String.valueOf(happy_count+"명"));
+        textViews[2].setText(String.valueOf(happy_count + "명"));
         textViews[3].setText(String.valueOf(total + "명"));
 
-        for(TextView textView : textViews){
+        for (TextView textView : textViews) {
             linearLayout.addView(textView);
         }
         this.linearLayout_chart.addView(linearLayout);
     }
 
-    private void textView_setting(TextView textview, int index){
+    private void textView_setting(TextView textview, int index) {
         //TextView 속성 설정을 위한 layoutParams 생성
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 105, 1);
         layoutParams.leftMargin = 14;
@@ -163,7 +159,7 @@ public class NationalStatistics extends Activity{
         textview.setTextColor(getResources().getColor(R.color.white,null));
         if (index % 2 == 0){
             textview.setTextColor(getResources().getColor(R.color.black,null));
-            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border));
         }
         textview.setPadding(3, 3, 3, 3);
     }

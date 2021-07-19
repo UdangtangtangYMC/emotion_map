@@ -13,8 +13,16 @@ import com.kakao.auth.KakaoSDK;
 
 public class GlobalApplication extends Application {
     private static GlobalApplication instance;
+
+    public static Application getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("this app illegal state");
+        }
+        return instance;
+    }
+
     @Override
-    public void onCreate(){
+    public void onCreate() {
         super.onCreate();
         instance = this;
         KakaoSDK.init(new KakaoSDKAdapter());
@@ -24,13 +32,6 @@ public class GlobalApplication extends Application {
     public void onTerminate() {
         super.onTerminate();
         instance = null;
-    }
-
-    public static Application getInstance(){
-        if(instance == null){
-            throw new IllegalStateException("this app illegal state");
-        }
-        return instance;
     }
 
     public class KakaoSDKAdapter extends KakaoAdapter {

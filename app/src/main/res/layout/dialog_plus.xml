@@ -1,64 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/round_border_detail">
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="감정표현설정"
-        android:textSize="40dp"
-        android:gravity="center"/>
+        android:textSize="40sp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:showText="true"
+        android:textOn="@string/angry"
+        android:textOff="@string/happy"/>
+
+
 
     <RadioGroup
         android:id="@+id/rdg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <RadioButton
             android:id="@+id/rg_btn1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="기쁨" />
+            android:text="@string/happy" />
+
         <RadioButton
             android:id="@+id/rg_btn2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="빡침" />
+            android:text="@string/angry" />
     </RadioGroup>
 
     <EditText
         android:id="@+id/edt_ment"
-        android:layout_height="200dp"
         android:layout_width="300dp"
+        android:layout_height="200dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="20dp"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="content"
+        android:hint="@string/hint"
         android:inputType="textImeMultiLine"
-        android:textSize="20sp"/>
+        android:textSize="20sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="20dp"
         android:orientation="horizontal"
-        android:layout_margin="20dp">
+        android:weightSum="5">
+
         <Button
             android:id="@+id/btn_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="확인"
-            android:layout_marginRight="70dp"/>
+            android:text="@string/confirm"
+            android:layout_weight="1"/>
+
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="취소"/>
+            android:text="@string/cancel"
+            android:layout_weight="1"/>
     </LinearLayout>
-
 
 
 </LinearLayout>

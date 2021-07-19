@@ -22,18 +22,20 @@ public class SessionCallback implements ISessionCallback {
     private Activity activity;
     private User user;
 
-    public SessionCallback(Activity activity){
+    public SessionCallback(Activity activity) {
         this.activity = activity;
     }
+
     //로그인에 성공한 상태
     @Override
     public void onSessionOpened() {
         requestMe();
     }
+
     //로그인에 실패한 상태
     @Override
     public void onSessionOpenFailed(KakaoException exception) {
-        if(exception !=  null){
+        if (exception != null) {
             Log.e("SessionCallback :: ", "onSessionOpenFailed : " + exception.getMessage());
         }
         //세션 연결이 실패 했을때
@@ -42,7 +44,7 @@ public class SessionCallback implements ISessionCallback {
     }
 
     //사용자 정보 요청
-    public void requestMe(){
+    public void requestMe() {
         Log.d(TAG, "requestMe()");
         UserManagement.getInstance()
                 .me(new MeV2ResponseCallback() {
@@ -59,17 +61,17 @@ public class SessionCallback implements ISessionCallback {
                     @Override
                     public void onSuccess(MeV2Response result) {
                         //유저 정보 저장을 위한 객체 생성
-                        user = new User();
+                        user = User.getInstance();
                         user.setLogin_method("kakao");
                         Log.i("KAKAO_API", "사용자 아이디 : " + result.getId());
                         //user정보를 받아옴
                         UserAccount kakaoAccount = result.getKakaoAccount();
                         if (kakaoAccount != null) {
                             String email = kakaoAccount.getEmail();
-                            if(email != null){
+                            if (email != null) {
                                 user.setID(email);
                                 Log.i("KAKAO_API", "사용자 아이디 : " + user.getID());
-                            }else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE){
+                            } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
 
                             }
                             //프로필
@@ -91,12 +93,12 @@ public class SessionCallback implements ISessionCallback {
                         }
                         intent_MainActivity();
                     }
-               });
+                });
     }
 
-    private void intent_MainActivity(){
+    private void intent_MainActivity() {
         Intent intent = new Intent(activity, MainActivity.class);
-        intent.putExtra("user",this.user);
+        intent.putExtra("user", this.user);
         activity.startActivity(intent);
         activity.finish();
     }

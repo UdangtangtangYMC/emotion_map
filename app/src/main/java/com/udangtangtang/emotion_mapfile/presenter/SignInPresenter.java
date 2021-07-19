@@ -3,7 +3,6 @@ package com.udangtangtang.emotion_mapfile.presenter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,11 +22,12 @@ public class SignInPresenter {
     private Context context;
     private FirebaseAuth mAuth;
 
-    public SignInPresenter(Context context, String key){
-        this.mAuth= FirebaseAuth.getInstance();
+    public SignInPresenter(Context context, String key) {
+        this.mAuth = FirebaseAuth.getInstance();
         this.context = context;
     }
-    public void intent_EmailSignUpActivity(){
+
+    public void intent_EmailSignUpActivity() {
         Intent intent = new Intent(context, EmailSignUpActivity.class);
         context.startActivity(intent);
     }
@@ -38,23 +38,22 @@ public class SignInPresenter {
                     .addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                Intent intent=new Intent(context, MainActivity.class);
-                                User login_user = new User();
+                                Intent intent = new Intent(context, MainActivity.class);
+                                User login_user = User.getInstance();
                                 login_user.setLogin_method("email");
                                 login_user.setName(user.getDisplayName());
                                 login_user.setID(user.getEmail());
                                 intent.putExtra("user", login_user);
                                 context.startActivity(intent);
                                 ((Activity) context).finish();
-                            }
-                            else{
+                            } else {
                                 Toast.makeText(context, "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
-        }else{
+        } else {
             Toast.makeText(context, "이메일과 비밀번호를 확인하세요.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -63,7 +62,7 @@ public class SignInPresenter {
         boolean auto_checking = false;
         try {
             auto_checking = PreferenceManager.getBoolean(context, key);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             setAutoLogin(key, false);
             return auto_checking;
         }

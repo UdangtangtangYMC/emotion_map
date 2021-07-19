@@ -35,7 +35,6 @@ import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +52,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private TextView TextView_menu2, TextView_menu3, userCity, textViewTemperature, angry, happy,
             commentOne, commentTwo, commentThree, commentFour, recentStatus, recentComment;
     private ArrayList<TextView> commentViewList;
-
     private ImageButton btn_logout;
-
     private TextView txt_id;
-
     private SwipeRefreshLayout swipeRefresh;
-
     //로그인 한 회원 정보 관련
     private FirebaseAuth mAuth;
-
     //색상
     private int clearSky;
     private int cloudy;
@@ -84,10 +78,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         //presenter 생성 및 위치권한 요청
         Intent intent = getIntent();
-        presenter = new MainPresenter(MainActivity.this, (User) intent.getSerializableExtra("user"), MainActivity.this);
-        presenter.checkPermissions(this);
+        if(presenter == null) {
+            presenter = new MainPresenter(MainActivity.this, MainActivity.this);
+            presenter.checkPermissions(this);
+        }
 
         //user 이름을 받아옴
+        Log.d(TAG, "onCreate: presenter "+presenter);
         txt_id.setText(presenter.get_userName());
 
         //옆 메뉴 출력
@@ -123,19 +120,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
         // 스와이프 새로고침
         swipeRefresh.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
-                    @Override
-                    public void onRefresh() {
-                        Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeRefresh.setRefreshing(false);
-                            }
-                        }, 500);
-                        refresh();
-                    }
+                () -> {
+                    Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            swipeRefresh.setRefreshing(false);
+                        }
+                    }, 500);
+                    refresh();
                 });
     }
 
@@ -148,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.btn_plus:
                 presenter.add_emotion();
                 break;
@@ -200,8 +194,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
         }
 
-        clearSky = getResources().getColor(R.color.clearSky_upper_gradient);
-        cloudy = getResources().getColor(R.color.cloudy_upper_gradient);
+        clearSky = getResources().getColor(R.color.clearSky_upper_gradient, null);
+        cloudy = getResources().getColor(R.color.cloudy_upper_gradient, null);
     }
 
     //메뉴창
@@ -243,10 +237,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         presenter.checkPermissions(this);
     }
 
-    public void setComments(Optional<List> comments) {
+    public void setComments(Optional<List<Comment>> comments) {
         comments.ifPresent(c -> {
             for (int i = 0; i < Math.min(c.size(), commentViewList.size()); i++) {
-                commentViewList.get(i).setText(String.valueOf(c.get(i)));
+                commentViewList.get(i).setText(getString(R.string.comment, c.get(i).getStatus(), c.get(i).getComment()));
             }
         });
 
@@ -289,10 +283,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         layoutParams.bottomMargin = 5;
         textview.setLayoutParams(layoutParams);
         textview.setGravity(17);
-        textview.setTextColor(getResources().getColor(R.color.white,null));
-        if (index % 2 == 0){
-            textview.setTextColor(getResources().getColor(R.color.black,null));
-            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border1));
+        textview.setTextColor(getResources().getColor(R.color.white, null));
+        if (index % 2 == 0) {
+            textview.setTextColor(getResources().getColor(R.color.black, null));
+            textview.setBackground(ContextCompat.getDrawable(this, R.drawable.round_border));
         }
         textview.setPadding(3, 3, 3, 3);
     }
@@ -333,15 +327,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
         Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherLayout" + weatherLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherIcon" + weatherIcon.getMeasuredHeight());
         userCity.setText(presenter.getUserCity());
         textViewTemperature.setText(getString(R.string.temperature, temperature));
         happy.setText(getString(R.string.people, happyPeople));
         angry.setText(getString(R.string.people, angryPeople));
     }
 
-    private void setStatusBarColor(int color){
+    private void setStatusBarColor(int color) {
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
@@ -361,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
 
     }
+
     public void setMyRecentComment(String s, String s1) {
         recentStatus.setText(s);
         recentComment.setText(s1);
