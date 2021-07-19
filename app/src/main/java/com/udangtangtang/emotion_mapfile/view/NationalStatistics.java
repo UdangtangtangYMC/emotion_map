@@ -2,17 +2,24 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -24,7 +31,7 @@ import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
 import java.util.ArrayList;
 
-public class NationalStatistics extends Activity {
+public class NationalStatistics extends AppCompatActivity {
     private static final String TAG = "NationalStatics";
     private LinearLayout linearLayout;
     private LinearLayout linearLayout_chart;
@@ -40,6 +47,13 @@ public class NationalStatistics extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
 
+        Toolbar toolbar = findViewById(R.id.toolbar_statis);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+
+
+
         init((boolean)getIntent().getSerializableExtra("isSunny"));
         nationalStatisticsPresenter.setActivity(this);
         //표 세팅
@@ -52,7 +66,20 @@ public class NationalStatistics extends Activity {
         barChart.getAxisRight().setAxisMaxValue(100);
         barChart.getAxisLeft().setAxisMaxValue(100);
         barChart.setDrawValueAboveBar(false);
+        Legend l = barChart.getLegend();
+        l.setTextSize(20);
+        l.setTextColor(getResources().getColor(R.color.chart_color));
+        l.setForm(Legend.LegendForm.CIRCLE);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void init(boolean isSunny) {
@@ -107,6 +134,7 @@ public class NationalStatistics extends Activity {
 
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
+        depenses.setValueTextSize(20);
         barChart.setDescription(" ");
 
         ArrayList<String> labels = new ArrayList<String>();
@@ -115,11 +143,13 @@ public class NationalStatistics extends Activity {
         }
 
         BarData data = new BarData(labels, depenses); // 라이브러리 v3.x 사용하면 에러 발생함
+        data.setValueTextSize(20);
         depenses.setColors(ColorTemplate.LIBERTY_COLORS); //
 
         barChart.setData(data);
         barChart.animateXY(100, 100);
         barChart.invalidate();
+        barChart.getBarData().setValueTextSize(15);
     }
 
     public void add_chartRow(String name, int angry_count, int happy_count, int total, int index) {

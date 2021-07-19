@@ -55,6 +55,7 @@ public class MainPresenter extends LocationCallback {
     private List<CityStatus> cityStatusesList = new ArrayList<>();
     private MainActivity activity;
     private FusedLocationProviderClient loc;
+    private int try_loc = 0;
 
     public MainPresenter(Context context, MainActivity activity) {
         this.context = context;
@@ -168,10 +169,11 @@ public class MainPresenter extends LocationCallback {
                                 location.getLongitude());
                         setInitInfo(activity);
                         Log.d(TAG, "getLocality: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + city.getMyCity());
+                        this.try_loc = 0;
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                     } catch (Exception e) {
                         Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
-                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "위치정보를 다시 가져옵니다 재시도 횟수 " + String.valueOf(++this.try_loc), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -20,8 +20,6 @@
         android:textOn="@string/angry"
         android:textOff="@string/happy"/>
 
-
-
     <RadioGroup
         android:id="@+id/rdg"
         android:layout_width="match_parent"

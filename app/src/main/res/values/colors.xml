@@ -12,4 +12,5 @@
     <color name="clearSky_upper_gradient">#a0dfff</color>
     <color name="clearSky_bottom_gradient">#4092d2</color>
     <color name="black">#000000</color>
+    <color name="chart_color">#DA7181</color>
 </resources>

@@ -24,8 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.Comment_list"
-            android:parentActivityName=".view.MainActivity" />
+            android:name=".view.Comment_list"/>
 
         <service
             android:name=".view.SplashActivity"

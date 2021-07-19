@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +33,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
 
@@ -72,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
         ab.setDisplayShowTitleEnabled(false);
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
 
         //위젯 연결
         initView();
@@ -145,6 +149,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         switch (item.getItemId()) {
             case R.id.btn_plus:
                 presenter.add_emotion();
+                break;
+            case android.R.id.home:
+                drawerLayout.openDrawer(Gravity.LEFT);
                 break;
             default:
         }
@@ -329,6 +336,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherLayout" + weatherLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherIcon" + weatherIcon.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
+
+        String mycity = presenter.getUserCity();
+        if(mycity.length() > 3){
+            userCity.setTextSize(50);
+        }else{
+            userCity.setTextSize(60);
+        }
         userCity.setText(presenter.getUserCity());
         textViewTemperature.setText(getString(R.string.temperature, temperature));
         happy.setText(getString(R.string.people, happyPeople));

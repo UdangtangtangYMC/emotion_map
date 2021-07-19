@@ -38,7 +38,6 @@ public class Comment_list extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_round_arrow_back_24,null));
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(getResources().getString(R.string.myCity, commentListPresenter.getMyCity()));
 
@@ -81,7 +80,7 @@ public class Comment_list extends AppCompatActivity {
                 commentListPresenter.add_emotion();
                 return true;
             case android.R.id.home:
-                onBackPressed();
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -101,6 +100,4 @@ public class Comment_list extends AppCompatActivity {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(color);
     }
-
-
 }
