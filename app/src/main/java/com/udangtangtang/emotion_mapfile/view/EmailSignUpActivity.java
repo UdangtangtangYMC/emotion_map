@@ -15,8 +15,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 
-import java.util.Locale;
-
 public class EmailSignUpActivity extends Activity {
     private FirebaseAuth mAuth;
     View.OnClickListener onClickListener = new View.OnClickListener() {

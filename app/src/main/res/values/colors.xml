@@ -15,4 +15,5 @@
     <color name="angry_switch">#F31600</color>
     <color name="happy_switch">#003D9B</color>
     <color name="transparent">#00ffffff</color>
+    <color name="chart_color">#DA7181</color>
 </resources>

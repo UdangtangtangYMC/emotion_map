@@ -1,28 +1,12 @@
 package com.udangtangtang.emotion_mapfile.presenter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.location.Location;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnTokenCanceledListener;
-import com.google.android.gms.tasks.Task;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
-import com.udangtangtang.emotion_mapfile.view.MainActivity;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 import java.util.Optional;
@@ -54,6 +38,8 @@ public class PlusEmotionPresenter {
     }
 
     public void insert_emotion(String selected_emotion, String comment, Refreshable refreshable) {
+
+        Log.d(TAG, "insert_emotion: "+selected_emotion);
 
         this.refreshable = refreshable;
 

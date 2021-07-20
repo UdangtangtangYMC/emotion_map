@@ -55,16 +55,28 @@ public class MainPresenter extends LocationCallback {
     private List<CityStatus> cityStatusesList = new ArrayList<>();
     private MainActivity activity;
     private FusedLocationProviderClient loc;
+    private int try_loc = 0;
+    private static MainPresenter singletonMainPresenter;
 
-    public MainPresenter(Context context, MainActivity activity) {
+    private MainPresenter(Context context, MainActivity activity) {
         this.context = context;
         this.user = User.getInstance();
         this.city = City.getInstance();
         this.activity = activity;
     }
 
+    public static MainPresenter getInstance(Context context, MainActivity activity){
+        if (singletonMainPresenter == null) {
+            singletonMainPresenter = new MainPresenter(context, activity);
+        }
+        return singletonMainPresenter;
+    }
+
+    public static MainPresenter getInstance(){
+        return singletonMainPresenter;
+    }
+
     public String get_userName() {
-        Log.d(TAG, "get_userName: "+user);
         Log.d(TAG, user.getName());
         return user.getName();
     }
@@ -100,7 +112,6 @@ public class MainPresenter extends LocationCallback {
     public void intent_NationalStatistics() {
         Intent intent = new Intent(context, NationalStatistics.class);
         NationalStatisticsPresenter nationalStatisticsPresenter = new NationalStatisticsPresenter(this.cityStatusesList);
-        Log.d(TAG, "cityStatusList size" + String.valueOf(cityStatusesList.size()));
         intent.putExtra("isSunny", city.getTemperature() > 0);
         intent.putExtra("nationalStatisticsPresenter", nationalStatisticsPresenter);
         context.startActivity(intent);
@@ -109,7 +120,6 @@ public class MainPresenter extends LocationCallback {
 
     // 위치 권환 확인 메소드
     public void checkPermissions(MainActivity activity) {
-        Log.d(TAG, "checkPermissions: " + ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION));
         // 위치권한이 획득 되어있지 않은 경우
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "권한요청 실행");
@@ -146,7 +156,6 @@ public class MainPresenter extends LocationCallback {
         locProvider.getLastLocation()
                 .addOnSuccessListener(location -> {
                     try {
-                        Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                         Geocoder geocoder = new Geocoder(context);
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                         Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
@@ -154,8 +163,6 @@ public class MainPresenter extends LocationCallback {
                         // Address 객체에서 Locality 속성을 획득
                         // subLocality는 구로 고정 되어있음, 속해있는 도가 없는 경우 -> getAdminArea를 통해 해당 시 접근, 도가 있는 존재하는 경우 -> getLocality를 통해 시 획득
                         String locality = address.getLocality();
-
-                        Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
 
                         // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
                         if (locality == null) {
@@ -167,11 +174,11 @@ public class MainPresenter extends LocationCallback {
                                 location.getLatitude(),
                                 location.getLongitude());
                         setInitInfo(activity);
-                        Log.d(TAG, "getLocality: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + city.getMyCity());
+                        this.try_loc = 0;
                         // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                     } catch (Exception e) {
                         Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");
-                        Toast.makeText(context, "위치정보를 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "위치정보를 다시 가져옵니다 재시도 횟수 " + String.valueOf(++this.try_loc), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -191,6 +198,8 @@ public class MainPresenter extends LocationCallback {
     public String getHappyPeople() {
         return String.valueOf(city.getHappyPeople());
     }
+
+    public String getUserEmail() {return this.user.getEmail();}
 
     public String getLoginMethod() {
         return user.getLogin_method();
@@ -229,7 +238,6 @@ public class MainPresenter extends LocationCallback {
             int happy_people = Integer.parseInt(happy_temp);
             int total = angry_people + happy_people;
             double ratio = (double) angry_people / (double) total * 100;
-            Log.d(TAG, cityName + " " + angry_temp + " " + happy_temp + " " + ratio);
 
             cityStatus.setAngry_count(angry_people);
             cityStatus.setHappy_count(happy_people);
@@ -238,14 +246,12 @@ public class MainPresenter extends LocationCallback {
             cityStatuses[index] = cityStatus;
             index++;
         }
-        Log.d(TAG, String.valueOf(cityStatuses.length));
         sortByProportion(cityStatuses, 0, cityStatuses.length - 1);
 
         this.cityStatusesList.addAll(Arrays.asList(cityStatuses));
 
 
         //메인화면에는 표의 data가 5개만 표시되므로
-        Log.d(TAG, "cityStatusesList.size() = " + String.valueOf(cityStatusesList.size()));
         if (cityStatusesList.size() < 5) {
             for (int i = 0; i < cityStatusesList.size(); i++) {
                 activity.setChart(cityStatusesList.get(i).getName(), cityStatusesList.get(i).getAngry_count(),
@@ -269,7 +275,6 @@ public class MainPresenter extends LocationCallback {
         int mid = cityStatuses[(pl + pr) / 2].getRatio();
 
         do {
-            Log.d(TAG, String.valueOf(pl) + String.valueOf(pr));
             while (cityStatuses[pl].getRatio() > mid) pl++;
             while (cityStatuses[pr].getRatio() < mid) pr--;
             if (pl <= pr) {
@@ -301,7 +306,7 @@ public class MainPresenter extends LocationCallback {
         this.comment_adapter.notifyDataSetChanged();
     }
 
-    private void setInitInfo(MainActivity activity) {
+    public void setInitInfo(MainActivity activity) {
         setCommentList(activity);
         setStatistics(activity);
     }
@@ -392,15 +397,6 @@ public class MainPresenter extends LocationCallback {
         };
     }
 
-    private AddEmotionCallback addEmotionCallback() {
-        return new AddEmotionCallback() {
-            @Override
-            public void onSuccess() {
-                activity.refresh();
-            }
-        };
-    }
-
     @SuppressLint("MissingPermission")
     private void updateLocation() {
         Log.d(TAG, "updateLocation: plusEmotion");
@@ -420,7 +416,6 @@ public class MainPresenter extends LocationCallback {
         }).addOnCompleteListener(task -> {
             Location location = task.getResult();
             try {
-                Log.d(TAG, "getLastLocation -> onSuccess: " + "latitude : " + location.getLatitude() + " longitude : " + location.getLongitude());
                 Geocoder geocoder = new Geocoder(context);
                 // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
                 Address address = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1).get(0);
@@ -428,8 +423,6 @@ public class MainPresenter extends LocationCallback {
                 // Address 객체에서 Locality 속성을 획득
                 // subLocality는 구로 고정 되어있음, 속해있는 도가 없는 경우 -> getAdminArea를 통해 해당 시 접근, 도가 있는 존재하는 경우 -> getLocality를 통해 시 획득
                 String locality = address.getLocality();
-
-                Log.d(TAG, "getLocality: " + address.getAdminArea() + address.getLocality() + address.getSubAdminArea() + address.getSubLocality());
 
                 // 현재 위치가 특별시, 광역시, 특별자치도 등 도에 속해있지 않은 경우
                 if (locality == null) {
@@ -441,7 +434,6 @@ public class MainPresenter extends LocationCallback {
                         location.getLatitude(),
                         location.getLongitude());
                 setInitInfo(activity);
-                Log.d(TAG, "getLocality: currentMill : " + System.currentTimeMillis() + " city.Mycity : " + city.getMyCity());
                 // 위도 경도를 매개변수로 Address 객체를 담은 리스트 생성
             } catch (Exception e) {
                 Log.d(TAG, "위치정보를 가져오는데 실패하였습니다.");

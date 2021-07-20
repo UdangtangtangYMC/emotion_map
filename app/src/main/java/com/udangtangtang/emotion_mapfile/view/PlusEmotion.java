@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -23,7 +22,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.presenter.AddEmotionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
 import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
@@ -75,6 +73,9 @@ public class PlusEmotion extends DialogFragment {
         return view;
     }
 
+    /**
+     * 이벤트 리스너가 필요한 View 객체에 리스너를 추가하는 메소드
+     */
     private void addEventListener(){
         // EditText의 내용 변경에 대한 이벤트 리스너 추가
         edt_comment.addTextChangedListener(new TextWatcher() {
@@ -102,7 +103,7 @@ public class PlusEmotion extends DialogFragment {
                 if (comment.equals("")) {
                     Toast.makeText(context,"내용을 입력해주세요.",Toast.LENGTH_LONG).show();
                 } else{
-                    if (emotionSwitch.isActivated()) {
+                    if (emotionSwitch.isOn()) {
                         plusEmotionPresenter.insert_emotion("빡침",comment, refreshable);
                     } else{
                         plusEmotionPresenter.insert_emotion("기쁨",comment, refreshable);
@@ -111,33 +112,5 @@ public class PlusEmotion extends DialogFragment {
                 }
             }
         });
-    }
-    public void callFunction(AddEmotionCallback addEmotionCallback) {
-
-        /*init(dlg);
-        btn_ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int emotion_id = rdg.getCheckedRadioButtonId();
-                //int happy_id = R.id.rg_btn1;
-                //selected_emotion = plusEmotionPresenter.get_emotion(emotion_id, happy_id);
-                comment = edt_ment.getText().toString();
-                if (!comment.equals("")) {
-                    plusEmotionPresenter.insert_emotion(selected_emotion, comment);
-                    addEmotionCallback.onSuccess();
-                    dlg.dismiss();
-                } else {
-                    Toast.makeText(context, "를 입력해주세요", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        btn_cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(context, "취소되었습니다", Toast.LENGTH_SHORT).show();
-                dlg.dismiss();
-            }
-        });*/
     }
 }

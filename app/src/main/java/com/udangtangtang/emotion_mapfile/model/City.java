@@ -55,7 +55,6 @@ public class City {
 
     // HashMap을 기반으로 comment 속성만으로 이루어진 List 생성후 반환
     private List<Comment> createCommentList(HashMap<String, Object> target) {
-        Log.d(TAG, "createCommentList: "+target);
         long twoDay = 1000 * 60 * 60 * 24 * 2;
         Date nowDate = new Date();
         Long now_criteria = nowDate.getTime();
@@ -68,9 +67,7 @@ public class City {
             HashMap<String, String> userInfo = (HashMap) target.get(key);
             //userInfo 에서 타임을 String 값으로 받아오고 이를 정수형으로 변환
             //정수형으로 변환된 time 값을 현재 날짜의 2일 전 값과 비교
-            Log.d(TAG, "userInfo size: " + userInfo.size());
             long write_date = Long.parseLong(String.valueOf(userInfo.get("create_at")));
-            Log.d(TAG, "userInfo size: " + write_date);
 
             //받아온 date가 현재 시간 기준 2일 안에 해당된다면
             //comment 인스턴스를 생성하여 list에 담음

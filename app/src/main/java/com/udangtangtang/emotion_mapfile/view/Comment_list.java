@@ -27,23 +27,23 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
     private final String TAG = "Comment_list";
     private LinearLayout linearLayout;
     private RecyclerView recyclerView;
-    private CommentListPresenter commentListPresenter;
+    private CommentListPresenter presenter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commentlist);
-        commentListPresenter = new CommentListPresenter(Comment_list.this, this);
+        presenter = new CommentListPresenter(this, this);
 
+        Intent intent = getIntent();
         //toolbar 세팅
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
-        ab.setHomeAsUpIndicator(getResources().getDrawable(R.drawable.ic_round_arrow_back_24,null));
         ab.setDisplayHomeAsUpEnabled(true);
-        ab.setTitle(getResources().getString(R.string.myCity, commentListPresenter.getMyCity()));
+        ab.setTitle(getResources().getString(R.string.myCity, presenter.getUserCity()));
 
-        Intent intent = getIntent();
+
         Comment_adapter comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
         initView((Boolean) intent.getSerializableExtra("isSunny"));
 
@@ -78,10 +78,10 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btn_plus:
-                commentListPresenter.add_emotion(this);
+                presenter.add_emotion(this);
                 return true;
             case android.R.id.home:
-                onBackPressed();
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -89,11 +89,7 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
 
     @Override
     public void refresh() {
-        Intent intent = getIntent();
-        finish();
-        overridePendingTransition(0, 0); //인텐트 애니메이션 제거
-        startActivity(intent); //현재 액티비티 재실행 실시
-        overridePendingTransition(0, 0); //인텐트 애나메이션 제거
+        //presenter.updateCommentDetailItems();
     }
 
     private void setStatusBarColor(int color) {
@@ -102,6 +98,4 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.setStatusBarColor(color);
     }
-
-
 }

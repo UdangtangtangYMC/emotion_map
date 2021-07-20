@@ -250,6 +250,7 @@ public class SignInActivity extends Activity {
                 login_user.setLogin_method("google");
                 login_user.setName(user.getDisplayName());
                 login_user.setID(user.getEmail());
+                login_user.setEmail(user.getEmail());
                 Log.d(TAG, "updateUI_google: " + user.getEmail());
                 intent.putExtra("user", login_user);
                 this.startActivity(intent);

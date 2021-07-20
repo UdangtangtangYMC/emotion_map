@@ -13,9 +13,9 @@ import com.kakao.usermgmt.response.model.Profile;
 import com.kakao.usermgmt.response.model.UserAccount;
 import com.kakao.util.OptionalBoolean;
 import com.kakao.util.exception.KakaoException;
-import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
+import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 public class SessionCallback implements ISessionCallback {
     private static final String TAG = "SessionCallback";
@@ -40,7 +40,9 @@ public class SessionCallback implements ISessionCallback {
         }
         //세션 연결이 실패 했을때
         //로그인화면을 다시 불러옴
-        activity.setContentView(R.layout.activity_login);
+        Intent intent = new Intent(activity, SignInActivity.class);
+        activity.startActivity(intent);
+        activity.finish();
     }
 
     //사용자 정보 요청
@@ -70,6 +72,7 @@ public class SessionCallback implements ISessionCallback {
                             String email = kakaoAccount.getEmail();
                             if (email != null) {
                                 user.setID(email);
+                                user.setEmail(email);
                                 Log.i("KAKAO_API", "사용자 아이디 : " + user.getID());
                             } else if (kakaoAccount.emailNeedsAgreement() == OptionalBoolean.TRUE) {
 

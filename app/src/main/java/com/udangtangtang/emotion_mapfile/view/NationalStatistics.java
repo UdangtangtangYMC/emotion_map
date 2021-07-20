@@ -1,16 +1,24 @@
 package com.udangtangtang.emotion_mapfile.view;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -22,7 +30,7 @@ import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
 import java.util.ArrayList;
 
-public class NationalStatistics extends Activity {
+public class NationalStatistics extends AppCompatActivity {
     private static final String TAG = "NationalStatics";
     private LinearLayout linearLayout;
     private LinearLayout linearLayout_chart;
@@ -30,11 +38,19 @@ public class NationalStatistics extends Activity {
     private ArrayList<Integer> valueList = new ArrayList<>(); // ArrayList 선언
     private ArrayList<String> labelList = new ArrayList<>(); // ArrayList 선언
     private BarChart barChart;
+    private int clearSky;
+    private int cloudy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
+
+        Toolbar toolbar = findViewById(R.id.toolbar_statis);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        ab.setDisplayHomeAsUpEnabled(true);
+        ab.setDisplayShowTitleEnabled(false);
 
         init((boolean)getIntent().getSerializableExtra("isSunny"));
         nationalStatisticsPresenter.setActivity(this);
@@ -47,8 +63,25 @@ public class NationalStatistics extends Activity {
         barChart.setTouchEnabled(false);
         barChart.getAxisRight().setAxisMaxValue(100);
         barChart.getAxisLeft().setAxisMaxValue(100);
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.setGridBackgroundColor(Color.WHITE);
         barChart.setDrawValueAboveBar(false);
+        Legend l = barChart.getLegend();
+        l.setTextSize(20);
+        l.setTextColor(getResources().getColor(R.color.chart_color));
+        l.setForm(Legend.LegendForm.CIRCLE);
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void init(boolean isSunny) {
@@ -57,16 +90,26 @@ public class NationalStatistics extends Activity {
         linearLayout_chart = findViewById(R.id.linearLayout_menu3);
         nationalStatisticsPresenter = (NationalStatisticsPresenter) intent.getSerializableExtra("nationalStatisticsPresenter");
         barChart = (BarChart) findViewById(R.id.charting);
-
+        clearSky = getResources().getColor(R.color.clearSky_upper_gradient);
+        cloudy = getResources().getColor(R.color.cloudy_upper_gradient);
         if (isSunny) {
             linearLayout.setBackground(getResources().getDrawable(R.drawable.clear_sky, null));
+            Log.d(TAG, "isSunny");
+            setStatusBarColor(clearSky);
         } else{
             linearLayout.setBackground(getResources().getDrawable(R.drawable.cloudy, null));
             Log.d(TAG, "isCloudy");
+            setStatusBarColor(cloudy);
         }
 
     }
 
+    private void setStatusBarColor(int color){
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.setStatusBarColor(color);
+    }
 
     public void graphInitSetting() {
 
@@ -93,6 +136,7 @@ public class NationalStatistics extends Activity {
 
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
+        depenses.setValueTextSize(20);
         barChart.setDescription(" ");
 
         ArrayList<String> labels = new ArrayList<String>();
@@ -101,10 +145,13 @@ public class NationalStatistics extends Activity {
         }
 
         BarData data = new BarData(labels, depenses); // 라이브러리 v3.x 사용하면 에러 발생함
+        data.setValueTextSize(20);
         depenses.setColors(ColorTemplate.LIBERTY_COLORS); //
 
         barChart.setData(data);
         barChart.animateXY(100, 100);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getBarData().setValueTextSize(15);
         barChart.invalidate();
     }
 

@@ -2,10 +2,12 @@ package com.udangtangtang.emotion_mapfile.model;
 
 import java.io.Serializable;
 
+
 public class User implements Serializable {
     private static User singletonUser;
     private final String TAG = "User";
     private String ID;
+    private String email;
     private String name;
     private String city;
     private String login_method;
@@ -50,5 +52,13 @@ public class User implements Serializable {
 
     public void setLogin_method(String login_method) {
         this.login_method = login_method;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

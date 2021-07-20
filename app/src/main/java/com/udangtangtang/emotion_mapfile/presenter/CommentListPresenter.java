@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
+import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
@@ -17,6 +18,7 @@ public class CommentListPresenter {
     private final User user;
     private Context context;
     private Comment_list activity;
+    private Comment_adapter adapter;
 
     public CommentListPresenter(Context context, Comment_list activity) {
         this.city = City.getInstance();
@@ -25,7 +27,7 @@ public class CommentListPresenter {
         this.activity = activity;
     }
 
-    public String getMyCity() {
+    public String getUserCity() {
         return city.getMyCity();
     }
 
