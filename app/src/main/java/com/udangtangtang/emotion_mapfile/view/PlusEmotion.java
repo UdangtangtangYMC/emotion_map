@@ -4,47 +4,115 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import com.github.angads25.toggle.widget.LabeledSwitch;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.AddEmotionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.PlusEmotionPresenter;
+import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
-public class PlusEmotion {
+public class PlusEmotion extends DialogFragment {
+    private final String TAG = "PlusEmotion";
     private PlusEmotionPresenter plusEmotionPresenter;
     private Context context;
-    private EditText edt_ment;
+    private EditText edt_comment;
+    private LabeledSwitch emotionSwitch;
+    private Button submit;
+    private TextView ems;
+    private Refreshable refreshable;
 
-    private String comment;
 
-
-    public PlusEmotion(Context context, PlusEmotionPresenter plusEmotionPresenter) {
+    public PlusEmotion(Context context, PlusEmotionPresenter plusEmotionPresenter, Refreshable refreshable) {
         this.context = context;
         this.plusEmotionPresenter = plusEmotionPresenter;
-
+        this.refreshable = refreshable;
     }
 
-    public void callFunction(AddEmotionCallback addEmotionCallback) {
-        final Dialog dlg = new Dialog(context);
-        dlg.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dlg.setContentView(R.layout.dialog_plus);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
+        // 다이얼로그의 배경을 투명하게 변경
+        Dialog dlg = getDialog();
+        dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dlg.getWindow().getAttributes().windowAnimations = R.style.AnimationPopup;
 
-        WindowManager.LayoutParams params = dlg.getWindow().getAttributes();
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        // 다이얼로그에 존재하는 view 초기화
+        View view = inflater.inflate(R.layout.dialog_plus,null);
+        edt_comment = view.findViewById(R.id.edt_comment);
+        Log.d(TAG, "onCreateDialog:"+edt_comment);
+        emotionSwitch = view.findViewById(R.id.emotion_switch);
+        Log.d(TAG, "onCreateDialog: "+emotionSwitch);
+        submit = view.findViewById(R.id.submit);
+        Log.d(TAG, "onCreateDialog: "+submit);
+        ems = view.findViewById(R.id.ems);
+        Log.d(TAG, "onCreateDialog: "+ems);
 
-        dlg.getWindow().setAttributes(params);
-        dlg.show();
+        // switch의 on, off 문구 설정
+        emotionSwitch.setLabelOn("빡침");
+        emotionSwitch.setLabelOff("기쁨");
+        emotionSwitch.setColorBorder(getResources().getColor(R.color.transparent,null));
+        emotionSwitch.setColorOn(getResources().getColor(R.color.angry_switch,null));
+
+        addEventListener();
+
+        return view;
+    }
+
+    private void addEventListener(){
+        // EditText의 내용 변경에 대한 이벤트 리스너 추가
+        edt_comment.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d(TAG, "beforeTextChanged: ");
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ems.setText(getString(R.string.ems, String.valueOf(s.length())));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d(TAG, "afterTextChanged: ");
+            }
+        });
+
+        // 등록버튼에 이벤트 리스너 추가
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String comment = edt_comment.getText().toString();
+                if (comment.equals("")) {
+                    Toast.makeText(context,"내용을 입력해주세요.",Toast.LENGTH_LONG).show();
+                } else{
+                    if (emotionSwitch.isActivated()) {
+                        plusEmotionPresenter.insert_emotion("빡침",comment, refreshable);
+                    } else{
+                        plusEmotionPresenter.insert_emotion("기쁨",comment, refreshable);
+                    }
+                    getDialog().dismiss();
+                }
+            }
+        });
+    }
+    public void callFunction(AddEmotionCallback addEmotionCallback) {
 
         /*init(dlg);
         btn_ok.setOnClickListener(new View.OnClickListener() {
@@ -71,14 +139,5 @@ public class PlusEmotion {
                 dlg.dismiss();
             }
         });*/
-    }
-
-    public void init(Dialog dlg) {
-        /*rdg = dlg.findViewById(R.id.rdg);
-        rd_btn1 = dlg.findViewById(R.id.rg_btn1);
-        rd_btn2 = dlg.findViewById(R.id.rg_btn2);*/
-        edt_ment = dlg.findViewById(R.id.edt_ment);
-        /*btn_ok = dlg.findViewById(R.id.btn_ok);
-        btn_cancel = dlg.findViewById(R.id.btn_cancel);*/
     }
 }

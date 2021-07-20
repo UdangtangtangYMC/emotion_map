@@ -7,6 +7,6 @@
         android:right="0dip"
         android:top="0dip" />
     <gradient
-        android:endColor="#d5cfdef3"
-        android:startColor="#d5e0dffc" />
+        android:endColor="#90cfdef3"
+        android:startColor="#90e0dffc" />
 </shape>

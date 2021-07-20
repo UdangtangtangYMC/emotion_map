@@ -69,15 +69,15 @@ public class MainPresenter extends LocationCallback {
         return user.getName();
     }
 
-    public void add_emotion() {
+    public void add_emotion(Refreshable refreshable) {
         if (user.getID() == null) {
             Toast.makeText(context, "Kakao login : 이메일 정보제공에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         } else {
-            PlusEmotionPresenter plusEmotionPresenter = new PlusEmotionPresenter(context, city, user);
-            PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter);
-            plusEmotion.callFunction(addEmotionCallback());
+            PlusEmotionPresenter plusEmotionPresenter = PlusEmotionPresenter.getInstance(context, city, user);
+            PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
+            plusEmotion.show(activity.getSupportFragmentManager(), "plus_emotion");
         }
     }
 

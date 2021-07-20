@@ -21,8 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListPresenter;
+import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
-public class Comment_list extends AppCompatActivity {
+public class Comment_list extends AppCompatActivity implements Refreshable {
     private final String TAG = "Comment_list";
     private LinearLayout linearLayout;
     private RecyclerView recyclerView;
@@ -45,7 +46,6 @@ public class Comment_list extends AppCompatActivity {
         Intent intent = getIntent();
         Comment_adapter comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
         initView((Boolean) intent.getSerializableExtra("isSunny"));
-        commentListPresenter = new CommentListPresenter(Comment_list.this, this);
 
         recyclerView.setAdapter(comment_adapter);
     }
@@ -78,7 +78,7 @@ public class Comment_list extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btn_plus:
-                commentListPresenter.add_emotion();
+                commentListPresenter.add_emotion(this);
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -87,6 +87,7 @@ public class Comment_list extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
     public void refresh() {
         Intent intent = getIntent();
         finish();

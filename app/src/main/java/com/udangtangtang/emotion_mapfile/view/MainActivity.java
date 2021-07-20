@@ -33,15 +33,15 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.Comment;
-import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.MainPresenter;
+import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 
-public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback, Refreshable {
 
     private final String TAG = "MainActivity";
     //메뉴창
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btn_plus:
-                presenter.add_emotion();
+                presenter.add_emotion(this);
                 break;
             default:
         }
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         }
     }
 
+    @Override
     public void refresh() {
         Intent intent = getIntent();
         finish();

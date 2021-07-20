@@ -12,4 +12,7 @@
     <color name="clearSky_upper_gradient">#a0dfff</color>
     <color name="clearSky_bottom_gradient">#4092d2</color>
     <color name="black">#000000</color>
+    <color name="angry_switch">#F31600</color>
+    <color name="happy_switch">#003D9B</color>
+    <color name="transparent">#00ffffff</color>
 </resources>

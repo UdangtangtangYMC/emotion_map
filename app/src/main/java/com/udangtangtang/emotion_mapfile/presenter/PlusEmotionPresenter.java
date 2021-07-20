@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
+import com.udangtangtang.emotion_mapfile.view.MainActivity;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -31,20 +32,31 @@ public class PlusEmotionPresenter {
     private final City city;
     private final User user;
     private Context context;
-    private FusedLocationProviderClient loc;
+    private static PlusEmotionPresenter singletonPlusEmotionPresenter;
+    private Refreshable refreshable;
 
-    public PlusEmotionPresenter(Context context, City city, User user) {
+    private PlusEmotionPresenter(Context context, City city, User user) {
         this.context = context;
         this.city = city;
         this.user = user;
-        this.loc = LocationServices.getFusedLocationProviderClient(context);
+    }
+
+    public static PlusEmotionPresenter getInstance(Context context, City city, User user) {
+        if (singletonPlusEmotionPresenter == null) {
+            singletonPlusEmotionPresenter = new PlusEmotionPresenter(context,city,user);
+        }
+
+        return singletonPlusEmotionPresenter;
     }
 
     public String get_emotion(int id, int happy_id) {
         return (id == happy_id) ? "기쁨" : "빡침";
     }
 
-    public void insert_emotion(String selected_emotion, String comment) {
+    public void insert_emotion(String selected_emotion, String comment, Refreshable refreshable) {
+
+        this.refreshable = refreshable;
+
         Comment input_comment = new Comment();
 
         input_comment.setComment(comment);
@@ -70,6 +82,7 @@ public class PlusEmotionPresenter {
             @Override
             public void onSuccess(Optional<Boolean> statusChanged, String status) {
                 city.changeStatus(statusChanged, status);
+                refreshable.refresh();
             }
         };
     }

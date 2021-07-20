@@ -6,7 +6,8 @@
     android:layout_marginStart="24dp"
     android:layout_marginEnd="24dp"
     android:background="@drawable/add_comment_drawable"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:scrollbars="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,54 +23,59 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:padding="25dp"
-            android:text="감정 추가"
-            android:textSize="35sp" />
+            android:text="@string/add_comment_title"
+            android:textSize="25sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal"
             android:weightSum="2">
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="나는 지금"
+                    android:text="@string/add_comment_switchLabel"
                     android:textAlignment="center"
                     android:textSize="30sp" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
 
                 <com.github.angads25.toggle.widget.LabeledSwitch
                     android:id="@+id/emotion_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    app:colorBorder="@color/colorAccent"
-                    app:on="false" />
+                    app:on="true"
+                    android:layout_gravity="center"
+                    android:scaleX="1.2"
+                    android:scaleY="1.2"/>
             </LinearLayout>
         </LinearLayout>
 
 
         <EditText
-            android:id="@+id/edt_ment"
+            android:id="@+id/edt_comment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="25dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:hint="@string/hint"
             android:inputType="textMultiLine"
+            android:gravity="start"
+            android:lines="6"
+            android:ems="10"
+            android:maxLength="50"
             android:padding="10dp"
-            android:maxEms="50"
             android:textSize="20sp"
             android:background="@drawable/edit_text_drawable"/>
 
@@ -79,21 +85,24 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/ems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:text="0/50"
+                android:layout_marginEnd="15dp"
+                android:text="@string/initial_ems"
                 android:textAlignment="viewEnd"
                 android:textSize="15sp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/submit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_margin="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="15dp"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/round_border"
-                android:text="등록"
+                android:text="@string/add_comment_submit"
                 android:textSize="20sp"
                 app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
