@@ -45,7 +45,6 @@ public class SignInPresenter {
                                 login_user.setLogin_method("email");
                                 login_user.setName(user.getDisplayName());
                                 login_user.setID(user.getEmail());
-                                intent.putExtra("user", login_user);
                                 context.startActivity(intent);
                                 ((Activity) context).finish();
                             } else {

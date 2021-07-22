@@ -2,6 +2,8 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private NavigationView navigationView;
     private TextView txt_userEmail;
 
+    //loading
+    private AppCompatDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,12 +90,11 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
-
+        progressON();
         //위젯 연결
         initView();
 
         //presenter 생성 및 위치권한 요청
-        Intent intent = getIntent();
         if(presenter == null) {
             presenter = MainPresenter.getInstance(MainActivity.this, MainActivity.this);
             presenter.checkPermissions(this);
@@ -143,10 +148,30 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         @Override
                         public void run() {
                             swipeRefresh.setRefreshing(false);
+                            refresh();
                         }
                     }, 500);
-                    refresh();
                 });
+    }
+
+    public void progressON(){
+        progressDialog = new AppCompatDialog(MainActivity.this);
+        progressDialog.setCancelable(false);
+        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        progressDialog.setContentView(R.layout.dialog_loading);
+        progressDialog.show();
+
+        final ImageView img_loading = progressDialog.findViewById(R.id.udang);
+        final Animation animation = AnimationUtils.loadAnimation(this, R.anim.scale);
+        img_loading.post(new Runnable() {
+            @Override
+            public void run() {
+                img_loading.startAnimation(animation);
+            }
+        });
+    }
+    public void progressOFF(){
+        progressDialog.dismiss();
     }
 
 
@@ -173,6 +198,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     setStatusBarColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
                 }
                 drawerLayout.openDrawer(Gravity.LEFT);
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN);
                 break;
             default:
         }
@@ -183,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         //뷰 세팅
         //drawer
         drawerLayout = findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         navigationView = findViewById(R.id.nav_view);
         txt_userEmail = navigationView.getHeaderView(0).findViewById(R.id.txt_userEmail);
         TextView_menu2 = findViewById(R.id.textView_menu2);
@@ -302,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             linearLayout.addView(textView);
         }
         this.linearLayout.addView(linearLayout);
+        progressOFF();
     }
 
     private void textView_setting(TextView textview, int index) {
@@ -328,8 +356,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
             presenter.getLocality(this);
         } else {
-            Snackbar
-                    .make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(coordinatorLayout, "권한 설정은 어플 재기동후 다시 설정하실 수 있습니다.", Snackbar.LENGTH_INDEFINITE)
                     .show();
         }
     }

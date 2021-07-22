@@ -101,7 +101,6 @@ public class SessionCallback implements ISessionCallback {
 
     private void intent_MainActivity() {
         Intent intent = new Intent(activity, MainActivity.class);
-        intent.putExtra("user", this.user);
         activity.startActivity(intent);
         activity.finish();
     }
