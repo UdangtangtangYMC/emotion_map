@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -24,7 +25,8 @@ import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
+import com.udangtangtang.emotion_mapfile.adapter.CommentDiffCallback;
+import com.udangtangtang.emotion_mapfile.adapter.CommentAdapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.CityStatus;
 import com.udangtangtang.emotion_mapfile.model.Comment;
@@ -37,6 +39,7 @@ import com.udangtangtang.emotion_mapfile.view.SignInActivity;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -50,7 +53,7 @@ public class MainPresenter extends LocationCallback {
     private final Context context;
     private final User user;
     private final City city;
-    private Comment_adapter comment_adapter;
+    private CommentAdapter commentAdapter;
     private List<Comment> commentList;
     private List<CityStatus> cityStatusesList = new ArrayList<>();
     private MainActivity activity;
@@ -94,14 +97,10 @@ public class MainPresenter extends LocationCallback {
     }
 
     public void intent_CommentDetail() {
-        if (comment_adapter != null) {
-            Intent intent = new Intent(context, Comment_list.class);
-            intent.putExtra("isSunny", city.getTemperature() > 0);
-            intent.putExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter", new Comment_adapter(commentList, true));
-            context.startActivity(intent);
-        } else {
-            Toast.makeText(context, "멘트 목록 상세보기 실패", Toast.LENGTH_SHORT).show();
-        }
+        Intent intent = new Intent(context, Comment_list.class);
+        intent.putExtra("commentList", (Serializable) city.getCommentList());
+        intent.putExtra("isSunny", city.getTemperature() > 0);
+        context.startActivity(intent);
     }
 
     public void intent_SignInActivity() {
@@ -291,19 +290,9 @@ public class MainPresenter extends LocationCallback {
         cityStatuses[idx2] = cityStatus;
     }
 
-
-    // Clear, Set comment_list
-    public void clearComments() {
-        this.comment_adapter.clearComments();
-    }
-
-    public void setComments(ArrayList<Comment> comment_list) {
-        this.comment_adapter.setComments(comment_list);
-    }
-
     // notifyDataSetChanged()
     public void notifyDataChanged() {
-        this.comment_adapter.notifyDataSetChanged();
+        this.commentAdapter.notifyDataSetChanged();
     }
 
     public void setInitInfo(MainActivity activity) {
@@ -317,13 +306,10 @@ public class MainPresenter extends LocationCallback {
             public void onSuccess(Optional<List<Comment>> comments) {
                 Log.d(TAG, "onSuccess: ");
                 comments.ifPresent(c -> {
-                    commentList = c;
                     // comment 상세보기에 쓰일 comment_adapter 생성
-                    comment_adapter = new Comment_adapter(c, false);
-
+                    commentList = c;
                     activity.setComments(Optional.of(c));
                     city.addMyCommentListener(user.getID(), createMyCommentCallBack(activity));
-
                 });
             }
 

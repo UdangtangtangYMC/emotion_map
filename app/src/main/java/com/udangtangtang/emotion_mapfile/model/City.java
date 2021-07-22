@@ -41,6 +41,7 @@ public class City {
     private long temperature;
     private long happyPeople;
     private long angryPeople;
+    private List<Comment> commentList;
 
     private City() {
         this.firebaseDatabase = FirebaseDatabase.getInstance();
@@ -100,6 +101,7 @@ public class City {
         }
 
         this.temperature = angryPeople - happyPeople;
+        this.commentList = comments;
 
         return comments;
     }
@@ -175,7 +177,7 @@ public class City {
                         // 실제 db에 comment를 등록하는 라인
                         reference.child(id).setValue(comment);
                         // callBack을 통해 작업이 완료됐음을 알림 -> 매개변수로 이전 comment와 비교하여 상태가 바뀌었는지, 현재 등록한 comment의 상태를 전달
-                        callBack.onSuccess(Optional.of(statusChanged), comment.getStatus());
+                        callBack.onUploadSuccess(Optional.of(statusChanged), comment.getStatus());
                     });
 
                     // 비어있는 경우 새로운 comment를 db에 등록
@@ -183,7 +185,7 @@ public class City {
                         reference.child(id).setValue(comment);
 
                         // callBack을 통해 작업이 완료 되었음을 알림. 이전 comment가 없기 때문에 첫 번째 매개변수는 false를 전달
-                        callBack.onSuccess(Optional.empty(), comment.getStatus());
+                        callBack.onUploadSuccess(Optional.empty(), comment.getStatus());
                     }
                 }
 
@@ -378,5 +380,21 @@ public class City {
                 }
             });
         }
+    }
+
+    public void updateCommentList(InsertCommentCallBack callBack){
+        DatabaseReference users = firebaseDatabase.getReference("users").child(myCity);
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+                HashMap<String,Object> comments = (HashMap) snapshot.getValue();
+                callBack.onUpdateSuccess(createCommentList(comments));
+            }
+
+            @Override
+            public void onCancelled(@NonNull @NotNull DatabaseError error) {
+                Log.d(TAG, "onCancelled: ");
+            }
+        });
     }
 }

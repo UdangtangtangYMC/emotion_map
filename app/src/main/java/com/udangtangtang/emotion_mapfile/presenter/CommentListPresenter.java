@@ -7,24 +7,28 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
+import com.udangtangtang.emotion_mapfile.adapter.CommentAdapter;
 import com.udangtangtang.emotion_mapfile.model.City;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.Comment_list;
 import com.udangtangtang.emotion_mapfile.view.PlusEmotion;
+
+import java.util.List;
 
 public class CommentListPresenter {
     private final City city;
     private final User user;
     private Context context;
     private Comment_list activity;
-    private Comment_adapter adapter;
+    private CommentAdapter adapter;
 
-    public CommentListPresenter(Context context, Comment_list activity) {
+    public CommentListPresenter(Context context, Comment_list activity, CommentAdapter adapter) {
         this.city = City.getInstance();
         this.user = User.getInstance();
         this.context = context;
         this.activity = activity;
+        this.adapter = adapter;
     }
 
     public String getUserCity() {
@@ -41,5 +45,13 @@ public class CommentListPresenter {
             PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
             plusEmotion.show(activity.getSupportFragmentManager(),"plus_emotion");
         }
+    }
+
+    public CommentAdapter getAdapter(){
+        return adapter;
+    }
+
+    public List<Comment> getCommentList(){
+        return city.getCommentList();
     }
 }
