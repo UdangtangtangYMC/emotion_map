@@ -63,7 +63,6 @@
             </LinearLayout>
         </LinearLayout>
 
-
         <EditText
             android:id="@+id/edt_comment"
             android:layout_width="match_parent"

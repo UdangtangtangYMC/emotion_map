@@ -19,16 +19,19 @@ import androidx.core.content.ContextCompat;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Utils;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NationalStatistics extends AppCompatActivity {
     private static final String TAG = "NationalStatics";
@@ -60,18 +63,6 @@ public class NationalStatistics extends AppCompatActivity {
         Utils.init(NationalStatistics.this);
         graphInitSetting();       //그래프 기본 세팅
 
-        barChart.setTouchEnabled(false);
-        barChart.getAxisRight().setAxisMaxValue(100);
-        barChart.getAxisLeft().setAxisMaxValue(100);
-        barChart.getXAxis().setDrawGridLines(false);
-        barChart.getAxisLeft().setDrawGridLines(false);
-        barChart.getAxisRight().setDrawGridLines(false);
-        barChart.setGridBackgroundColor(Color.WHITE);
-        barChart.setDrawValueAboveBar(false);
-        Legend l = barChart.getLegend();
-        l.setTextSize(20);
-        l.setTextColor(getResources().getColor(R.color.chart_color));
-        l.setForm(Legend.LegendForm.CIRCLE);
     }
 
     @Override
@@ -130,6 +121,7 @@ public class NationalStatistics extends AppCompatActivity {
 
         // BarChart 메소드
         ArrayList<BarEntry> entries = new ArrayList<>();
+
         for (int i = 0; i < valList.size(); i++) {
             entries.add(new BarEntry((Integer) valList.get(i), i));
         }
@@ -137,6 +129,9 @@ public class NationalStatistics extends AppCompatActivity {
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
         depenses.setValueTextSize(20);
+//        int[] color_list = {Color.RED, Color.RED,Color.RED, Color.RED, Color.RED};
+        depenses.setColors(new int[] {Color.rgb(000, 255, 255), Color.rgb(051, 255, 255), Color.rgb(102, 255, 255),
+                        Color.rgb(153, 255, 255), Color.rgb(204, 204, 204)});
         barChart.setDescription(" ");
 
         ArrayList<String> labels = new ArrayList<String>();
@@ -146,12 +141,28 @@ public class NationalStatistics extends AppCompatActivity {
 
         BarData data = new BarData(labels, depenses); // 라이브러리 v3.x 사용하면 에러 발생함
         data.setValueTextSize(20);
-        depenses.setColors(ColorTemplate.LIBERTY_COLORS); //
 
         barChart.setData(data);
         barChart.animateXY(100, 100);
-        barChart.getAxisLeft().setDrawGridLines(false);
         barChart.getBarData().setValueTextSize(15);
+        barChart.setTouchEnabled(false);
+        barChart.getAxisLeft().setAxisMaxValue(100);
+
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawAxisLine(false);
+        barChart.setDrawGridBackground(false);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getAxisLeft().setEnabled(false);
+        barChart.getXAxis().setDrawAxisLine(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.setGridBackgroundColor(Color.WHITE);
+        barChart.setDrawValueAboveBar(false);
+
+        Legend l = barChart.getLegend();
+        l.setTextSize(15);
+        l.setForm(Legend.LegendForm.CIRCLE);
         barChart.invalidate();
     }
 
