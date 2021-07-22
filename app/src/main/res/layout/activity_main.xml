@@ -343,5 +343,7 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/navi_header"
         app:menu="@menu/menu_navi"
-        app:theme="@style/NavigationDrawerStyle"/>
+        app:theme="@style/NavigationDrawerStyle"
+        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/white" />
 </androidx.drawerlayout.widget.DrawerLayout>

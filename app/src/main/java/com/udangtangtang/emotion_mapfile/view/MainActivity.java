@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //색상
     private int clearSky;
     private int cloudy;
+    private int lastWeather;
 
     public int temperature;
 
@@ -112,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         item.setChecked(false);
                         startActivity(intent);
                         break;
-                    case R.id.btn_bugReport:
+                    case R.id.btn_ask:
                         item.setChecked(false);
                 }
                 return false;
@@ -154,6 +155,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 presenter.add_emotion(this);
                 break;
             case android.R.id.home:
+                if(temperature>0) {
+                    navigationView.setBackgroundColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
+                    setStatusBarColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
+                }
+                else {
+                    navigationView.setBackgroundColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
+                    setStatusBarColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
+                }
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;
             default:
@@ -212,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            setStatusBarColor(lastWeather);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             if (System.currentTimeMillis() - time >= 2000) {
@@ -326,12 +336,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             weatherIcon.setScaleX(Float.parseFloat("1"));
             weatherIcon.setScaleY(Float.parseFloat("1"));
             drawerLayout.setBackground(clearSky);
+            lastWeather = this.clearSky;
             setStatusBarColor(this.clearSky);
         } else {
             weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.rainy_icon, null));
             weatherIcon.setScaleX(Float.parseFloat("2.5"));
             weatherIcon.setScaleY(Float.parseFloat("2.5"));
             drawerLayout.setBackground(cloudy);
+            lastWeather = this.cloudy;
             setStatusBarColor(this.cloudy);
         }
 
@@ -341,8 +353,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
 
-        String mycity = presenter.getUserCity();
-        if(mycity.length() > 3){
+        String myCity = presenter.getUserCity();
+        if(myCity.length() > 3){
             userCity.setTextSize(50);
         }else{
             userCity.setTextSize(60);

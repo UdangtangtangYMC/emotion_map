@@ -2,12 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/btn_logout"
-        android:title="로그아웃"
-        />
+        android:title="@string/logout"
+        android:icon="@drawable/outline_exit_to_app_white_24" />
     <item
         android:id="@+id/btn_git"
-        android:title="GitHub" />
+        android:title="@string/Github"
+        android:icon="@drawable/outline_open_in_new_white_24"/>
     <item
-        android:id="@+id/btn_bugReport"
-        android:title="건의 사항" />
+        android:id="@+id/btn_ask"
+        android:title="@string/ask"
+        android:icon="@drawable/outline_help_outline_24"/>
 </menu>
