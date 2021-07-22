@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -70,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //drawer
     private NavigationView navigationView;
     private TextView txt_userEmail;
-    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +116,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         break;
                     case R.id.btn_ask:
                         item.setChecked(false);
+                        String[] address = {"wsm9175@gmail.com"};
+                        Intent email = new Intent(Intent.ACTION_SEND);
+                        email.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        email.setType("plain/text");
+                        email.setPackage("com.google.android.gm");
+                        email.putExtra(Intent.EXTRA_EMAIL, address);
+                        startActivity(email);
                 }
                 return false;
             }
@@ -140,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                     refresh();
                 });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -176,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         txt_userEmail = navigationView.getHeaderView(0).findViewById(R.id.txt_userEmail);
-
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
@@ -228,7 +236,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 time = System.currentTimeMillis();
                 Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
             } else if (System.currentTimeMillis() - time < 2000) {
-                finishAffinity();
+                moveTaskToBack(true);
+                finishAndRemoveTask();
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         }
     }
@@ -268,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     //표 텍스트 설정
     public void setChart(String name, int angry_count, int happy_count, int total, int index) {
+        Log.d(TAG, "serChart 진입");
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
