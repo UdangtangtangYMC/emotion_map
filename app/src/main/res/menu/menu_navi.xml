@@ -8,6 +8,6 @@
         android:id="@+id/btn_git"
         android:title="GitHub" />
     <item
-        android:id="@+id/btn_bugReport"
+        android:id="@+id/btn_ask"
         android:title="건의 사항" />
 </menu>

@@ -34,10 +34,6 @@ public class PlusEmotionPresenter {
         return singletonPlusEmotionPresenter;
     }
 
-    public String get_emotion(int id, int happy_id) {
-        return (id == happy_id) ? "기쁨" : "빡침";
-    }
-
     public void insert_emotion(String selected_emotion, String comment, Refreshable refreshable) {
 
         Log.d(TAG, "insert_emotion: "+selected_emotion);
