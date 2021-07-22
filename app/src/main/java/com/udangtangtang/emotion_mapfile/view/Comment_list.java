@@ -19,23 +19,32 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.udangtangtang.emotion_mapfile.R;
-import com.udangtangtang.emotion_mapfile.adapter.Comment_adapter;
+import com.udangtangtang.emotion_mapfile.adapter.CommentAdapter;
+import com.udangtangtang.emotion_mapfile.adapter.CommentDiffCallback;
+import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListPresenter;
 import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
+
+import java.io.Serializable;
+import java.util.List;
 
 public class Comment_list extends AppCompatActivity implements Refreshable {
     private final String TAG = "Comment_list";
     private LinearLayout linearLayout;
     private RecyclerView recyclerView;
     private CommentListPresenter presenter;
+    private CommentAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commentlist);
-        presenter = new CommentListPresenter(this, this);
+
+        adapter = CommentAdapter.getInstance(CommentDiffCallback.getInstance(), true);
 
         Intent intent = getIntent();
+        presenter = new CommentListPresenter(this, this, adapter);
+
         //toolbar 세팅
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -43,11 +52,11 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setTitle(getResources().getString(R.string.myCity, presenter.getUserCity()));
 
-
-        Comment_adapter comment_adapter = (Comment_adapter) intent.getSerializableExtra("com.udangtangtang.emotion_mapfile.adapter.Comment_adapter");
         initView((Boolean) intent.getSerializableExtra("isSunny"));
 
-        recyclerView.setAdapter(comment_adapter);
+        List<Comment> commentList = (List<Comment>) intent.getSerializableExtra("commentList");
+        adapter.submitList(commentList);
+        recyclerView.setAdapter(presenter.getAdapter());
     }
 
     private void initView(boolean isSunny) {
@@ -89,7 +98,9 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
 
     @Override
     public void refresh() {
-        //presenter.updateCommentDetailItems();
+        Log.d(TAG, "refresh: ");
+        adapter.submitList(presenter.getCommentList());
+        Log.d(TAG, "refresh: finish");
     }
 
     private void setStatusBarColor(int color) {
