@@ -24,14 +24,11 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.Utils;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.presenter.NationalStatisticsPresenter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NationalStatistics extends AppCompatActivity {
     private static final String TAG = "NationalStatics";
@@ -43,6 +40,7 @@ public class NationalStatistics extends AppCompatActivity {
     private BarChart barChart;
     private int clearSky;
     private int cloudy;
+    private boolean isSunny;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +53,8 @@ public class NationalStatistics extends AppCompatActivity {
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setDisplayShowTitleEnabled(false);
 
-        init((boolean)getIntent().getSerializableExtra("isSunny"));
+        isSunny = (boolean)getIntent().getSerializableExtra("isSunny");
+        init(isSunny);
         nationalStatisticsPresenter.setActivity(this);
         //표 세팅
         nationalStatisticsPresenter.add_tableRow();
@@ -129,9 +128,15 @@ public class NationalStatistics extends AppCompatActivity {
         BarDataSet depenses = new BarDataSet(entries, "빡친 도시 Top5"); // 변수로 받아서 넣어줘도 됨
         depenses.setAxisDependency(YAxis.AxisDependency.LEFT);
         depenses.setValueTextSize(20);
-//        int[] color_list = {Color.RED, Color.RED,Color.RED, Color.RED, Color.RED};
-        depenses.setColors(new int[] {Color.rgb(000, 255, 255), Color.rgb(051, 255, 255), Color.rgb(102, 255, 255),
-                        Color.rgb(153, 255, 255), Color.rgb(204, 204, 204)});
+        if(isSunny){
+//            depenses.setColors(new int[] {Color.parseColor("#8be3af"), Color.parseColor("#a5eac1"), Color.parseColor("#c0f0d4"),
+//                    Color.parseColor("#daf6e6"), Color.parseColor("#f5fcf8")});
+            depenses.setColors(new int[] {Color.rgb(243, 149, 182), Color.rgb(248, 191, 211), Color.rgb(250, 209, 223),
+                    Color.rgb(252, 227, 236), Color.rgb(254, 250, 250)});
+        }else{
+            depenses.setColors(new int[] {Color.rgb(000, 255, 255), Color.rgb(051, 255, 255), Color.rgb(102, 255, 255),
+                    Color.rgb(153, 255, 255), Color.rgb(204, 204, 204)});
+        }
         barChart.setDescription(" ");
 
         ArrayList<String> labels = new ArrayList<String>();
@@ -157,11 +162,14 @@ public class NationalStatistics extends AppCompatActivity {
         barChart.getAxisLeft().setEnabled(false);
         barChart.getXAxis().setDrawAxisLine(false);
         barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setTextColor(Color.WHITE);
+        barChart.getXAxis().setTextSize(15);
         barChart.setGridBackgroundColor(Color.WHITE);
         barChart.setDrawValueAboveBar(false);
 
         Legend l = barChart.getLegend();
         l.setTextSize(15);
+        l.setTextColor(Color.WHITE);
         l.setForm(Legend.LegendForm.CIRCLE);
         barChart.invalidate();
     }

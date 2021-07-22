@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.LogoutResponseCallback;
-import com.udangtangtang.emotion_mapfile.adapter.CommentDiffCallback;
 import com.udangtangtang.emotion_mapfile.adapter.CommentAdapter;
 import com.udangtangtang.emotion_mapfile.model.City;
 import com.udangtangtang.emotion_mapfile.model.CityStatus;

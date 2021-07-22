@@ -25,7 +25,6 @@ import com.udangtangtang.emotion_mapfile.model.Comment;
 import com.udangtangtang.emotion_mapfile.presenter.CommentListPresenter;
 import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
-import java.io.Serializable;
 import java.util.List;
 
 public class Comment_list extends AppCompatActivity implements Refreshable {

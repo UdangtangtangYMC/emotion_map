@@ -11,6 +11,9 @@
     <string name="comment">%s | %s</string>
     <string name="myCity">%s</string>
     <string name="hint">이유를 입력해주세요.</string>
+    <string name="logout">로그아웃</string>
+    <string name="Github">Github</string>
+    <string name="ask">문의하기</string>
 
     <string name="angry">빡침</string>
     <string name="happy">기쁨</string>

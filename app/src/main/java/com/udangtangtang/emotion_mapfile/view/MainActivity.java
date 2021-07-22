@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -63,13 +65,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //색상
     private int clearSky;
     private int cloudy;
+    private int lastWeather;
 
     public int temperature;
 
     //drawer
     private NavigationView navigationView;
     private TextView txt_userEmail;
-    private String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +114,15 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         item.setChecked(false);
                         startActivity(intent);
                         break;
-                    case R.id.btn_bugReport:
+                    case R.id.btn_ask:
                         item.setChecked(false);
+                        String[] address = {"wsm9175@gmail.com"};
+                        Intent email = new Intent(Intent.ACTION_SEND);
+                        email.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        email.setType("plain/text");
+                        email.setPackage("com.google.android.gm");
+                        email.putExtra(Intent.EXTRA_EMAIL, address);
+                        startActivity(email);
                 }
                 return false;
             }
@@ -140,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 });
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -154,6 +164,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 presenter.add_emotion(this);
                 break;
             case android.R.id.home:
+                if(temperature>0) {
+                    navigationView.setBackgroundColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
+                    setStatusBarColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
+                }
+                else {
+                    navigationView.setBackgroundColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
+                    setStatusBarColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
+                }
                 drawerLayout.openDrawer(Gravity.LEFT);
                 break;
             default:
@@ -167,7 +185,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         txt_userEmail = navigationView.getHeaderView(0).findViewById(R.id.txt_userEmail);
-
         TextView_menu2 = findViewById(R.id.textView_menu2);
         TextView_menu3 = findViewById(R.id.textView_menu3Detail);
         userCity = (TextView) findViewById(R.id.txt_userCity);
@@ -212,13 +229,16 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            setStatusBarColor(lastWeather);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             if (System.currentTimeMillis() - time >= 2000) {
                 time = System.currentTimeMillis();
                 Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
             } else if (System.currentTimeMillis() - time < 2000) {
-                finishAffinity();
+                moveTaskToBack(true);
+                finishAndRemoveTask();
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         }
     }
@@ -258,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
 
     //표 텍스트 설정
     public void setChart(String name, int angry_count, int happy_count, int total, int index) {
+        Log.d(TAG, "serChart 진입");
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
@@ -326,12 +347,14 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             weatherIcon.setScaleX(Float.parseFloat("1"));
             weatherIcon.setScaleY(Float.parseFloat("1"));
             drawerLayout.setBackground(clearSky);
+            lastWeather = this.clearSky;
             setStatusBarColor(this.clearSky);
         } else {
             weatherIcon.setImageDrawable(getResources().getDrawable(R.drawable.rainy_icon, null));
             weatherIcon.setScaleX(Float.parseFloat("2.5"));
             weatherIcon.setScaleY(Float.parseFloat("2.5"));
             drawerLayout.setBackground(cloudy);
+            lastWeather = this.cloudy;
             setStatusBarColor(this.cloudy);
         }
 
@@ -341,8 +364,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
 
-        String mycity = presenter.getUserCity();
-        if(mycity.length() > 3){
+        String myCity = presenter.getUserCity();
+        if(myCity.length() > 3){
             userCity.setTextSize(50);
         }else{
             userCity.setTextSize(60);
