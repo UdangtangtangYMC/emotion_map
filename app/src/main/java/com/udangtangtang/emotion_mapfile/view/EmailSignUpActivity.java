@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -33,6 +34,8 @@ public class EmailSignUpActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_signup);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mAuth = FirebaseAuth.getInstance();
         findViewById(R.id.signUpSubmitButton).setOnClickListener(onClickListener);
     }

@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,6 +47,8 @@ public class NationalStatistics extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nationalstatistics);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Toolbar toolbar = findViewById(R.id.toolbar_statis);
         setSupportActionBar(toolbar);

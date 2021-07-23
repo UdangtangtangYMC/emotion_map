@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -38,6 +39,8 @@ public class Comment_list extends AppCompatActivity implements Refreshable {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_commentlist);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         adapter = CommentAdapter.getInstance(CommentDiffCallback.getInstance(), true);
 

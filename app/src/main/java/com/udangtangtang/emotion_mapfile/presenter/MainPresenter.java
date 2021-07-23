@@ -59,7 +59,7 @@ public class MainPresenter extends LocationCallback {
     private FusedLocationProviderClient loc;
     private int try_loc = 0;
     private static MainPresenter singletonMainPresenter;
-    private static PlusEmotion plusEmotion;
+    private PlusEmotion plusEmotion;
 
     private MainPresenter(Context context, MainActivity activity) {
         this.context = context;
@@ -75,11 +75,6 @@ public class MainPresenter extends LocationCallback {
 
     public static MainPresenter getInstance(){
         return singletonMainPresenter;
-    }
-
-    public String get_userName() {
-        Log.d(TAG, user.getName());
-        return user.getName();
     }
 
     public void add_emotion(Refreshable refreshable) {

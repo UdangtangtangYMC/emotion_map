@@ -1,6 +1,7 @@
 package com.udangtangtang.emotion_mapfile.view;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +14,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -83,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         //toolbar 세팅
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -113,11 +118,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         //로그아웃 수행
                         String loginMethod = presenter.getLoginMethod();
                         item.setChecked(false);
+                        setStatusBarColor(lastWeather);
                         logout(loginMethod);
                         break;
                     case R.id.btn_git:
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/UdangtangtangYMC/emotion_map"));
                         item.setChecked(false);
+                        setStatusBarColor(lastWeather);
                         startActivity(intent);
                         break;
                     case R.id.btn_ask:
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                         email.setType("plain/text");
                         email.setPackage("com.google.android.gm");
                         email.putExtra(Intent.EXTRA_EMAIL, address);
+                        setStatusBarColor(lastWeather);
                         startActivity(email);
                 }
                 return false;
@@ -190,11 +198,10 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
                 presenter.add_emotion(this);
                 break;
             case android.R.id.home:
-                if(temperature>0) {
+                if (temperature > 0) {
                     navigationView.setBackgroundColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
                     setStatusBarColor(getResources().getColor(R.color.clearSky_bottom_gradient, null));
-                }
-                else {
+                } else {
                     navigationView.setBackgroundColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
                     setStatusBarColor(getResources().getColor(R.color.cloudy_bottom_gradient, null));
                 }
@@ -249,6 +256,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             Toast.makeText(getApplicationContext(), "로그인 정보 불러오기 실패", Toast.LENGTH_SHORT).show();
         }
 
+
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         clearSky = getResources().getColor(R.color.clearSky_upper_gradient, null);
         cloudy = getResources().getColor(R.color.cloudy_upper_gradient, null);
     }
@@ -396,13 +405,13 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         Log.d(TAG, "setCityStats: cityLayout" + cityLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherLayout" + weatherLayout.getMeasuredHeight());
         Log.d(TAG, "setCityStats: weatherIcon" + weatherIcon.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherLayout"+weatherLayout.getMeasuredHeight());
-        Log.d(TAG, "setCityStats: weatherIcon"+weatherIcon.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherLayout" + weatherLayout.getMeasuredHeight());
+        Log.d(TAG, "setCityStats: weatherIcon" + weatherIcon.getMeasuredHeight());
 
         String myCity = presenter.getUserCity();
-        if(myCity.length() > 3){
+        if (myCity.length() > 3) {
             userCity.setTextSize(50);
-        }else{
+        } else {
             userCity.setTextSize(60);
         }
         userCity.setText(presenter.getUserCity());
@@ -435,5 +444,4 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         recentStatus.setText(s);
         recentComment.setText(s1);
     }
-
 }
