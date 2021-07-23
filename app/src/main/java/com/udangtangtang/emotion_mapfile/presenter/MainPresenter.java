@@ -2,6 +2,7 @@ package com.udangtangtang.emotion_mapfile.presenter;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,7 +49,7 @@ public class MainPresenter extends LocationCallback {
 
     static final int PERMISSIONS_REQUEST = 0x0000001;
     private final String TAG = "MainPresenter";
-    private final Context context;
+    private Context context;
     private final User user;
     private final City city;
     private CommentAdapter commentAdapter;
@@ -58,6 +59,7 @@ public class MainPresenter extends LocationCallback {
     private FusedLocationProviderClient loc;
     private int try_loc = 0;
     private static MainPresenter singletonMainPresenter;
+    private static PlusEmotion plusEmotion;
 
     private MainPresenter(Context context, MainActivity activity) {
         this.context = context;
@@ -67,9 +69,7 @@ public class MainPresenter extends LocationCallback {
     }
 
     public static MainPresenter getInstance(Context context, MainActivity activity){
-        if (singletonMainPresenter == null) {
-            singletonMainPresenter = new MainPresenter(context, activity);
-        }
+        singletonMainPresenter = new MainPresenter(context, activity);
         return singletonMainPresenter;
     }
 
@@ -89,7 +89,7 @@ public class MainPresenter extends LocationCallback {
             Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
         } else {
             PlusEmotionPresenter plusEmotionPresenter = PlusEmotionPresenter.getInstance(context, city, user);
-            PlusEmotion plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
+            plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
             plusEmotion.show(activity.getSupportFragmentManager(), "plus_emotion");
         }
     }
@@ -221,6 +221,7 @@ public class MainPresenter extends LocationCallback {
     private void setChart(HashMap statuses) {
         CityStatus[] cityStatuses = new CityStatus[statuses.size()];
         this.cityStatusesList.clear();
+        Log.d(TAG, "setChart진입");
         int index = 0;
         //status로 부터 값을 꺼내와
         for (Object key : statuses.keySet()) {
@@ -263,6 +264,7 @@ public class MainPresenter extends LocationCallback {
                         cityStatusesList.get(i).getHappy_count(), cityStatusesList.get(i).getTotal(), i);
             }
         }
+        activity.progressOFF();
     }
 
     private void sortByProportion(CityStatus[] cityStatuses, int left, int right) {
@@ -431,4 +433,5 @@ public class MainPresenter extends LocationCallback {
         Location lastLocation = locationResult.getLastLocation();
         Log.d(TAG, "onLocationResult: " + lastLocation.getLatitude() + " " + lastLocation.getLongitude());
     }
+
 }

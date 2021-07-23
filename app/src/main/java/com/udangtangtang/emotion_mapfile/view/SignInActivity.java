@@ -245,6 +245,7 @@ public class SignInActivity extends Activity {
     private void updateUI_google(FirebaseUser user) { //update ui code here
         if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             User login_user = User.getInstance();
             try {
                 login_user.setLogin_method("google");
@@ -252,7 +253,6 @@ public class SignInActivity extends Activity {
                 login_user.setID(user.getEmail());
                 login_user.setEmail(user.getEmail());
                 Log.d(TAG, "updateUI_google: " + user.getEmail());
-                intent.putExtra("user", login_user);
                 this.startActivity(intent);
                 finish();
             } catch (Exception e) {

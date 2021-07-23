@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     private TextView txt_userEmail;
 
     //loading
-    private AppCompatDialog progressDialog;
+    static private AppCompatDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         ab.setDisplayShowTitleEnabled(false);
         ab.setDisplayHomeAsUpEnabled(true);
         ab.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+        progressDialog = new AppCompatDialog(MainActivity.this);
         progressON();
         //위젯 연결
         initView();
@@ -155,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     public void progressON(){
-        progressDialog = new AppCompatDialog(MainActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         progressDialog.setContentView(R.layout.dialog_loading);
@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         });
     }
     public void progressOFF(){
+        Log.d(TAG, "progressOff 진입");
         progressDialog.dismiss();
     }
 
@@ -277,14 +278,20 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     }
 
     public void logout(String loginMethod){
+        Intent intent;
         switch (loginMethod) {
             case "google":
                 presenter.logout_google(mAuth);
                 finish();
+                intent = new Intent(MainActivity.this, SignInActivity.class);
+                startActivity(intent);
                 break;
             case "kakao":
                 presenter.logout_kakao();
                 finish();
+                intent = new Intent(MainActivity.this, SignInActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
                 break;
             default:
                 Log.d(TAG, "로그아웃 정보 얻어오기 실패");
@@ -328,8 +335,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         for (TextView textView : textViews) {
             linearLayout.addView(textView);
         }
+        Log.d(TAG, "serChart for 진입");
         this.linearLayout.addView(linearLayout);
-        progressOFF();
     }
 
     private void textView_setting(TextView textview, int index) {
@@ -364,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public void setCityStats(String temperature, String happyPeople, String angryPeople) {
 
         // 필요한 drawable 객체 선언
+        Log.d(TAG, "setCityStats");
         Drawable clearSky = getResources().getDrawable(R.drawable.clear_sky, null);
         Drawable cloudy = getResources().getDrawable(R.drawable.cloudy, null);
         this.temperature = Integer.parseInt(temperature);
@@ -421,7 +429,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
             recentStatus.setHeight(0);
             recentComment.setText("지금 당신의 상태를 기록해보세요!");
         }
-
     }
 
     public void setMyRecentComment(String s, String s1) {
