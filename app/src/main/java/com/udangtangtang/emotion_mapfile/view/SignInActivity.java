@@ -271,7 +271,9 @@ public class SignInActivity extends Activity {
             time = System.currentTimeMillis();
             Toast.makeText(getApplicationContext(), "뒤로가기 버튼을 한번 더 누르면 종료합니다.", Toast.LENGTH_SHORT).show();
         } else if (System.currentTimeMillis() - time < 2000) {
-            finish();
+            moveTaskToBack(true);
+            finishAndRemoveTask();
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
     }
 

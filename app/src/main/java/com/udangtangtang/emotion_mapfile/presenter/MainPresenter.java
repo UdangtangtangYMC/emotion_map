@@ -312,8 +312,12 @@ public class MainPresenter extends LocationCallback {
             public void onFailed() {
                 Log.d(TAG, "onFailed: ");
                 activity.setComments(Optional.empty());
+                if(user.getEmail() == null){
+                    activity.setMyRecentComment("kakao login 이메일 정보 제공 비동의", "이메일 정보제공 비동의시 감정표현이 불가능 합니다");
+                }else{
+                    activity.setMyRecentComment(Optional.empty(), Optional.empty());
+                }
 
-                activity.setMyRecentComment("kakao login 이메일 정보 제공 비동의", "이메일 정보제공 비동의시 감정표현이 불가능 합니다");
             }
         };
     }
