@@ -65,11 +65,9 @@ public class SignInActivity extends Activity {
         setContentView(R.layout.activity_login);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         initView();
-
-        signInPresenter = new SignInPresenter(SignInActivity.this, key);
-
+        signInPresenter = new SignInPresenter(this,SignInActivity.this, key);
+        signInPresenter.versionCheck();
         //구글 세션 초기화
         currentUser = mAuth.getCurrentUser();
         //카카오세션 초기화
@@ -288,4 +286,6 @@ public class SignInActivity extends Activity {
         edt_password.setEnabled(false);
         check_autoLogin.setEnabled(false);
     }
+
+
 }
