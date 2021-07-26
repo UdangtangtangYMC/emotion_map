@@ -4,11 +4,7 @@ package com.udangtangtang.emotion_mapfile.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,13 +30,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.Session;
+import com.kakao.util.helper.Utility;
 import com.udangtangtang.emotion_mapfile.R;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.presenter.SessionCallback;
 import com.udangtangtang.emotion_mapfile.presenter.SignInPresenter;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 
 public class SignInActivity extends Activity {
@@ -70,13 +64,10 @@ public class SignInActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Log.d(TAG, "onCreate: "+getKeyHash());
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
         initView();
-
-        signInPresenter = new SignInPresenter(SignInActivity.this, key);
-
+        signInPresenter = new SignInPresenter(this,SignInActivity.this, key);
+        signInPresenter.versionCheck();
         //구글 세션 초기화
         currentUser = mAuth.getCurrentUser();
         //카카오세션 초기화
@@ -294,25 +285,5 @@ public class SignInActivity extends Activity {
         edt_email.setEnabled(false);
         edt_password.setEnabled(false);
         check_autoLogin.setEnabled(false);
-    }
-
-    // 키해시 얻기
-    public String getKeyHash(){
-        try{
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-            if(packageInfo == null) return null;
-            for(Signature signature: packageInfo.signatures){
-                try{
-                    MessageDigest md = MessageDigest.getInstance("SHA");
-                    md.update(signature.toByteArray());
-                    return android.util.Base64.encodeToString(md.digest(), Base64.NO_WRAP);
-                }catch (NoSuchAlgorithmException e){
-                    Log.w("getKeyHash", "Unable to get MessageDigest. signature="+signature, e);
-                }
-            }
-        }catch(PackageManager.NameNotFoundException e){
-            Log.w("getPackageInfo", "Unable to getPackageInfo");
-        }
-        return null;
     }
 }
