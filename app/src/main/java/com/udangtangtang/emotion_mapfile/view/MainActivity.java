@@ -2,13 +2,16 @@ package com.udangtangtang.emotion_mapfile.view;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -47,6 +50,8 @@ import com.udangtangtang.emotion_mapfile.presenter.Refreshable;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -195,6 +200,8 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btn_plus:
+                // 다이얼로그가 여러개 띄워지는 것을 방지
+                findViewById(R.id.btn_plus).setEnabled(false);
                 presenter.add_emotion(this);
                 break;
             case android.R.id.home:
@@ -265,6 +272,7 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
     //뒤로가기 버튼 2번을 통해 시스템 종료 || 뒤로가기 한번 클릭으로 drawer종료
     @Override
     public void onBackPressed() {
+        Log.d(TAG, "onBackPressed: ");
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             setStatusBarColor(lastWeather);
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -444,4 +452,6 @@ public class MainActivity extends AppCompatActivity implements ActivityCompat.On
         recentStatus.setText(s);
         recentComment.setText(s1);
     }
+
+
 }

@@ -11,6 +11,5 @@ import java.util.Optional;
  */
 public interface CommentListCallBack {
     void onSuccess(Optional<List<Comment>> commentList);
-
     void onFailed();
 }

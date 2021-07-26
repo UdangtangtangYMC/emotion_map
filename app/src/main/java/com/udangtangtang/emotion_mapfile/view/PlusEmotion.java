@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -50,6 +52,9 @@ public class PlusEmotion extends DialogFragment {
         Dialog dlg = getDialog();
         dlg.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dlg.getWindow().getAttributes().windowAnimations = R.style.AnimationPopup;
+
+        //배경 터치로 인해 닫히는 현상 방지
+        getDialog().setCanceledOnTouchOutside(false);
 
         // 다이얼로그에 존재하는 view 초기화
         View view = inflater.inflate(R.layout.dialog_plus,null);
@@ -112,5 +117,14 @@ public class PlusEmotion extends DialogFragment {
                 }
             }
         });
+
+        // 이후에 창이 닫힐 경우 다시 버튼을 활성화 해주기 위함.
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getDialog().getOwnerActivity().findViewById(R.id.btn_plus).setEnabled(true);
+            }
+        }, 400);
     }
 }

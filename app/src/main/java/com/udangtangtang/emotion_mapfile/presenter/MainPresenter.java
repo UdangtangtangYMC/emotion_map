@@ -78,14 +78,16 @@ public class MainPresenter extends LocationCallback {
     }
 
     public void add_emotion(Refreshable refreshable) {
-        if (user.getID() == null) {
-            Toast.makeText(context, "Kakao login : 이메일 정보제공에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
-        } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
-        } else {
-            PlusEmotionPresenter plusEmotionPresenter = PlusEmotionPresenter.getInstance(context, city, user);
-            plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
-            plusEmotion.show(activity.getSupportFragmentManager(), "plus_emotion");
+        PlusEmotionPresenter plusEmotionPresenter = PlusEmotionPresenter.getInstance(context, city, user);
+        plusEmotion = new PlusEmotion(context, plusEmotionPresenter, refreshable);
+        if (!plusEmotion.isAdded()) {
+            if (user.getID() == null) {
+                Toast.makeText(context, "Kakao login : 이메일 정보제공에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
+            } else if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(context, "위치 권한 사용에 동의하여야 합니다.", Toast.LENGTH_SHORT).show();
+            } else {
+                plusEmotion.show(activity.getSupportFragmentManager(), "plus_emotion");
+            }
         }
     }
 
@@ -177,18 +179,6 @@ public class MainPresenter extends LocationCallback {
 
     public String getUserCity() {
         return city.getMyCity();
-    }
-
-    public String getCityTemperature() {
-        return String.valueOf(city.getTemperature());
-    }
-
-    public String getAngryPeople() {
-        return String.valueOf(city.getAngryPeople());
-    }
-
-    public String getHappyPeople() {
-        return String.valueOf(city.getHappyPeople());
     }
 
     public String getUserEmail() {return this.user.getEmail();}
@@ -283,11 +273,6 @@ public class MainPresenter extends LocationCallback {
         CityStatus cityStatus = cityStatuses[idx1];
         cityStatuses[idx1] = cityStatuses[idx2];
         cityStatuses[idx2] = cityStatus;
-    }
-
-    // notifyDataSetChanged()
-    public void notifyDataChanged() {
-        this.commentAdapter.notifyDataSetChanged();
     }
 
     public void setInitInfo(MainActivity activity) {
