@@ -44,6 +44,6 @@
     <string name="menu3.4">총합</string>
 
     <!---카카오-->
-    <string name="kakao_app_key">14c0eb02333568e599c669cb59b7e30c</string>
+    <string name="kakao_app_key">0a44c75e17c694fcd835f7fa64e90654</string>
     <string name="splashText">빡칠지도</string>
 </resources>
