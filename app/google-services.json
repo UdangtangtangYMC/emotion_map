@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "866090862234-4jkn6fsrdpn7dbvll9bvg0n067hr7obh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.udangtangtang.emotion_mapfile",
+            "certificate_hash": "1d8722b8e5eb98c8b0adfa040a1e311b018c4541"
+          }
+        },
+        {
           "client_id": "866090862234-dd145kehimo47s4ni6rv4hvq0fb8bto2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
