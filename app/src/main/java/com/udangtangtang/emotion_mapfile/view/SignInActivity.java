@@ -23,6 +23,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -59,15 +64,22 @@ public class SignInActivity extends Activity {
     //카카오 로그인을 위해 필요한 변수 선언
     private SessionCallback sessionCallback = new SessionCallback(SignInActivity.this);
 
+    //앱 버전 체크
+    private final int REQUEST_CODE = 3247;
+    private final int RESULT_OK=Activity.RESULT_OK;
+    private AppUpdateManager appUpdateManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         initView();
+        updateCheck();
+
         signInPresenter = new SignInPresenter(this,SignInActivity.this, key);
-        signInPresenter.versionCheck();
         //구글 세션 초기화
         currentUser = mAuth.getCurrentUser();
         //카카오세션 초기화
@@ -145,6 +157,36 @@ public class SignInActivity extends Activity {
         }
     }
 
+    private void updateCheck(){
+        //인앱버전 업데이트 체크
+        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+        //업데이트를 체크하는데 사용되는 인텐트를 리턴한다.
+        com.google.android.play.core.tasks.Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        //checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo->{ //appUpdateManager이 추가되는데 성공하면 발생하는 이벤트
+            if(appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE // UpdateAvailability.UPDATE_AVAILABLE == 2이면 앱 true
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)){ //허용된 타입의 앱 업데이트면 실행
+                requestUpdate(appUpdateInfo);
+            }
+        });
+
+    }
+    private void requestUpdate(AppUpdateInfo appUpdateInfo){
+        try{
+            appUpdateManager.startUpdateFlowForResult(
+                    //getAppUpdateInfo() 에 의해 리턴된 인텐트
+                    appUpdateInfo,
+                    //AppUpdateType.FLEXIBLE : 사용자에게 업데이트 여부를 물은 후 업데이트 실행 가능
+                    //AppUpdateType.IMMEDIATE : 사용자가 수락해야만 하는 업데이트 창을 보여줌
+                    AppUpdateType.IMMEDIATE,
+                    // 현재 업데이트 요청을 만든 액티비티
+                    this,
+                    REQUEST_CODE);
+        }catch(Exception e){
+            Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
+        }
+    }
+
     private void initView() {
         signUpButton = findViewById(R.id.signUpButton);
         signInButton = findViewById(R.id.signInButton);
@@ -209,11 +251,47 @@ public class SignInActivity extends Activity {
                 Log.d(TAG, "google_login : task fail");
                 Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
             }
+        }else if(requestCode == REQUEST_CODE){
+            if(resultCode != RESULT_OK){
+                Log.d(TAG, "Update flow failed! Result");
+                com.google.android.play.core.tasks.Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+                appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+                    if(appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                            && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)){
+                        //업데이트 재요청
+                        requestUpdate(appUpdateInfo);
+                    }
+                });
+            }
         }
 
         if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        appUpdateManager
+                .getAppUpdateInfo()
+                .addOnSuccessListener(
+                        appUpdateINfo -> {
+                            if (appUpdateINfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS){
+                                try{
+                                    appUpdateManager.startUpdateFlowForResult(
+                                            appUpdateINfo,
+                                            AppUpdateType.IMMEDIATE,
+                                            this,
+                                            REQUEST_CODE);
+                                }catch (Exception e){
+                                    Toast.makeText(getApplicationContext(), "업데이트 실패", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }
+                );
     }
 
     @Override
@@ -286,6 +364,4 @@ public class SignInActivity extends Activity {
         edt_password.setEnabled(false);
         check_autoLogin.setEnabled(false);
     }
-
-
 }

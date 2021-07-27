@@ -46,6 +46,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.google.android.play:core:1.8.0'
     def activity_version = "1.2.3"
     def fragment_version = "1.3.4"
 

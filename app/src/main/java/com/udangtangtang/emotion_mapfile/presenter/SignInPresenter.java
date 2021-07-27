@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.udangtangtang.emotion_mapfile.model.AppVersion;
 import com.udangtangtang.emotion_mapfile.model.User;
 import com.udangtangtang.emotion_mapfile.view.EmailSignUpActivity;
 import com.udangtangtang.emotion_mapfile.view.MainActivity;
@@ -30,13 +29,11 @@ public class SignInPresenter {
     private String serverVersion;
     private String version;
     private SignInActivity signInActivity;
-    private AppVersion appVersion;
 
     public SignInPresenter(SignInActivity signInActivity, Context context, String key) {
         this.signInActivity = signInActivity;
         this.mAuth = FirebaseAuth.getInstance();
         this.context = context;
-        appVersion = new AppVersion();
     }
 
     public void intent_EmailSignUpActivity() {
@@ -84,52 +81,5 @@ public class SignInPresenter {
         PreferenceManager.setBoolean(context, key, value);
         Log.d(TAG, "값세팅" + value);
     }
-
-    public void versionCheck(){
-        getVersion();
-        appVersion.getVersion(appVersionCallBack());
-    }
-
-    public void getVersion(){
-        PackageInfo pInfo = null;
-        try{
-            pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        }catch(PackageManager.NameNotFoundException e){
-            e.printStackTrace();
-        }
-
-        this.version = pInfo.versionName;
-        Log.d(TAG, "version :" + version);
-    }
-
-    public boolean compareVersion(){
-        Log.d(TAG, "compareVersion");
-        return version.equals(serverVersion);
-    }
-
-    public AppVersionCallBack appVersionCallBack(){
-        return new AppVersionCallBack() {
-            @Override
-            public void onSuccess(HashMap<String, Object> version) {
-                serverVersion = (String)version.get("version");
-                Log.d(TAG, "onSuccess :" + serverVersion);
-                if(!compareVersion()){
-                    Toast.makeText(context, "버전이 다릅니다. 플레이스토어에서 최신버전으로 업데이트 해주세요", Toast.LENGTH_LONG).show();
-                    signInActivity.moveTaskToBack(true);
-                    signInActivity.finishAndRemoveTask();
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }
-
-            @Override
-            public void onFail() {
-                Log.d(TAG, "onFail :" + serverVersion);
-                Toast.makeText(context, "서버로부터 버전을 가져오는데 실패하였습니다.", Toast.LENGTH_SHORT).show();
-                signInActivity.moveTaskToBack(true);
-                signInActivity.finishAndRemoveTask();
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
-        };
-    }
-
 }
+
